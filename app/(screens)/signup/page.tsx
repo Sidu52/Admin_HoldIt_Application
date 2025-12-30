@@ -11,7 +11,7 @@ export default function Signup() {
 
   const { data, isLoading, error } = useVerifyInvite(token);
 
-  if (isLoading) return <VerificationPage />;
+  if (isLoading) return <VerificationPage isLoading={true} error={error} />;
 
   if (error || !data?.success || !token) {
     return <InvalidLinkPage />;

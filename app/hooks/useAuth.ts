@@ -8,37 +8,37 @@ import {
   SignupPayload,
 } from "@/app/types/auth";
 import { useRouter, usePathname } from "next/navigation";
+import { log } from "console";
+import { setUser } from "../store/slices/profileSlice";
+import { useAppDispatch } from "../store/hooks";
 
 export const useAuth = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const isLoginPage = pathname === "/login";
   // Login
-  const loginMutation = useMutation<AuthResponse, Error, LoginCredentials>({
+  const loginMutation = useMutation<AuthResponse, any, LoginCredentials>({
     mutationFn: login,
-    onSuccess: (data) => {
-      if (data?.data?.user) {
-        queryClient.setQueryData(["auth-user"], data.data.user);
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] }); // Invalidate user profile query
       router.push("/dashboard");
     },
   });
 
   // Signup
-  const signupMutation = useMutation<AuthResponse, Error, SignupPayload>({
+  const signupMutation = useMutation<AuthResponse, any, SignupPayload>({
     mutationFn: signup,
-    onSuccess: (data) => {
-      if (data?.data?.user) {
-        queryClient.setQueryData(["auth-user"], data.data.user);
-      }
-      router.push("/dashboard");
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      router.push("/login");
     },
   });
 
   // Verify session
   const verifyQuery = useQuery({
-    queryKey: ["auth-user"],
+    queryKey: ["auth-verify"],
     queryFn: verifyToken,
     retry: false,
     staleTime: 5 * 60 * 1000,
@@ -58,14 +58,20 @@ export const useAuth = () => {
     },
   });
 
+  console.log("loginMuation", loginMutation);
+
   return {
     user: verifyQuery.data,
-    isLoading: loginMutation.isPending || verifyQuery.isLoading,
+    isLoading: verifyQuery.isLoading,
     isAuthenticated: verifyQuery.isSuccess,
     login: loginMutation.mutate,
+    loginIsLoading: loginMutation.isPending,
+    loginSuccess: loginMutation.isSuccess,
+    loginError: loginMutation.error?.response?.data?.message,
     logout: logoutMutation.mutate,
+    logoutSuccess: logoutMutation.isSuccess,
+    logoutLoading: logoutMutation.isPending,
     signup: signupMutation.mutate,
-    error:
-      loginMutation.error?.message || (verifyQuery.error as Error)?.message,
+    error: verifyQuery.error?.message,
   };
 };

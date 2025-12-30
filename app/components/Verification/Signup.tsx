@@ -27,7 +27,10 @@ type ApiResponse = {
   };
 };
 interface SignupPageProps {
-  data: ApiResponse;
+  data: {
+    email: string;
+    role: string;
+  };
   token: string;
 }
 type FormData = {
@@ -45,9 +48,11 @@ type FormData = {
 
 export default function SignupPage({ data, token }: SignupPageProps) {
   const { signup, isLoading, error } = useAuth();
+
+  console.log("DATA", data);
   const [formData, setFormData] = useState<FormData>({
-    email: data.data?.email || "",
-    role: data.data?.role || "",
+    email: data?.email || "",
+    role: data?.role || "",
     gender: "",
     firstName: "",
     lastName: "",
@@ -133,14 +138,11 @@ export default function SignupPage({ data, token }: SignupPageProps) {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Handle signup logic here
-      console.log("Signup submitted:", formData);
-
       signup({
         token,
         credentials: {
-          username: formData.firstName + " " + formData.lastName,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
           phone: formData.phone,
           address: formData.address,
           dateOfBirth: formData.dateOfBirth,
@@ -151,18 +153,18 @@ export default function SignupPage({ data, token }: SignupPageProps) {
       });
 
       // Reset form after successful submission
-      // setFormData({
-      //   email: data.data?.email || "",
-      //   role: data.data?.admin || "",
-      //   gender: "",
-      //   firstName: "",
-      //   lastName: "",
-      //   phone: "",
-      //   address: "",
-      //   dateOfBirth: "",
-      //   password: "",
-      //   confirmPassword: "",
-      // });
+      setFormData({
+        email: data?.email || "",
+        role: data?.role || "",
+        gender: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        address: "",
+        dateOfBirth: "",
+        password: "",
+        confirmPassword: "",
+      });
     } catch (error) {
       console.error("Signup error:", error);
       alert("Failed to create account. Please try again.");
@@ -209,6 +211,8 @@ export default function SignupPage({ data, token }: SignupPageProps) {
         return "bg-gray-300 dark:bg-[#324467]";
     }
   };
+
+  console.log("formData", formData);
 
   const formatDateForInput = (dateString: string) => {
     if (!dateString) return "";

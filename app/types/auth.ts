@@ -10,7 +10,8 @@ export interface SignupPayload {
 
 
 export interface SignupCredentials {
-  username: string;
+  first_name: string;
+  last_name: string;
   phone: string;
   address: string;
   dateOfBirth: string;

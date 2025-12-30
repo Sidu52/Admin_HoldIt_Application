@@ -6,48 +6,22 @@ import { RiShieldCheckFill, RiTimer2Fill } from "react-icons/ri";
 
 type VerificationStatus = "verifying" | "success" | "error" | "expired";
 
-export default function VerificationPage() {
+export default function VerificationPage({
+  isLoading,
+  error,
+}: {
+  isLoading: boolean;
+  error: any;
+}) {
   const [status, setStatus] = useState<VerificationStatus>("verifying");
-  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    // Simulate verification process
-    const timer = setTimeout(() => {
-      // In a real app, you would make an API call here
-      // For demo purposes, we'll simulate success after 3 seconds
+    if (isLoading) {
+      setStatus("verifying");
+    } else {
       setStatus("success");
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (status === "success") {
-      // Start countdown for redirect
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            // Redirect to signup page
-            // window.location.href = "/signup";
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
     }
-  }, [status]);
-
-  const handleRetry = () => {
-    setStatus("verifying");
-    setCountdown(5);
-    // Retry verification logic here
-    setTimeout(() => {
-      setStatus("success");
-    }, 2000);
-  };
+  }, [isLoading]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden py-10">
@@ -113,12 +87,6 @@ export default function VerificationPage() {
                     Your invitation has been successfully verified. Redirecting
                     to signup page...
                   </p>
-                  <div className="mt-4">
-                    <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
-                      <RiTimer2Fill className="animate-spin" />
-                      <span>Redirecting in {countdown} seconds...</span>
-                    </div>
-                  </div>
                 </>
               )}
 
@@ -136,19 +104,6 @@ export default function VerificationPage() {
               )}
             </div>
 
-            {/* Progress Bar for Verification */}
-            {status === "verifying" && (
-              <div className="w-full max-w-[320px] mt-8">
-                <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-                  <span>Verifying...</span>
-                  <span>75%</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full w-3/4 animate-pulse"></div>
-                </div>
-              </div>
-            )}
-
             {/* Action Buttons */}
             <div className="w-full mt-8">
               {status === "verifying" && (
@@ -157,49 +112,6 @@ export default function VerificationPage() {
                     <LoadingSpinner size="sm" className="text-blue-500" />
                     <span>Checking invitation validity...</span>
                   </div>
-                  <button
-                    onClick={handleRetry}
-                    disabled
-                    className="w-full opacity-50 cursor-not-allowed flex items-center justify-center gap-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 h-12 px-5 text-gray-400 dark:text-gray-500 text-base font-medium leading-normal transition-all"
-                  >
-                    Cancel Verification
-                  </button>
-                </div>
-              )}
-
-              {status === "success" && (
-                <div className="space-y-3">
-                  <button
-                    onClick={() => (window.location.href = "/signup")}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-12 px-5 text-white text-base font-bold leading-normal shadow-lg shadow-green-500/25 transition-all transform hover:-translate-y-0.5"
-                  >
-                    <RiShieldCheckFill className="text-lg" />
-                    <span>Proceed to Signup ({countdown})</span>
-                  </button>
-                  <button
-                    onClick={() => console.log("Manual navigation")}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 h-12 px-5 text-gray-700 dark:text-gray-300 text-base font-medium leading-normal transition-all"
-                  >
-                    <span>Continue Manually</span>
-                  </button>
-                </div>
-              )}
-
-              {(status === "error" || status === "expired") && (
-                <div className="space-y-3">
-                  <button
-                    onClick={handleRetry}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 h-12 px-5 text-white text-base font-bold leading-normal shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
-                  >
-                    <RiShieldCheckFill className="text-lg" />
-                    <span>Retry Verification</span>
-                  </button>
-                  <button
-                    onClick={() => (window.location.href = "/support")}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 h-12 px-5 text-gray-700 dark:text-gray-300 text-base font-medium leading-normal transition-all"
-                  >
-                    <span>Contact Support</span>
-                  </button>
                 </div>
               )}
             </div>

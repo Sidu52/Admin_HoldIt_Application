@@ -1,27 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/app/hooks/useAuth';
-import LoadingSpinner from '@/app/components/Common/LoadingSpinner';
+import { useState } from "react";
+import { useAuth } from "@/app/hooks/useAuth";
+import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
 import {
-  FaEye, 
-  FaEyeSlash, 
+  FaEye,
+  FaEyeSlash,
   FaShieldAlt,
   FaKey,
-  FaMailBulk
-} from 'react-icons/fa';
-import { RiAdminFill } from 'react-icons/ri';
+  FaMailBulk,
+} from "react-icons/fa";
+import { RiAdminFill } from "react-icons/ri";
 
 export default function LoginPage() {
-  const { login, isLoading, error } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login, logoutLoading: isLoading, loginError: error } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login({ email, password });
   };
+
+  console.log("isLoading", isLoading);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden">
@@ -45,7 +47,8 @@ export default function LoginPage() {
               Admin Portal
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal pt-2 text-center max-w-[320px]">
-              Welcome back to Admin Portal. Please enter your details to sign in.
+              Welcome back to Admin Portal. Please enter your details to sign
+              in.
             </p>
           </div>
 
@@ -54,13 +57,18 @@ export default function LoginPage() {
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               {error && (
                 <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded">
-                  <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+                  <p className="text-red-700 dark:text-red-300 text-sm">
+                    {error}
+                  </p>
                 </div>
               )}
 
               {/* Email Field */}
               <div className="flex flex-col gap-2">
-                <label className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal" htmlFor="email">
+                <label
+                  className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal"
+                  htmlFor="email"
+                >
                   Email
                 </label>
                 <div className="relative group">
@@ -83,10 +91,16 @@ export default function LoginPage() {
               {/* Password Field */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal" htmlFor="password">
+                  <label
+                    className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal"
+                    htmlFor="password"
+                  >
                     Password
                   </label>
-                  <a className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer" href="#">
+                  <a
+                    className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                    href="#"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -98,7 +112,7 @@ export default function LoginPage() {
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-0 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-blue-600 dark:focus:border-blue-500 h-12 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-11 pr-12 text-base font-normal leading-normal transition-all shadow-sm z-0"
                     id="password"
                     placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
@@ -142,7 +156,7 @@ export default function LoginPage() {
           {/* Card Footer */}
           <div className="bg-gray-50 dark:bg-gray-900 px-8 py-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-center">
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <span className="text-gray-400 dark:text-gray-600 cursor-not-allowed">
                 Contact Super Admin
               </span>
@@ -153,12 +167,18 @@ export default function LoginPage() {
         {/* Page Footer */}
         <div className="mt-8 text-center">
           <p className="text-gray-500 dark:text-gray-600 text-xs">
-            © {new Date().getFullYear()} Admin Portal Inc. ·{' '}
-            <a className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer" href="#">
+            © {new Date().getFullYear()} Admin Portal Inc. ·{" "}
+            <a
+              className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer"
+              href="#"
+            >
               Privacy
-            </a>{' '}
-            ·{' '}
-            <a className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer" href="#">
+            </a>{" "}
+            ·{" "}
+            <a
+              className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer"
+              href="#"
+            >
               Terms
             </a>
           </p>
