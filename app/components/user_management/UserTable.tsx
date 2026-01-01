@@ -7,7 +7,7 @@ import { useAppSelector } from "@/app/store/hooks";
 import { useSelector } from "react-redux";
 import NoData from "@/app/NoData";
 import { useRouter } from "next/navigation";
-import Pagination from "../Common/Pagination";
+import Pagination from "../common/Pagination";
 
 export default function UserTable() {
   const router = useRouter();

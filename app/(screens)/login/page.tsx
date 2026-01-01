@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/hooks/useAuth";
-import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
+import LoadingSpinner from "@/app/components/common/LoadingSpinner";
 import {
   FaEye,
   FaEyeSlash,
