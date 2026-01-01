@@ -1,8 +1,8 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import InvalidLinkPage from "@/app/components/Verification/Invalid_Link";
-import SignupPage from "@/app/components/Verification/Signup";
-import VerificationPage from "@/app/components/Verification/Verification";
+import InvalidLinkPage from "@/app/components/verification/Invalid_Link";
+import SignupPage from "@/app/components/verification/Signup";
+import VerificationPage from "@/app/components/verification/Verification";
 import { useVerifyInvite } from "@/app/hooks/useVerifyInvite";
 
 export default function Signup() {
@@ -16,7 +16,6 @@ export default function Signup() {
   if (error || !data?.success || !token) {
     return <InvalidLinkPage />;
   }
-  console.log("DATA token", token);
   return (
     <div>
       {/* Signup form here */}

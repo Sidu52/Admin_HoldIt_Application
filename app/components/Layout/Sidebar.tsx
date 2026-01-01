@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
+  import {
   FaUsers,
   FaTruck,
   FaStore,
@@ -31,23 +30,38 @@ interface SidebarProps {
   onMobileToggle: () => void;
 }
 
-const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }: SidebarProps) => {
+const Sidebar = ({
+  isCollapsed,
+  onToggle,
+  isMobileOpen,
+  onMobileToggle,
+}: SidebarProps) => {
   const sidebarItems: SidebarItem[] = [
-    { id: "dashboard", label: "Dashboard", icon: <MdDashboard />, href: "#", active: true },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: <MdDashboard />,
+      href: "#",
+      active: true,
+    },
     { id: "users", label: "User Manager", icon: <FaUsers />, href: "#" },
     { id: "drivers", label: "Driver Manager", icon: <FaTruck />, href: "#" },
     { id: "stores", label: "Store Manager", icon: <FaStore />, href: "#" },
-    { id: "store-owners", label: "Store Owner Manager", icon: <FaUserTie />, href: "#" },
+    {
+      id: "store-owners",
+      label: "Store Owner Manager",
+      icon: <FaUserTie />,
+      href: "#",
+    },
     { id: "teams", label: "Team Manager", icon: <FaUsersCog />, href: "#" },
     { id: "profile", label: "Profile Update", icon: <FaUserEdit />, href: "#" },
-    { id: "bookings", label: "Booking Manager", icon: <FaCalendarAlt />, href: "#" },
+    {
+      id: "bookings",
+      label: "Booking Manager",
+      icon: <FaCalendarAlt />,
+      href: "#",
+    },
   ];
-
-  const userProfile = {
-    name: "Alex Johnson",
-    email: "alex.j@holdit.com",
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAAzYfl7BKRe8Yq0Ky4eMt1zaqyrEuHMDr4I6_douAxszB0BSuk973GrnoYiLKeou3Wlo0MqudMSMWm-9jaVjn3wSbg_jNEoELHdzr_QC4lHwKzY10qz8bb9Du8-rMlbrm194Op99OQmzDOdWGOuBiIBMIlZ9Ol-fAdp_3fXzGEqOiubwCQDby2CY9uER33f0hX2TvjL1_c0vk3vv1JOBU263NNmssgUTIlfgu4U6-mbiaQt29pT43jQOvl2nc_7HKeIFVHyaCD6Wwn"
-  };
 
   return (
     <>
@@ -72,8 +86,11 @@ const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }: Sideba
         <div className="flex flex-col gap-6 overflow-y-auto">
           <div className="flex items-center justify-between">
             {/* Logo Section */}
-            <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-2"} shrink-0`}>
-
+            <div
+              className={`flex items-center ${
+                isCollapsed ? "justify-center" : "gap-3 px-2"
+              } shrink-0`}
+            >
               {!isCollapsed && (
                 <>
                   <div className="bg-primary/10 flex items-center justify-center rounded-lg h-10 w-10 shrink-0">
@@ -107,15 +124,20 @@ const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }: Sideba
                 key={item.id}
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors
-                  ${item.active
-                    ? "bg-primary/10 text-primary"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  ${
+                    item.active
+                      ? "bg-primary/10 text-primary"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                   }
                   ${isCollapsed ? "justify-center" : ""}`}
               >
                 <span className="text-xl shrink-0">{item.icon}</span>
                 {!isCollapsed && (
-                  <p className={`text-sm leading-normal truncate ${item.active ? "font-semibold" : "font-medium"}`}>
+                  <p
+                    className={`text-sm leading-normal truncate ${
+                      item.active ? "font-semibold" : "font-medium"
+                    }`}
+                  >
                     {item.label}
                   </p>
                 )}
@@ -123,28 +145,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }: Sideba
             ))}
           </nav>
         </div>
-
-        {/* Footer Section */}
         <div className="flex flex-col gap-4 shrink-0 mt-4">
-          {/* User Profile */}
-          {/* <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#1a2332]`}>
-            <div 
-              className="h-10 w-10 rounded-full bg-cover bg-center shadow-sm shrink-0"
-              style={{ backgroundImage: `url('${userProfile.avatar}')` }}
-            />
-            {!isCollapsed && (
-              <div className="flex flex-col min-w-0">
-                <h2 className="text-slate-900 dark:text-white text-sm font-bold truncate">
-                  {userProfile.name}
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-xs truncate">
-                  {userProfile.email}
-                </p>
-              </div>
-            )}
-          </div> */}
-
-          {/* Logout Button */}
           <button className="flex w-full items-center justify-center gap-2 rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
             <FaSignOutAlt className="text-lg" />
             {!isCollapsed && <span className="truncate">Logout</span>}

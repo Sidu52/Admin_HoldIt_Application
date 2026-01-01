@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { verifyInvviteToken } from "../api/auth";
 
 export const useVerifyInvite = (token: string | null) => {
-  console.log("token", token);
   return useQuery({
     queryKey: ["verify-invite", token],
     queryFn: () => {

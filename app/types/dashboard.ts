@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface StatItem {
   title: string;
   value: string | number;
@@ -26,3 +28,42 @@ export interface ChartData {
   value: number;
   maxValue: number;
 }
+
+// Stats
+export type StatsCardItem = {
+  label: string;
+  value: number;
+  bgColor: string;
+  textColor: string;
+};
+
+export type StatsCard = {
+  title: string;
+  value: number;
+  icon: ReactNode;
+  iconBgColor: string;
+  iconColor: string;
+  stats: StatsCardItem[];
+};
+
+export type Stats = {
+  booking: {
+    totalToday: number;
+    inProgress: number;
+    completed: number;
+  };
+  users: {
+    total: number;
+    newToday: number;
+  };
+  drivers: {
+    total: number;
+    online: number;
+    offline: number;
+  };
+  stores: {
+    total: number;
+    online: number;
+    offline: number;
+  };
+};

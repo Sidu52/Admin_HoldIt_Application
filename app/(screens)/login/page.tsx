@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/hooks/useAuth";
-import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
+import LoadingSpinner from "@/app/components/common/LoadingSpinner";
 import {
   FaEye,
   FaEyeSlash,
@@ -22,8 +22,6 @@ export default function LoginPage() {
     e.preventDefault();
     login({ email, password });
   };
-
-  console.log("isLoading", isLoading);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden">

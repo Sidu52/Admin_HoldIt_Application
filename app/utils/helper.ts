@@ -1,8 +1,6 @@
 import { ParsedDateTime } from "../types/helper";
 
-export function parseTimestamp(
-  input: string | number | Date
-): ParsedDateTime {
+export function parseTimestamp(input: string | number | Date): ParsedDateTime {
   const date = new Date(input);
 
   if (isNaN(date.getTime())) {
@@ -39,8 +37,53 @@ export function parseTimestamp(
     date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
       date.getDate()
     )}`,
-    dateTime: `${date.getFullYear()}-${pad(
-      date.getMonth() + 1
-    )}-${pad(date.getDate())} ${pad(hour)}:${pad(minute)}:${pad(second)}`
+    dateTime: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )} ${pad(hour)}:${pad(minute)}:${pad(second)}`,
   };
+}
+
+// debounce.ts
+export function debounce(func: Function, delay: number) {
+  let timeoutId: NodeJS.Timeout;
+  return (...args: any[]) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
+export function formatDateTime(
+  value?: string | number | Date,
+  format: "date" | "time" | "datetime" = "datetime",
+  locale: string = "en-US"
+): string {
+  if (!value) return "--";
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "--";
+
+  return format === "date"
+    ? date.toLocaleDateString(locale, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : format === "time"
+    ? date.toLocaleTimeString(locale, {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      })
+    : date.toLocaleString(locale, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
 }

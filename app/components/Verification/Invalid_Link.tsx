@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
+import LoadingSpinner from "@/app/components/common/LoadingSpinner";
 import { FaQuestionCircle, FaRedoAlt } from "react-icons/fa";
 import { RiAdminFill } from "react-icons/ri";
 import { FaLink } from "react-icons/fa6";

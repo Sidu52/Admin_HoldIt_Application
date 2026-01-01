@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
+import LoadingSpinner from "@/app/components/common/LoadingSpinner";
 import { RiShieldCheckFill, RiTimer2Fill } from "react-icons/ri";
 
 type VerificationStatus = "verifying" | "success" | "error" | "expired";

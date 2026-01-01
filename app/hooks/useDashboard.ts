@@ -1,13 +1,30 @@
-import { useQuery } from '@tanstack/react-query';
-import { dashboardApi } from '@/app/api/client';
+import { useQuery } from "@tanstack/react-query";
+import { dashboardApi } from "@/app/api/client";
 
-
-export const userProfile = (page: number = 1, limit: number = 10) => {
+export const userProfile = () => {
   return useQuery({
-    queryKey: ['profile', { page, limit }],
+    queryKey: ["profile"],
     queryFn: () => dashboardApi.getUserProfile(),
   });
 };
+
+export const summary = () => {
+  return useQuery({
+    queryKey: ["dashboard", "summary"],
+    queryFn: () => dashboardApi.getSummary(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const chart = (entity:string,range:string) => {
+  return useQuery({
+    queryKey: ["chart"],
+    queryFn: () => dashboardApi.getChart({entity,range}),
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+
 
 // export const users = (page: number = 1, limit: number = 10) => {
 //   return useQuery({

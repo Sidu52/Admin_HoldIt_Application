@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "@/app/providers/ThemeProvider";
-import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import Sidebar from "./Sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -12,8 +12,6 @@ interface DashboardLayoutProps {
 const userData = {
   name: "Alex Johnson",
   email: "alex.j@holdit.com",
-  avatar:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAAzYfl7BKRe8Yq0Ky4eMt1zaqyrEuHMDr4I6_douAxszB0BSuk973GrnoYiLKeou3Wlo0MqudMSMWm-9jaVjn3wSbg_jNEoELHdzr_QC4lHwKzY10qz8bb9Du8-rMlbrm194Op99OQmzDOdWGOuBiIBMIlZ9Ol-fAdp_3fXzGEqOiubwCQDby2CY9uER33f0hX2TvjL1_c0vk3vv1JOBU263NNmssgUTIlfgu4U6-mbiaQt29pT43jQOvl2nc_7HKeIFVHyaCD6Wwn",
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -46,7 +44,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggle={toggleSidebar}
-          user={userData}
+          isMobileOpen={isMobileMenuOpen}
+          onMobileToggle={toggleMobileMenu}
         />
 
         {/* Mobile Sidebar Overlay */}
@@ -58,9 +57,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-[#111722] z-10">
               <Sidebar
-                isCollapsed={false}
-                onToggle={() => {}}
-                user={userData}
+                isCollapsed={isSidebarCollapsed}
+                onToggle={toggleSidebar}
+                isMobileOpen={isMobileMenuOpen}
+                onMobileToggle={toggleMobileMenu}
               />
             </div>
           </div>
@@ -73,7 +73,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             onMenuClick={toggleMobileMenu}
             isDarkMode={theme === "dark"}
             onToggleDarkMode={toggleTheme}
-            user={userData}
           />
 
           {/* Main Content */}

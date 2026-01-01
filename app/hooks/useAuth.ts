@@ -4,12 +4,9 @@ import { verifyToken, verifyInvviteToken } from "@/app/api/auth";
 import {
   LoginCredentials,
   AuthResponse,
-  SignupCredentials,
   SignupPayload,
 } from "@/app/types/auth";
 import { useRouter, usePathname } from "next/navigation";
-import { log } from "console";
-import { setUser } from "../store/slices/profileSlice";
 import { useAppDispatch } from "../store/hooks";
 
 export const useAuth = () => {
@@ -57,8 +54,6 @@ export const useAuth = () => {
       router.push("/login");
     },
   });
-
-  console.log("loginMuation", loginMutation);
 
   return {
     user: verifyQuery.data,

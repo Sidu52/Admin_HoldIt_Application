@@ -1,127 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useAppDispatch } from "@/app/store/hooks";
+import { setBookings } from "@/app/store/slices/bookingSlice";
+import { setChart, setSummary } from "@/app/store/slices/dashboardSlice";
 import StatCard from "@/app/components/Dashboard/StatCard";
 import ActivityTable from "@/app/components/Dashboard/ActivityTable";
 import ChartBar from "@/app/components/Dashboard/ChartBar";
-import {
-  FaUsers,
-  FaTruck,
-  FaStore,
-  FaCalendarAlt,
-  FaSearch,
-  FaCog,
-} from "react-icons/fa";
 import ProfileDropdown from "@/app/components/Dashboard/ProfileDropdown";
+import { chart, summary } from "@/app/hooks/useDashboard";
+import { getBooking } from "@/app/hooks/useBooking";
+import { FaClipboardList, FaStore, FaTruck, FaUsers } from "react-icons/fa";
+import {
+  CardSkeleton,
+  ChartSkeleton,
+  ActiveTableSkeleton,
+} from "@/app/loading/dashboard";
+import { Stats, StatsCard } from "@/app/types/dashboard";
 
-// Mock data
-const STATS_DATA = [
-  {
-    title: "Users",
-    value: "24,592",
-    icon: <FaUsers className="text-xl" />,
-    iconColor: "text-blue-600 dark:text-blue-400",
-    iconBgColor: "bg-blue-100 dark:bg-blue-500/10",
-    trend: { value: "+15%", isPositive: true, label: "vs last month" }
-  },
-  {
-    title: "Drivers",
-    value: "1,042",
-    icon: <FaTruck className="text-xl" />,
-    iconColor: "text-purple-600 dark:text-purple-400",
-    iconBgColor: "bg-purple-100 dark:bg-purple-500/10",
-    trend: { value: "+12%", isPositive: true, label: "vs last month" }
-  },
-  {
-    title: "Stores",
-    value: "482",
-    icon: <FaStore className="text-xl" />,
-    iconColor: "text-orange-600 dark:text-orange-400",
-    iconBgColor: "bg-orange-100 dark:bg-orange-500/10",
-    trend: { value: "+8%", isPositive: true, label: "vs last week" }
-  },
-  {
-    title: "Bookings",
-    value: "8,932",
-    icon: <FaCalendarAlt className="text-xl" />,
-    iconColor: "text-emerald-600 dark:text-emerald-400",
-    iconBgColor: "bg-emerald-100 dark:bg-emerald-500/10",
-    trend: { value: "+22%", isPositive: true, label: "this month" }
-  }
+const RANGE = [
+  { label: "Today", value: "today" },
+  { label: "This Week", value: "week" },
+  { label: "This Month", value: "month" },
+  { label: "Last 3 Month", value: "last_3_months" },
 ];
 
-const CHART_DATA = [
-  { day: "Mon", value: 40, maxValue: 100 },
-  { day: "Tue", value: 60, maxValue: 100 },
-  { day: "Wed", value: 50, maxValue: 100 },
-  { day: "Thu", value: 80, maxValue: 100 },
-  { day: "Fri", value: 95, maxValue: 100 },
-  { day: "Sat", value: 70, maxValue: 100 },
-  { day: "Sun", value: 55, maxValue: 100 }
-];
-
-const ACTIVITY_DATA = [
-  {
-    id: "1",
-    bookingId: "#BK-9281",
-    userName: "John Doe",
-    userEmail: "john.d@email.com",
-    userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDmG9klbPGOyRFop9bzgyGmBuXbQQauFgrfnjKxt_N3GSL1LwvFR-QhaewIjlmKUXvrG1jjg6Q6LfVMxlxRtRJTtvvtXUVwR90gFbse14MGUL0DASTGoJQm5kDhoBWP9CwfeGBUzW7CkvYKdVFewmYXlVVKv0aHfTa6bZEW0Q3WCCCbyDHibnd80-GO0yKGdrtmRA4trm8Mf4FpSpeMUzEFOT21_gCYBSNMfv3FmeT5mw3OTNIyEsmONRGVFKkGGUpJwUHbEezCDh04",
-    status: "completed" as const,
-    bookingTime: "Oct 24, 2023 10:30 AM"
-  },
-  {
-    id: "2",
-    bookingId: "#BK-9282",
-    userName: "Sarah Jenkins",
-    userEmail: "sarah.j@email.com",
-    userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCw1GdHKASsODjAKLxcjD0JFOIuWsutnGVE40j0ExRbeKRYpilYfuikQlvIIK7aJXFIRmIz8SKi93Ar7KsdjGcUYE_CiJPAP5_Z9NFD-VODmplEKf4GlzQtvqkpAaYOlBnrNoOdIPcZqLV5rnlrIdeb9NgskrRMpJV8ZFKlQzDAEE57kMIhKqXfF9ECkfOFYOEoXJHIR6F7pFp5VAm3jg8vE5YMhvCCV0ISUEjyWUU3ByrIbwvTTiymqlpP4o5g4nR40k-DaSu1JjYL",
-    status: "in-progress" as const,
-    bookingTime: "Oct 24, 2023 11:15 AM"
-  },
-  {
-    id: "3",
-    bookingId: "#BK-9283",
-    userName: "Mike Ross",
-    userEmail: "mike.ross@email.com",
-    userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCNSKo9jf8jssW_qflkBLJF4TQDLvQdKMfPvqukLyjWZFUZVLJmym0l2230wfoNwWKOhUO7wNKq8CfPpO13CX3W7ZDWU2HhbwrAkTlcmIiFQcf-eWhQkr7PKvVsJANI7y16yEXcVfQZtflsfllWB10H8gs9m01G_l57-X-u0pvYYlw_khqiMFRLWqObLgAyxCX2b12weYgo0ox8KXPvwdR3XfEEu9Pa42wqYBvxuTasQx9qVd_dGmi6fgvhRf5HtB3DPSQYSR-VqNUI",
-    status: "pending" as const,
-    bookingTime: "Oct 24, 2023 11:45 AM"
-  },
-  {
-    id: "4",
-    bookingId: "#BK-9284",
-    userName: "Jane Tan",
-    userEmail: "jane.t@email.com",
-    userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIEz1ZPG7vZqN2x5iQYinM7nIzE_gcCdA93bT9TP26WRNu_C0RyryDo1pnf4-RPRliSJpwR9aLzpseWgxWUJMO1GGZXfk8HdOOPDqa5oGIyBJby_75_S3-9pMXZgT-uNVxlnmLdtlUTFB-0N_WZvhQIXAARSqNQvmxYT1zR1MmHXYbfVggmuih_zifWKSzXrOjc3z82qfuWaINTciB-oFtQ9xcJ9ehLVNptkb0I9bgkHRAblaMOijQAtTAFbBLrrlCOachgcadm9Y_",
-    status: "cancelled" as const,
-    bookingTime: "Oct 24, 2023 12:05 PM"
-  },
-  {
-    id: "5",
-    bookingId: "#BK-9285",
-    userName: "Tom Baker",
-    userEmail: "tom.baker@email.com",
-    userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDNmrbeKEIdGuLUqVCPnWPOtxaf3nqTkeGCkeE_tbojwq9Wqp0z7L1_WTOEfk-x11IMdBL8roU1wWYHYXM0lRcpsmeUMBykn_zWvzoO2waLtjCYWrtdsBwogvypU4pn6MOQAiWaM7m4ML19Gb8VnEXwN42iOPyxzBW5x0N_6vBs47FWuTbD5Uv-YbdifrfTIE2dyGTpAgvQ8wzrrEZkE_TpqtHcoASwDy6Yf-NkPt2TdHgz4i8-w45-A1iDLhCQatvrBVq9UvJdPrl2",
-    status: "completed" as const,
-    bookingTime: "Oct 24, 2023 01:22 PM"
-  }
+const ENTITY = [
+  { label: "Booking", value: "booking" },
+  { label: "User", value: "user" },
 ];
 
 export default function DashboardPage() {
+  const dispatch = useAppDispatch();
+  const [entity, setEntity] = useState("user");
+  const [range, setRange] = useState("week");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [timeRange, setTimeRange] = useState("This Week");
+  // Data fetching hooks
+  const {
+    data: summaryData,
+    isLoading: summaryLoading,
+    error: summaryError,
+  } = summary();
+  const {
+    data: chartData,
+    isLoading: chartLoading,
+    error: chartError,
+  } = chart(entity, range);
+  const {
+    data: BookingData,
+    isLoading: bookingLoading,
+    error: bookingError,
+  } = getBooking();
 
+  // Memoize the cards to avoid unnecessary recalculations
+  const cards = useMemo(
+    () => buildStatsCards(summaryData?.data?.data),
+    [summaryData?.data?.data]
+  );
 
-  const handleViewDetails = (id: string) => {
-    console.log("View details for:", id);
-    // Implement view details logic
-  };
+  // Dispatch actions on data updates
+  useEffect(() => {
+    if (summaryData) {
+      dispatch(setSummary(summaryData.data.data));
+    }
+  }, [summaryData, dispatch]);
+  useEffect(() => {
+    if (BookingData) {
+      dispatch(setBookings(BookingData.data.data));
+    }
+  }, [BookingData, dispatch]);
+  useEffect(() => {
+    if (chartData?.data?.data) {
+      dispatch(setChart(chartData.data.data));
+    }
+  }, [chartData, dispatch]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  // Early returns for loading and error states
+  if (summaryLoading || chartLoading || bookingLoading) {
+    return (
+      <main className="flex-1 overflow-y-auto">
+        <div className="w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 space-y-8">
+          <CardSkeleton />
+          <ChartSkeleton />
+          <ActiveTableSkeleton />
+        </div>
+      </main>
+    );
+  }
+
+  if (summaryError || chartError || bookingError) {
+    return <div>Error loading data.</div>;
+  }
 
   return (
     <main className="flex-1 overflow-y-auto">
@@ -144,8 +113,8 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {STATS_DATA.map((stat, index) => (
-            <StatCard key={index} {...stat} />
+          {cards.map((card, index) => (
+            <StatCard key={index} {...card} />
           ))}
         </div>
 
@@ -155,18 +124,32 @@ export default function DashboardPage() {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
               Booking Analytics
             </h3>
-            <select
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-primary focus:border-primary block p-2"
-            >
-              <option>This Week</option>
-              <option>Last Week</option>
-              <option>This Month</option>
-              <option>Last Month</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <select
+                value={range}
+                onChange={(e) => setRange(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-primary focus:border-primary block p-2"
+              >
+                {RANGE.map((range, index) => (
+                  <option key={index} value={range.value}>
+                    {range.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={entity}
+                onChange={(e) => setEntity(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-primary focus:border-primary block p-2"
+              >
+                {ENTITY.map((entity, index) => (
+                  <option key={index} value={entity.value}>
+                    {entity.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <ChartBar data={CHART_DATA} />
+          <ChartBar />
         </div>
 
         {/* Recent Activity */}
@@ -179,16 +162,101 @@ export default function DashboardPage() {
               View All
             </button>
           </div>
-          <ActivityTable
-            activities={ACTIVITY_DATA}
-            currentPage={currentPage}
-            totalPages={Math.ceil(8932 / 5)}
-            totalItems={8932}
-            onPageChange={handlePageChange}
-            onViewDetails={handleViewDetails}
-          />
+          <ActivityTable />
         </div>
       </div>
     </main>
   );
 }
+
+const buildStatsCards = (stats: Stats): StatsCard[] => {
+  if (!stats) return [];
+
+  return [
+    // Bookings Today Card
+    {
+      title: "Bookings Today",
+      value: stats.booking.totalToday,
+      icon: <FaClipboardList />,
+      iconBgColor: "bg-blue-100 dark:bg-blue-500/10",
+      iconColor: "text-blue-600 dark:text-blue-400",
+      stats: [
+        {
+          label: "In Progress",
+          value: stats.booking.inProgress, // Assuming this value exists in the stats object
+          bgColor: "bg-blue-100 dark:bg-blue-500/10",
+          textColor: "text-blue-600 dark:text-blue-400",
+        },
+        {
+          label: "Completed",
+          value: stats.booking.completed, // Assuming this value exists in the stats object
+          bgColor: "bg-green-100 dark:bg-green-500/10",
+          textColor: "text-green-600 dark:text-green-400",
+        },
+      ],
+    },
+
+    // Users Card
+    {
+      title: "Users",
+      value: stats.users.total,
+      icon: <FaUsers />,
+      iconBgColor: "bg-indigo-100 dark:bg-indigo-500/10",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      stats: [
+        {
+          label: "New Today",
+          value: stats.users.newToday,
+          bgColor: "bg-emerald-100 dark:bg-emerald-500/10",
+          textColor: "text-emerald-500 dark:text-emerald-400",
+        },
+      ],
+    },
+
+    // Drivers Card
+    {
+      title: "Drivers",
+      value: stats.drivers.total,
+      icon: <FaTruck />,
+      iconBgColor: "bg-emerald-100 dark:bg-emerald-500/10",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+      stats: [
+        {
+          label: "Online",
+          value: stats.drivers.online,
+          bgColor: "bg-emerald-100 dark:bg-emerald-500/10",
+          textColor: "text-emerald-500 dark:text-emerald-400",
+        },
+        {
+          label: "Offline",
+          value: stats.drivers.offline,
+          bgColor: "bg-rose-100 dark:bg-rose-500/10",
+          textColor: "text-rose-600 dark:text-rose-400",
+        },
+      ],
+    },
+
+    // Stores Card
+    {
+      title: "Stores",
+      value: stats.stores.total,
+      icon: <FaStore />,
+      iconBgColor: "bg-pink-100 dark:bg-pink-500/10",
+      iconColor: "text-pink-600 dark:text-pink-400",
+      stats: [
+        {
+          label: "Online",
+          value: stats.stores.online,
+          bgColor: "bg-emerald-100 dark:bg-emerald-500/10",
+          textColor: "text-emerald-500 dark:text-emerald-400",
+        },
+        {
+          label: "Offline",
+          value: stats.stores.offline,
+          bgColor: "bg-rose-100 dark:bg-rose-500/10",
+          textColor: "text-rose-600 dark:text-rose-400",
+        },
+      ],
+    },
+  ];
+};

@@ -15,8 +15,6 @@ export const login = async (
 };
 export const signup = async (payload: SignupPayload): Promise<AuthResponse> => {
   const { token, credentials } = payload;
-  console.log("token", token);
-  console.log("credentials", credentials);
   const response = await api.post<AuthResponse>("/auth/signup", credentials, {
     params: { token },
   });

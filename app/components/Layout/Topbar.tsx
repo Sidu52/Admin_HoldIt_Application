@@ -16,24 +16,14 @@ interface TopbarProps {
   onMenuClick: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
-  user: {
-    name: string;
-    avatar: string;
-  };
 }
 
 export default function Topbar({
   onMenuClick,
   isDarkMode,
   onToggleDarkMode,
-  user,
 }: TopbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
-
-  const handleCreateNew = () => {
-    // Implement create new logic
-    console.log("Create new clicked");
-  };
 
   return (
     <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111722]">
@@ -79,14 +69,6 @@ export default function Topbar({
         <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <FaCog className="text-slate-600 dark:text-slate-400" />
         </button>
-
-        {/* User Profile (Mobile) */}
-        <div className="flex items-center gap-2">
-          <div
-            className="h-8 w-8 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-800"
-            style={{ backgroundImage: `url(${user.avatar})` }}
-          />
-        </div>
 
         {/* Mobile Menu Button */}
         <button

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import LoadingSpinner from "@/app/components/Common/LoadingSpinner";
+import LoadingSpinner from "@/app/components/common/LoadingSpinner";
 import {
   FaEye,
   FaEyeSlash,
@@ -49,7 +49,6 @@ type FormData = {
 export default function SignupPage({ data, token }: SignupPageProps) {
   const { signup, isLoading, error } = useAuth();
 
-  console.log("DATA", data);
   const [formData, setFormData] = useState<FormData>({
     email: data?.email || "",
     role: data?.role || "",
@@ -130,11 +129,9 @@ export default function SignupPage({ data, token }: SignupPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
-
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
