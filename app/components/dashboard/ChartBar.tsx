@@ -4,10 +4,10 @@ import NoData from "@/app/NoData";
 const ChartBar = () => {
   const { chart } = useAppSelector((state) => state.dashboard);
 
-  const maxValue = Math.max(...chart.map(item => item.maxValue));
+  const maxValue = Math.max(...chart.map((item) => item.maxValue));
 
   if (chart && chart.length == 0) {
-    return <NoData />
+    return <NoData />;
   }
 
   return (
@@ -28,8 +28,8 @@ const ChartBar = () => {
               className="w-full h-full bg-gradient-to-t from-primary/60 to-primary rounded-t-lg transition-all duration-300 group-hover:from-primary/80 group-hover:to-primary"
               style={{
                 background: `linear-gradient(to top, 
-                  rgba(59, 130, 246, ${0.2 + (index * 0.1)}), 
-                  rgba(37, 99, 235, ${0.4 + (index * 0.1)}))`
+                  rgba(59, 130, 246, ${0.2 + index * 0.1}), 
+                  rgba(37, 99, 235, ${0.4 + index * 0.1}))`,
               }}
             />
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500 dark:text-slate-400">

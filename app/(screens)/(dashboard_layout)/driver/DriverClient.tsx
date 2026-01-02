@@ -1,13 +1,13 @@
 "use client";
 import {
-  UserFilters,
-  UserTable,
-  UserHeader,
-} from "@/app/components/user_management";
+  DriverFilters,
+  DriverTable,
+  DriverHeader,
+} from "@/app/components/driver_management";
 import { useUsers } from "@/app/hooks/useUserManager";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { setUsers } from "@/app/store/slices/usersSlice";
+import { setUsers } from "@/app/store/slices/userSlice";
 import UserSkeleton from "@/app/loading/user/UserSkeleton";
 
 export default function Home() {
@@ -36,9 +36,9 @@ export default function Home() {
   return (
     <main className="flex-1 flex flex-col items-center py-6 px-4 md:px-8">
       <div className="w-full max-w-7xl flex flex-col gap-6">
-        <UserHeader />
-        <UserFilters />
-        <UserTable />
+        <DriverHeader />
+        <DriverFilters />
+        <DriverTable />
       </div>
     </main>
   );

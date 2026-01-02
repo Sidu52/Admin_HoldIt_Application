@@ -1,6 +1,6 @@
 "use client";
 
-  import {
+import {
   FaUsers,
   FaTruck,
   FaStore,
@@ -22,7 +22,6 @@ interface SidebarItem {
   href: string;
   active?: boolean;
 }
-
 interface SidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
@@ -41,25 +40,35 @@ const Sidebar = ({
       id: "dashboard",
       label: "Dashboard",
       icon: <MdDashboard />,
-      href: "#",
+      href: "/dashboard",
       active: true,
     },
-    { id: "users", label: "User Manager", icon: <FaUsers />, href: "#" },
-    { id: "drivers", label: "Driver Manager", icon: <FaTruck />, href: "#" },
-    { id: "stores", label: "Store Manager", icon: <FaStore />, href: "#" },
+    { id: "users", label: "User Manager", icon: <FaUsers />, href: "/users" },
+    {
+      id: "drivers",
+      label: "Driver Manager",
+      icon: <FaTruck />,
+      href: "/driver",
+    },
+    { id: "stores", label: "Store Manager", icon: <FaStore />, href: "/store" },
     {
       id: "store-owners",
       label: "Store Owner Manager",
       icon: <FaUserTie />,
-      href: "#",
+      href: "/store-owner",
     },
-    { id: "teams", label: "Team Manager", icon: <FaUsersCog />, href: "#" },
-    { id: "profile", label: "Profile Update", icon: <FaUserEdit />, href: "#" },
+    { id: "teams", label: "Team Manager", icon: <FaUsersCog />, href: "/team" },
+    {
+      id: "profile",
+      label: "Profile Update",
+      icon: <FaUserEdit />,
+      href: "/profile",
+    },
     {
       id: "bookings",
       label: "Booking Manager",
       icon: <FaCalendarAlt />,
-      href: "#",
+      href: "/booking",
     },
   ];
 

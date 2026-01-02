@@ -1,5 +1,6 @@
 import { UserProfile } from "@/app/types/profile";
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchProfileThunk, updateProfileThunk } from "../thunks/profileThunks";
 
 const initialState = {
   profile: {
@@ -16,28 +17,53 @@ const initialState = {
     last_login_at: "",
     isVerified: false,
   } as UserProfile,
+  loading: true,
+  error: null as string | null,
 };
 
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    setUser(state, action) {
-      state.profile.id = action.payload._id;
-      state.profile.first_name = action.payload.first_name;
-      state.profile.last_name = action.payload.last_name;
-      state.profile.email = action.payload.email;
-      state.profile.role = action.payload.role;
-      state.profile.phone = action.payload.phone;
-      state.profile.address = action.payload.address;
-      state.profile.date_of_birth = action.payload.date_of_birth;
-      state.profile.status = action.payload.status;
-      state.profile.gender = action.payload.gender;
-      state.profile.last_login_at = action.payload.last_login_at;
-      state.profile.isVerified = action.payload.isVerified;
+    clearProfile(state) {
+      state.profile = initialState.profile;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch profile
+      .addCase(fetchProfileThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProfileThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = {
+          ...action.payload,
+          id: action.payload.id, // mapping backend id
+        };
+      })
+      .addCase(fetchProfileThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Update profile
+      .addCase(updateProfileThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProfileThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = {
+          ...action.payload,
+          id: action.payload.id,
+        };
+      })
+      .addCase(updateProfileThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const { setUser } = profileSlice.actions;
+export const { clearProfile } = profileSlice.actions;
 export default profileSlice.reducer;

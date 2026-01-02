@@ -46,6 +46,12 @@ export type StatsCard = {
   stats: StatsCardItem[];
 };
 
+export interface ChartItem {
+  day: string;
+  value: number;
+  maxValue: number;
+}
+
 export type Stats = {
   booking: {
     totalToday: number;

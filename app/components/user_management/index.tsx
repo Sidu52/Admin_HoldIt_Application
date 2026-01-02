@@ -1,5 +1,5 @@
-import  UserFilters from "./UserFilters";
-import  UserTable from "./UserTable";
-import  UserHeader from "./UserHeader";
+import UserFilters from "./UserFilters";
+import UserTable from "./UserTable";
+import UserHeader from "./UserHeader";
 
-export {UserFilters, UserHeader, UserTable};
+export { UserFilters, UserHeader, UserTable };

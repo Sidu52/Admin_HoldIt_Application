@@ -1,31 +1,38 @@
-export type UserRole = "admin" | "editor" | "viewer";
-export type UserStatus = "active" | "pending" | "blocked" | "inactive";
-export type Gender = "male" | "female" | "other";
-
+// app/types/user.ts
 export interface User {
   _id: string;
   first_name: string;
   last_name: string;
   email: string;
-  gender: string;
-  dob: string;
-  address: string;
-
-  status: string;
-  is_serviceable: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  auth_user_id: {
-    role: string;
-    phone: number;
-    last_login_at: Date;
-    isVerified: boolean;
+  phone: string;
+  avatar: string;
+  role: "admin" | "manager" | "user" | "support";
+  status: "active" | "inactive" | "suspended" | "pending";
+  email_verified: boolean;
+  phone_verified: boolean;
+  last_login: Date;
+  login_count: number;
+  created_at: Date;
+  updated_at: Date;
+  permissions?: string[];
+  department?: string;
+  job_title?: string;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zip_code: string;
   };
-}
-
-export interface FilterState {
-  search: string;
-  status: UserStatus | "";
+  preferences?: {
+    language: string;
+    timezone: string;
+    notifications: {
+      email: boolean;
+      push: boolean;
+      sms: boolean;
+    };
+  };
 }
 
 export interface UserUpdateData {
@@ -33,16 +40,38 @@ export interface UserUpdateData {
   last_name: string;
   email: string;
   phone: string;
-  gender: Gender;
-  dob: string;
-  address: string;
-  status: UserStatus;
-  role: UserRole;
+  role: string;
+  status: string;
+  department?: string;
+  job_title?: string;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zip_code: string;
+  };
+  permissions?: string[];
 }
 
-export interface UserUpdateProps {
-  user: User;
-  onSubmit: (data: User) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+export interface FilterState {
+  search: string;
+  status: string;
+  role: string;
+  department: string;
+}
+
+export interface UsersResponse {
+  users: User[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }

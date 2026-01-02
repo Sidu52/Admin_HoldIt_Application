@@ -1,45 +1,103 @@
+// app/components/user/UserFilters.tsx
 "use client";
-import { useMemo, useState } from "react";
-import { FilterState } from "@/app/types/usermanager";
-import { BiLock, BiSearch } from "react-icons/bi";
-import { CgCheck, CgUnblock } from "react-icons/cg";
-import { GrGroup, GrSchedule } from "react-icons/gr";
-import { updateFilter } from "@/app/store/slices/usersSlice";
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { debounce } from "@/app/utils/helper";
 
-const STATUS_BUTTONS = [
-  { label: "All Users", value: "", icon: <GrGroup />, active: true, color: "" },
+import React, { useMemo, useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/useUserStore";
+import { updateFilter, clearFilters } from "@/app/store/slices/userSlice";
+import { debounce } from "@/app/utils/helper";
+import {
+  BiSearch,
+  BiFilter,
+  BiX,
+  BiUser,
+  BiCheckCircle,
+  BiTime,
+  BiBlock,
+  BiLock,
+  BiCrown,
+  BiSupport,
+  BiBuilding,
+} from "react-icons/bi";
+
+const STATUS_OPTIONS = [
+  { label: "All Status", value: "", icon: <BiUser />, color: "text-slate-500" },
   {
     label: "Active",
     value: "active",
-    icon: <CgCheck />,
+    icon: <BiCheckCircle />,
     color: "text-green-500",
-  },
-  {
-    label: "Pending",
-    value: "pending",
-    icon: <GrSchedule />,
-    color: "text-amber-500",
-  },
-  {
-    label: "Blocked",
-    value: "blocked",
-    icon: <BiLock />,
-    color: "text-red-500",
   },
   {
     label: "Inactive",
     value: "inactive",
-    icon: <CgUnblock />,
-    color: "text-red-200",
+    icon: <BiBlock />,
+    color: "text-slate-400",
+  },
+  {
+    label: "Pending",
+    value: "pending",
+    icon: <BiTime />,
+    color: "text-amber-500",
+  },
+  {
+    label: "Suspended",
+    value: "suspended",
+    icon: <BiLock />,
+    color: "text-red-500",
   },
 ] as const;
 
+const ROLE_OPTIONS = [
+  { label: "All Roles", value: "", icon: <BiUser />, color: "text-slate-500" },
+  {
+    label: "Admin",
+    value: "admin",
+    icon: <BiCrown />,
+    color: "text-purple-500",
+  },
+  {
+    label: "Manager",
+    value: "manager",
+    icon: <BiUser />,
+    color: "text-blue-500",
+  },
+  {
+    label: "User",
+    value: "user",
+    icon: <BiUser />,
+    color: "text-slate-500",
+  },
+  {
+    label: "Support",
+    value: "support",
+    icon: <BiSupport />,
+    color: "text-teal-500",
+  },
+] as const;
+
+const DEPARTMENT_OPTIONS = [
+  { label: "All Departments", value: "", icon: <BiBuilding /> },
+  { label: "Engineering", value: "engineering" },
+  { label: "Sales", value: "sales" },
+  { label: "Marketing", value: "marketing" },
+  { label: "Support", value: "support" },
+  { label: "HR", value: "hr" },
+  { label: "Finance", value: "finance" },
+  { label: "Operations", value: "operations" },
+];
+
 export default function UserFilters() {
   const [searchInput, setSearchInput] = useState("");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
   const dispatch = useAppDispatch();
-  const { status } = useAppSelector((state) => state.users);
+  const { filters } = useAppSelector((state) => state.users);
+  const { status, role, department, search } = filters;
+
+  // Sync local search input with Redux state
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
 
   const debouncedSearch = useMemo(
     () =>
@@ -50,74 +108,339 @@ export default function UserFilters() {
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-    debouncedSearch(e.target.value);
+    const value = e.target.value;
+    setSearchInput(value);
+    debouncedSearch(value);
   };
 
-  const handleStatusChange = (status: FilterState["status"]) => {
-    dispatch(updateFilter({ status }));
+  const handleStatusChange = (statusValue: string) => {
+    dispatch(updateFilter({ status: statusValue }));
   };
 
-  const clearFilters = () => {
-    dispatch(updateFilter({ status: "", search: "" }));
+  const handleRoleChange = (roleValue: string) => {
+    dispatch(updateFilter({ role: roleValue }));
   };
+
+  const handleDepartmentChange = (departmentValue: string) => {
+    dispatch(updateFilter({ department: departmentValue }));
+  };
+
+  const handleClearAll = () => {
+    dispatch(clearFilters());
+    setSearchInput("");
+  };
+
+  const hasActiveFilters = status || role || department || search;
 
   return (
-    <div className="flex flex-col gap-4 bg-white dark:bg-[#1e293b] p-4 rounded-xl shadow-sm border border-slate-200 dark:border-[#232f48]">
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Search Input */}
-        <div className="flex-1 relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span className="material-symbols-outlined text-slate-400 dark:text-slate-500">
-              <BiSearch fontSize={"20px"} />
-            </span>
+    <div className="flex flex-col gap-4 px-6 pb-4">
+      <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
+        {/* Search */}
+        <div className="w-full xl:max-w-md">
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <BiSearch
+                className="text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors"
+                size={20}
+              />
+            </div>
+            <input
+              className="block w-full h-11 pl-10 pr-4 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-sm"
+              placeholder="Search by name, email, phone, or user ID..."
+              type="text"
+              value={searchInput}
+              onChange={handleSearchChange}
+            />
+            {searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                  dispatch(updateFilter({ search: "" }));
+                }}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <BiX
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                  size={18}
+                />
+              </button>
+            )}
           </div>
-          <input
-            className="w-full h-12 pl-11 pr-4 rounded-lg bg-slate-50 dark:bg-[#111722] border border-slate-200 dark:border-[#324467] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            placeholder="Search by name, email, or user ID..."
-            type="text"
-            value={searchInput}
-            onChange={handleSearchChange}
-          />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Status Filter */}
+          <div className="relative group">
+            <button className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors">
+              <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
+                Status:{" "}
+                <span className="text-slate-900 dark:text-white">
+                  {STATUS_OPTIONS.find((opt) => opt.value === status)?.label ||
+                    "All"}
+                </span>
+              </span>
+              <BiFilter className="text-slate-400" size={18} />
+            </button>
+            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+              {STATUS_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleStatusChange(option.value)}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-[#232f48] transition-colors flex items-center gap-2 ${
+                    status === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  <span className={`text-[18px] ${option.color}`}>
+                    {option.icon}
+                  </span>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Role Filter */}
+          <div className="relative group">
+            <button className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors">
+              <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
+                Role:{" "}
+                <span className="text-slate-900 dark:text-white">
+                  {ROLE_OPTIONS.find((opt) => opt.value === role)?.label ||
+                    "All"}
+                </span>
+              </span>
+              <BiFilter className="text-slate-400" size={18} />
+            </button>
+            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+              {ROLE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleRoleChange(option.value)}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-[#232f48] transition-colors flex items-center gap-2 ${
+                    role === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  <span className={`text-[18px] ${option.color}`}>
+                    {option.icon}
+                  </span>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Department Filter */}
+          <div className="relative group">
+            <button className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors">
+              <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
+                Department:{" "}
+                <span className="text-slate-900 dark:text-white">
+                  {DEPARTMENT_OPTIONS.find((opt) => opt.value === department)
+                    ?.label || "All"}
+                </span>
+              </span>
+              <BiFilter className="text-slate-400" size={18} />
+            </button>
+            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+              {DEPARTMENT_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleDepartmentChange(option.value)}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-[#232f48] transition-colors flex items-center gap-1 ${
+                    department === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  {option.icon && (
+                    <span className="text-[18px] text-slate-400">
+                      {option.icon}
+                    </span>
+                  )}
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-slate-200 dark:bg-[#232f48] mx-1"></div>
+
+          {/* Advanced Filters Toggle */}
+          <button
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors"
+          >
+            <BiFilter className="text-slate-400" size={18} />
+            <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
+              Advanced
+            </span>
+          </button>
+
+          {/* Export Button */}
+          <button
+            className="flex items-center justify-center size-9 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors"
+            title="Export Data"
+          >
+            <BiFilter
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              size={20}
+            />
+          </button>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearAll}
+              className="flex items-center gap-2 h-9 px-3.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 text-sm font-medium rounded-lg transition-colors"
+            >
+              <BiX size={18} />
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Status Chips */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-[#232f48]">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-2">
-          Status:
-        </span>
-
-        {STATUS_BUTTONS.map(({ label, value, icon, color }) => (
-          <button
-            key={label}
-            onClick={() => handleStatusChange(value)}
-            className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              status === value || (value === "" && status === "")
-                ? "bg-primary/10 text-primary border border-primary/20"
-                : "bg-slate-100 dark:bg-[#232f48] text-slate-600 dark:text-slate-300 border border-transparent hover:bg-slate-200 dark:hover:bg-[#324467]"
-            }`}
-          >
-            <span
-              className={`material-symbols-outlined text-[18px] ${
-                color || "text-primary"
-              }`}
+      {/* Advanced Filters */}
+      {showAdvancedFilters && (
+        <div className="bg-slate-50 dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg p-4 mt-2">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Advanced Filters
+            </h3>
+            <button
+              onClick={() => setShowAdvancedFilters(false)}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
             >
-              {icon}
+              <BiX size={20} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Verification Status */}
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                Email Verified
+              </label>
+              <select className="w-full h-9 px-3 rounded-lg bg-white dark:bg-[#232f48] border border-slate-200 dark:border-[#324467] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <option value="">All</option>
+                <option value="true">Verified</option>
+                <option value="false">Not Verified</option>
+              </select>
+            </div>
+
+            {/* Last Login */}
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                Last Login
+              </label>
+              <select className="w-full h-9 px-3 rounded-lg bg-white dark:bg-[#232f48] border border-slate-200 dark:border-[#324467] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <option value="">Any time</option>
+                <option value="today">Today</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
+                <option value="90">Last 90 days</option>
+                <option value="never">Never logged in</option>
+              </select>
+            </div>
+
+            {/* Created Date */}
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                Created Date
+              </label>
+              <input
+                type="date"
+                className="w-full h-9 px-3 rounded-lg bg-white dark:bg-[#232f48] border border-slate-200 dark:border-[#324467] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary [color-scheme:dark]"
+              />
+            </div>
+
+            {/* Sort By */}
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                Sort By
+              </label>
+              <select className="w-full h-9 px-3 rounded-lg bg-white dark:bg-[#232f48] border border-slate-200 dark:border-[#324467] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <option value="created_at:desc">Newest First</option>
+                <option value="created_at:asc">Oldest First</option>
+                <option value="last_name:asc">Name (A-Z)</option>
+                <option value="last_name:desc">Name (Z-A)</option>
+                <option value="last_login:desc">Recently Active</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-[#232f48]">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            Active Filters:
+          </span>
+
+          {status && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+              Status:{" "}
+              {STATUS_OPTIONS.find((opt) => opt.value === status)?.label}
+              <button
+                onClick={() => handleStatusChange("")}
+                className="ml-1 hover:text-primary-dark"
+              >
+                <BiX size={14} />
+              </button>
             </span>
-            <span>{label}</span>
-          </button>
-        ))}
+          )}
 
-        <div className="flex-1"></div>
+          {role && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/10 text-blue-500 text-xs font-medium rounded-full">
+              Role: {ROLE_OPTIONS.find((opt) => opt.value === role)?.label}
+              <button
+                onClick={() => handleRoleChange("")}
+                className="ml-1 hover:text-blue-600"
+              >
+                <BiX size={14} />
+              </button>
+            </span>
+          )}
 
-        <button
-          onClick={clearFilters}
-          className="text-sm text-slate-500 hover:text-primary underline decoration-dotted underline-offset-4"
-        >
-          Clear all filters
-        </button>
-      </div>
+          {department && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-medium rounded-full">
+              Department:{" "}
+              {
+                DEPARTMENT_OPTIONS.find((opt) => opt.value === department)
+                  ?.label
+              }
+              <button
+                onClick={() => handleDepartmentChange("")}
+                className="ml-1 hover:text-emerald-600"
+              >
+                <BiX size={14} />
+              </button>
+            </span>
+          )}
+
+          {search && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-500/10 text-amber-500 text-xs font-medium rounded-full">
+              Search: "{search}"
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                  dispatch(updateFilter({ search: "" }));
+                }}
+                className="ml-1 hover:text-amber-600"
+              >
+                <BiX size={14} />
+              </button>
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

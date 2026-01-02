@@ -9,11 +9,6 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-const userData = {
-  name: "Alex Johnson",
-  email: "alex.j@holdit.com",
-};
-
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
