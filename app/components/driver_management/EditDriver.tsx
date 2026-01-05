@@ -283,7 +283,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
           {/* Section: Personal Information */}
           <div className="bg-[#1c2433] rounded-xl border border-[#232f48] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#232f48] flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">person</span>
+              <span className="material-symbols-outlined text-[#135bec]">person</span>
               <h3 className="text-white font-bold text-lg">Personal Information</h3>
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -293,7 +293,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   First Name *
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#3d485e]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all placeholder:text-[#3d485e]"
                   type="text"
                   name="first_name"
                   value={formData.first_name}
@@ -308,7 +308,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Last Name *
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#3d485e]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all placeholder:text-[#3d485e]"
                   type="text"
                   name="last_name"
                   value={formData.last_name}
@@ -324,7 +324,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 pl-10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#3d485e]"
+                    className="w-full h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 pl-10 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all placeholder:text-[#3d485e]"
                     type="email"
                     name="email"
                     value={formData.email}
@@ -344,7 +344,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 pl-10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#3d485e]"
+                    className="w-full h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 pl-10 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all placeholder:text-[#3d485e]"
                     type="tel"
                     name="phone"
                     value={formData.phone}
@@ -361,7 +361,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-[#92a4c9]">Gender</label>
                 <select
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
@@ -380,7 +380,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Date of Birth
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all [color-scheme:dark]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all [color-scheme:dark]"
                   type="date"
                   name="dob"
                   value={formatDateForInput(formData.dob)}
@@ -394,7 +394,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Residential Address
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#3d485e]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all placeholder:text-[#3d485e]"
                   type="text"
                   name="address"
                   value={formData.address}
@@ -407,7 +407,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
           {/* Section: License & Identification */}
           <div className="bg-[#1c2433] rounded-xl border border-[#232f48] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#232f48] flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">badge</span>
+              <span className="material-symbols-outlined text-[#135bec]">badge</span>
               <h3 className="text-white font-bold text-lg">License & Identification</h3>
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -417,7 +417,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   License Number *
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   type="text"
                   name="licenseNumber"
                   value={formData.licenseNumber}
@@ -432,7 +432,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Expiration Date
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all [color-scheme:dark]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all [color-scheme:dark]"
                   type="date"
                   name="licenseExpiry"
                   // You might need to add this field to your formData
@@ -447,7 +447,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   License Class
                 </label>
                 <div className="relative">
-                  <select className="w-full h-11 appearance-none rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+                  <select className="w-full h-11 appearance-none rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all">
                     <option>Class A</option>
                     <option>Class B</option>
                     <option selected>Class C (Standard)</option>
@@ -465,7 +465,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Verification Status
                 </label>
                 <select
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   name="verification_status"
                   value={formData.verification_status}
                   onChange={handleChange}
@@ -483,7 +483,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Driver Status
                 </label>
                 <select
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
@@ -599,12 +599,12 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   {/* Upload Button */}
                   <div
                     onClick={() => document.getElementById("license-front")?.click()}
-                    className="w-32 h-20 rounded-lg border border-dashed border-[#586885] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                    className="w-32 h-20 rounded-lg border border-dashed border-[#586885] flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#135bec] hover:bg-[#135bec]/5 transition-all group"
                   >
-                    <span className="material-symbols-outlined text-[#586885] group-hover:text-primary">
+                    <span className="material-symbols-outlined text-[#586885] group-hover:text-[#135bec]">
                       upload
                     </span>
-                    <span className="text-[10px] text-[#586885] group-hover:text-primary">
+                    <span className="text-[10px] text-[#586885] group-hover:text-[#135bec]">
                       Upload Document
                     </span>
                   </div>
@@ -619,7 +619,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
           {/* Section: Assigned Vehicle */}
           <div className="bg-[#1c2433] rounded-xl border border-[#232f48] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#232f48] flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">
+              <span className="material-symbols-outlined text-[#135bec]">
                 directions_car
               </span>
               <h3 className="text-white font-bold text-lg">Assigned Vehicle</h3>
@@ -631,7 +631,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Vehicle Type *
                 </label>
                 <select
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   name="vehicleType"
                   value={formData.vehicleType}
                   onChange={handleChange}
@@ -653,7 +653,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Make & Model
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   type="text"
                   placeholder="e.g., Toyota Camry SE Hybrid"
                   // You might need to add vehicle model to your formData
@@ -666,7 +666,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-[#92a4c9]">Year</label>
                 <select
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   // You might need to add vehicle year to your formData
                   // value={formData.vehicleYear}
                   // onChange={handleChange}
@@ -689,7 +689,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Plate Number
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono tracking-wider"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all font-mono tracking-wider"
                   type="text"
                   placeholder="e.g., 6XRT882"
                   // You might need to add plate number to your formData
@@ -704,7 +704,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Vehicle Color
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all"
                   type="text"
                   placeholder="e.g., Grey"
                   // You might need to add vehicle color to your formData
@@ -719,7 +719,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
                   Insurance Expiry
                 </label>
                 <input
-                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all [color-scheme:dark]"
+                  className="h-11 rounded-lg bg-[#111722] border border-[#232f48] px-4 text-white focus:border-[#135bec] focus:ring-1 focus:ring-[#135bec] outline-none transition-all [color-scheme:dark]"
                   type="date"
                   // You might need to add insurance expiry to your formData
                   // value={formData.insuranceExpiry}
@@ -754,7 +754,7 @@ const EditDriver: React.FC<EditDriverProps> = ({
               <button
                 type="submit"
                 disabled={operationLoading}
-                className="px-8 py-2.5 rounded-lg bg-primary text-white font-bold shadow-lg shadow-blue-900/20 hover:bg-blue-600 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-8 py-2.5 rounded-lg bg-[#135bec] text-white font-bold shadow-lg shadow-blue-900/20 hover:bg-blue-600 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {operationLoading ? (
                   <>

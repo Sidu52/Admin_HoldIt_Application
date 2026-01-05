@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark">
+    <div className="h-screen bg-background-light dark:bg-background-dark overflow-hidden">
       <div className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
         <div className="flex h-screen overflow-hidden">
           {/* Sidebar */}
@@ -43,8 +43,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           />
 
           {/* Main Content Area */}
-          <div className="flex flex-1 flex-col overflow-hidden">
-            {/* Main Content */}
+          <div className="flex flex-1 flex-col">
             {children}
 
             {/* Footer */}

@@ -111,7 +111,7 @@ const ActivityTable = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-slate-400 hover:text-primary dark:hover:text-primary transition-colors p-1">
+                    <button className="text-slate-400 hover:text-[#135bec] dark:hover:text-[#135bec] transition-colors p-1">
                       <FaEye className="text-lg" />
                     </button>
                   </td>

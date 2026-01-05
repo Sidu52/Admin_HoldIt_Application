@@ -4,34 +4,22 @@ export interface User {
   first_name: string;
   last_name: string;
   email: string;
-  phone: string;
-  avatar: string;
-  role: "admin" | "manager" | "user" | "support";
-  status: "active" | "inactive" | "suspended" | "pending";
-  email_verified: boolean;
-  phone_verified: boolean;
-  last_login: Date;
-  login_count: number;
-  created_at: Date;
-  updated_at: Date;
-  permissions?: string[];
-  department?: string;
-  job_title?: string;
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zip_code: string;
-  };
-  preferences?: {
-    language: string;
-    timezone: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      sms: boolean;
-    };
+  gender: string;
+  dob: string;
+  status: string;
+  last_login_at: Date;
+  is_active: boolean;
+  is_serviceable: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  address: string;
+  auth_user_id?: {
+    _id: string;
+    phone: string;
+    role: string;
+    last_login_at: Date;
+    last_active_at: Date;
+    isVerified: boolean;
   };
 }
 
@@ -40,18 +28,9 @@ export interface UserUpdateData {
   last_name: string;
   email: string;
   phone: string;
-  role: string;
-  status: string;
-  department?: string;
-  job_title?: string;
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zip_code: string;
-  };
-  permissions?: string[];
+  gender: string;
+  dob: string;
+  address: string;
 }
 
 export interface Pagination {
@@ -64,8 +43,6 @@ export interface Pagination {
 export interface FilterState {
   search: string;
   status: string;
-  role: string;
-  department: string;
 }
 
 export interface UsersResponse {

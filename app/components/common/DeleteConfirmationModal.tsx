@@ -4,6 +4,7 @@ import React from "react";
 import { MdDelete, MdWarning } from "react-icons/md";
 
 interface DeleteConfirmationModalProps {
+  modalTitle: string;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -12,6 +13,7 @@ interface DeleteConfirmationModalProps {
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
+  modalTitle,
   isOpen,
   onClose,
   onConfirm,
@@ -34,11 +36,13 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-white mb-2">
-                Delete {count} {count === 1 ? "Driver" : "Drivers"}
+                Delete {count} {count === 1 ? modalTitle : `${modalTitle}s`}
               </h3>
               <p className="text-slate-400 text-sm">
-                Are you sure you want to delete {count === 1 ? "this driver" : `these ${count} drivers`}?
-                This action cannot be undone. All associated data will be permanently removed.
+                Are you sure you want to delete{" "}
+                {count === 1 ? "this driver" : `these ${count} ${modalTitle}s`}?
+                This action cannot be undone. All associated data will be
+                permanently removed.
               </p>
             </div>
           </div>
@@ -49,13 +53,12 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                 <MdWarning />
               </span>
               <p className="text-sm text-slate-300">
-                <span className="font-semibold text-white">Note:</span> Deleting drivers will:
+                <span className="font-semibold text-white">Note:</span> Deleting
+                drivers will:
               </p>
             </div>
             <ul className="mt-2 text-sm text-slate-400 space-y-1 ml-8">
-              <li>• Remove driver from the system permanently</li>
-              <li>• Cancel any active deliveries assigned to them</li>
-              <li>• Remove access to the driver portal</li>
+              <li>• Remove {modalTitle} from the system permanently</li>
               <li>• Delete all associated documents and records</li>
             </ul>
           </div>
@@ -85,7 +88,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                   <span className="material-symbols-outlined text-[18px]">
                     <MdDelete />
                   </span>
-                  Delete {count === 1 ? "Driver" : `(${count}) Drivers`}
+                  Delete {count === 1 ? modalTitle : `${modalTitle}s`}
                 </>
               )}
             </button>

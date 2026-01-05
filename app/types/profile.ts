@@ -12,3 +12,13 @@ export interface UserProfile {
   last_login_at: string;
   isVerified: boolean;
 }
+
+export interface UserProfileUpdateData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  date_of_birth: string;
+  address: string;
+}

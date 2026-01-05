@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useUpdateDriver } from "@/app/hooks/useDrivers";
+import { useDrivers } from "@/app/hooks/useDriverManager";
 import { Driver, DriverUpdateData } from "@/app/types/driver";
 
 interface DriverEditModalProps {
@@ -54,9 +54,11 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev: DriverUpdateData) => ({ ...prev, [name]: checked }));
@@ -88,7 +90,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               />
             </div>
 
@@ -101,7 +103,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               />
             </div>
 
@@ -114,7 +116,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               />
             </div>
 
@@ -127,7 +129,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               />
             </div>
 
@@ -139,7 +141,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -156,7 +158,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="vehicleType"
                 value={formData.vehicleType}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               >
                 <option value="Car">Car</option>
                 <option value="Van">Van</option>
@@ -174,7 +176,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                 name="licenseNumber"
                 value={formData.licenseNumber}
                 onChange={handleChange}
-                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-dark border border-surface-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec]"
               />
             </div>
 
@@ -185,7 +187,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
                   name="is_online"
                   checked={formData.is_online}
                   onChange={handleChange}
-                  className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-offset-surface-dark focus:ring-primary/50"
+                  className="rounded border-slate-600 bg-surface-dark text-[#135bec] focus:ring-offset-surface-dark focus:ring-[#135bec]/50"
                 />
                 Online Status
               </label>
@@ -203,7 +205,7 @@ const DriverEditModal: React.FC<DriverEditModalProps> = ({
             <button
               type="submit"
               disabled={updateDriver.isPending}
-              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-[#135bec] hover:bg-[#135bec]-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {updateDriver.isPending ? "Saving..." : "Save Changes"}
             </button>

@@ -70,12 +70,12 @@ const DriverFilters: React.FC<DriverFiltersProps> = ({
         <div className="w-full xl:max-w-md">
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">
+              <span className="material-symbols-outlined text-slate-400 group-focus-within:text-[#135bec] transition-colors">
                 <MdSearch />
               </span>
             </div>
             <input
-              className="block w-full h-11 pl-10 pr-4 bg-surface-dark border border-surface-border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+              className="block w-full h-11 pl-10 pr-4 bg-surface-dark border border-surface-border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec] transition-all text-sm"
               placeholder="Search by name, email, ID, or license number..."
               type="text"
               value={searchInput}
@@ -121,7 +121,7 @@ const DriverFilters: React.FC<DriverFiltersProps> = ({
                   onClick={() => onFilterChange("status", option.value)}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-border transition-colors ${
                     filters.status === option.value
-                      ? "text-primary bg-primary/10"
+                      ? "text-[#135bec] bg-[#135bec]/10"
                       : "text-slate-300"
                   }`}
                 >
@@ -151,7 +151,7 @@ const DriverFilters: React.FC<DriverFiltersProps> = ({
                   onClick={() => onFilterChange("is_online", option.value)}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-border transition-colors ${
                     filters.is_online === option.value
-                      ? "text-primary bg-primary/10"
+                      ? "text-[#135bec] bg-[#135bec]/10"
                       : "text-slate-300"
                   }`}
                 >
@@ -181,7 +181,7 @@ const DriverFilters: React.FC<DriverFiltersProps> = ({
                   onClick={() => onFilterChange("vehicleType", option.value)}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-border transition-colors ${
                     filters.vehicleType === option.value
-                      ? "text-primary bg-primary/10"
+                      ? "text-[#135bec] bg-[#135bec]/10"
                       : "text-slate-300"
                   }`}
                 >

@@ -95,7 +95,7 @@ const DriverTable: React.FC<DriverTableProps> = ({
               type="checkbox"
               checked={allSelected}
               onChange={onSelectAll}
-              className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-offset-surface-dark focus:ring-primary/50"
+              className="rounded border-slate-600 bg-surface-dark text-[#135bec] focus:ring-offset-surface-dark focus:ring-[#135bec]/50"
             />
           </th>
           <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 min-w-[200px]">
@@ -126,12 +126,12 @@ const DriverTable: React.FC<DriverTableProps> = ({
                 type="checkbox"
                 checked={selectedDrivers.includes(driver._id)}
                 onChange={() => onSelectDriver(driver._id)}
-                className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-offset-surface-dark focus:ring-primary/50"
+                className="rounded border-slate-600 bg-surface-dark text-[#135bec] focus:ring-offset-surface-dark focus:ring-[#135bec]/50"
               />
             </td>
             <td className="py-4 px-4">
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-slate-700 bg-cover bg-center ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
+                <div className="size-10 rounded-full bg-slate-700 bg-cover bg-center ring-2 ring-transparent group-hover:ring-[#135bec]/50 transition-all">
                   {/* Add driver image here */}
                 </div>
                 <div>
@@ -173,7 +173,7 @@ const DriverTable: React.FC<DriverTableProps> = ({
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => onViewDetails(driver)}
-                  className="text-primary hover:text-white hover:bg-primary px-3 py-1.5 rounded-md text-xs font-bold transition-all border border-transparent hover:border-primary/50"
+                  className="text-[#135bec] hover:text-white hover:bg-[#135bec] px-3 py-1.5 rounded-md text-xs font-bold transition-all border border-transparent hover:border-[#135bec]/50"
                 >
                   View Details
                 </button>

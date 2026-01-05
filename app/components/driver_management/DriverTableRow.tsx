@@ -46,7 +46,7 @@ export default function DriverTableRow({
       <td className="px-6 py-4 text-right">
         <button
           onClick={() => onViewDetails(driver?._id)}
-          className="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-[#232f48] transition-colors"
+          className="p-2 rounded-lg text-slate-400 hover:text-[#135bec] hover:bg-blue-50 dark:hover:bg-[#232f48] transition-colors"
           title="View Details"
         >
           <span className="material-symbols-outlined">

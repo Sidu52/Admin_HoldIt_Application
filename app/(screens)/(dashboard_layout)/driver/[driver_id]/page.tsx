@@ -10,6 +10,8 @@
 
 import React from "react";
 
-function page() {
+const page = async ({ params }: { params: Promise<{ driver_id: string }> }) => {
   return <div></div>;
 }
+
+export default page;

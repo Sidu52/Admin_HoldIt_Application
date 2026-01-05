@@ -69,7 +69,7 @@ const DriverHeader: React.FC<DriverHeaderProps> = ({
           
           <button
             onClick={onAddDriver}
-            className="flex items-center justify-center gap-2 h-10 px-5 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20"
+            className="flex items-center justify-center gap-2 h-10 px-5 bg-[#135bec] hover:bg-[#135bec]-dark transition-colors text-white text-sm font-bold rounded-lg shadow-lg shadow-[#135bec]/20"
           >
             <span className="material-symbols-outlined text-[20px]"><MdAdd /></span>
             <span>Add New Driver</span>

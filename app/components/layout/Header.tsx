@@ -31,19 +31,19 @@ const Header = ({ onMenuClick }: HeaderProps) => {
       <div className="flex items-center gap-2">
         <button
           onClick={onMenuClick}
-          className="p-2 text-slate-600 dark:text-slate-400 hover:text-primary"
+          className="p-2 text-slate-600 dark:text-slate-400 hover:text-[#135bec]"
         >
           <FaBars className="text-xl" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="bg-primary/10 flex items-center justify-center rounded-lg h-8 w-8">
-            <RiAdminFill className="text-primary text-lg" />
+          <div className="bg-[#135bec]/10 flex items-center justify-center rounded-lg h-8 w-8">
+            <RiAdminFill className="text-[#135bec] text-lg" />
           </div>
           <span className="font-bold text-slate-900 dark:text-white">Holdit</span>
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <button className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-primary">
+        <button className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-[#135bec]">
           <FaBell className="text-xl" />
           <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
         </button>

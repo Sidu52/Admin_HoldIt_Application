@@ -25,7 +25,7 @@ const ChartBar = () => {
               {item.day}
             </div>
             <div
-              className="w-full h-full bg-gradient-to-t from-primary/60 to-primary rounded-t-lg transition-all duration-300 group-hover:from-primary/80 group-hover:to-primary"
+              className="w-full h-full bg-gradient-to-t from-[#135bec]/60 to-[#135bec] rounded-t-lg transition-all duration-300 group-hover:from-[#135bec]/80 group-hover:to-[#135bec]"
               style={{
                 background: `linear-gradient(to top, 
                   rgba(59, 130, 246, ${0.2 + index * 0.1}), 

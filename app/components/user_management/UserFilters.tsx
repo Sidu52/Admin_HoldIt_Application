@@ -1,9 +1,10 @@
-// app/components/user/UserFilters.tsx
 "use client";
-
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/useUserStore";
-import { updateFilter, clearFilters } from "@/app/store/slices/userSlice";
+import {
+  updateFilter,
+  clearFilters,
+} from "@/app/store/slices/userSlice";
 import { debounce } from "@/app/utils/helper";
 import {
   BiSearch,
@@ -14,9 +15,6 @@ import {
   BiTime,
   BiBlock,
   BiLock,
-  BiCrown,
-  BiSupport,
-  BiBuilding,
 } from "react-icons/bi";
 
 const STATUS_OPTIONS = [
@@ -47,52 +45,19 @@ const STATUS_OPTIONS = [
   },
 ] as const;
 
-const ROLE_OPTIONS = [
-  { label: "All Roles", value: "", icon: <BiUser />, color: "text-slate-500" },
-  {
-    label: "Admin",
-    value: "admin",
-    icon: <BiCrown />,
-    color: "text-purple-500",
-  },
-  {
-    label: "Manager",
-    value: "manager",
-    icon: <BiUser />,
-    color: "text-blue-500",
-  },
-  {
-    label: "User",
-    value: "user",
-    icon: <BiUser />,
-    color: "text-slate-500",
-  },
-  {
-    label: "Support",
-    value: "support",
-    icon: <BiSupport />,
-    color: "text-teal-500",
-  },
-] as const;
-
-const DEPARTMENT_OPTIONS = [
-  { label: "All Departments", value: "", icon: <BiBuilding /> },
-  { label: "Engineering", value: "engineering" },
-  { label: "Sales", value: "sales" },
-  { label: "Marketing", value: "marketing" },
-  { label: "Support", value: "support" },
-  { label: "HR", value: "hr" },
-  { label: "Finance", value: "finance" },
-  { label: "Operations", value: "operations" },
-];
-
-export default function UserFilters() {
+export default function UserFilters({
+  onSearch,
+  onFilterChange,
+}: {
+  onSearch: (value: string) => void;
+  onFilterChange: (value: any) => void;
+}) {
   const [searchInput, setSearchInput] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const dispatch = useAppDispatch();
-  const { filters } = useAppSelector((state) => state.users);
-  const { status, role, department, search } = filters;
+  const { filters, pagination } = useAppSelector((state) => state.user);
+  const { status, search } = filters;
 
   // Sync local search input with Redux state
   useEffect(() => {
@@ -102,7 +67,7 @@ export default function UserFilters() {
   const debouncedSearch = useMemo(
     () =>
       debounce((value: string) => {
-        dispatch(updateFilter({ search: value }));
+        onFilterChange(value);
       }, 500),
     [dispatch]
   );
@@ -117,20 +82,12 @@ export default function UserFilters() {
     dispatch(updateFilter({ status: statusValue }));
   };
 
-  const handleRoleChange = (roleValue: string) => {
-    dispatch(updateFilter({ role: roleValue }));
-  };
-
-  const handleDepartmentChange = (departmentValue: string) => {
-    dispatch(updateFilter({ department: departmentValue }));
-  };
-
   const handleClearAll = () => {
     dispatch(clearFilters());
     setSearchInput("");
   };
 
-  const hasActiveFilters = status || role || department || search;
+  const hasActiveFilters = status || search;
 
   return (
     <div className="flex flex-col gap-4 px-6 pb-4">
@@ -202,72 +159,6 @@ export default function UserFilters() {
             </div>
           </div>
 
-          {/* Role Filter */}
-          <div className="relative group">
-            <button className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors">
-              <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
-                Role:{" "}
-                <span className="text-slate-900 dark:text-white">
-                  {ROLE_OPTIONS.find((opt) => opt.value === role)?.label ||
-                    "All"}
-                </span>
-              </span>
-              <BiFilter className="text-slate-400" size={18} />
-            </button>
-            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
-              {ROLE_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleRoleChange(option.value)}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-[#232f48] transition-colors flex items-center gap-2 ${
-                    role === option.value
-                      ? "text-primary bg-primary/10"
-                      : "text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  <span className={`text-[18px] ${option.color}`}>
-                    {option.icon}
-                  </span>
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Department Filter */}
-          <div className="relative group">
-            <button className="flex items-center gap-2 h-9 px-3.5 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors">
-              <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
-                Department:{" "}
-                <span className="text-slate-900 dark:text-white">
-                  {DEPARTMENT_OPTIONS.find((opt) => opt.value === department)
-                    ?.label || "All"}
-                </span>
-              </span>
-              <BiFilter className="text-slate-400" size={18} />
-            </button>
-            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#111722] border border-slate-200 dark:border-[#232f48] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
-              {DEPARTMENT_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleDepartmentChange(option.value)}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-[#232f48] transition-colors flex items-center gap-1 ${
-                    department === option.value
-                      ? "text-primary bg-primary/10"
-                      : "text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  {option.icon && (
-                    <span className="text-[18px] text-slate-400">
-                      {option.icon}
-                    </span>
-                  )}
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Divider */}
           <div className="w-px h-6 bg-slate-200 dark:bg-[#232f48] mx-1"></div>
 
@@ -280,17 +171,6 @@ export default function UserFilters() {
             <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
               Advanced
             </span>
-          </button>
-
-          {/* Export Button */}
-          <button
-            className="flex items-center justify-center size-9 bg-white dark:bg-[#111722] hover:bg-slate-50 dark:hover:bg-[#232f48] border border-slate-200 dark:border-[#232f48] rounded-lg transition-colors"
-            title="Export Data"
-          >
-            <BiFilter
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
-              size={20}
-            />
           </button>
 
           {/* Clear Filters Button */}
@@ -391,34 +271,6 @@ export default function UserFilters() {
               <button
                 onClick={() => handleStatusChange("")}
                 className="ml-1 hover:text-primary-dark"
-              >
-                <BiX size={14} />
-              </button>
-            </span>
-          )}
-
-          {role && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/10 text-blue-500 text-xs font-medium rounded-full">
-              Role: {ROLE_OPTIONS.find((opt) => opt.value === role)?.label}
-              <button
-                onClick={() => handleRoleChange("")}
-                className="ml-1 hover:text-blue-600"
-              >
-                <BiX size={14} />
-              </button>
-            </span>
-          )}
-
-          {department && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-medium rounded-full">
-              Department:{" "}
-              {
-                DEPARTMENT_OPTIONS.find((opt) => opt.value === department)
-                  ?.label
-              }
-              <button
-                onClick={() => handleDepartmentChange("")}
-                className="ml-1 hover:text-emerald-600"
               >
                 <BiX size={14} />
               </button>

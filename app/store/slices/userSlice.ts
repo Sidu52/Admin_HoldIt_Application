@@ -1,177 +1,15 @@
-// app/store/slices/userSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User, FilterState, Pagination } from "@/app/types/usermanager";
 import {
-  User,
-  UserUpdateData,
-  FilterState,
-  Pagination,
-} from "@/app/types/usermanager";
-import { usersApi } from "@/app/api/client";
-import { AxiosError } from "axios";
-
-// Async Thunks
-export const fetchUsers = createAsyncThunk(
-  "user/fetchUsers",
-  async (
-    params: {
-      page?: number;
-      limit?: number;
-      status?: string;
-      search?: string;
-      role?: string;
-      department?: string;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const {
-        page = 1,
-        limit = 10,
-        status = "",
-        search = "",
-        role = "",
-        department = "",
-      } = params;
-      const response = await usersApi.getUsers(
-        page,
-        limit,
-        status,
-        search,
-        role,
-        department
-      );
-
-      return {
-        users: response.data.users || response.data,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(response.data.total / limit),
-          totalItems: response.data.total,
-          itemsPerPage: limit,
-        },
-        filters: { status, search, role, department },
-      };
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch users"
-      );
-    }
-  }
-);
-
-export const fetchUserById = createAsyncThunk(
-  "user/fetchUserById",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await usersApi.userById(id);
-      return response.data;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch user"
-      );
-    }
-  }
-);
-
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async (data: UserUpdateData & { id: string }, { rejectWithValue }) => {
-    try {
-      const response = await usersApi.updateUser(data);
-      return response.data;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to update user"
-      );
-    }
-  }
-);
-
-export const createUser = createAsyncThunk(
-  "user/createUser",
-  async (data: Omit<UserUpdateData, "id">, { rejectWithValue }) => {
-    try {
-      const response = await usersApi.createUser(data);
-      return response.data;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to create user"
-      );
-    }
-  }
-);
-
-export const deleteUsers = createAsyncThunk(
-  "user/deleteUsers",
-  async (ids: string[], { rejectWithValue }) => {
-    try {
-      await usersApi.deleteUsers(ids);
-      return ids;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to delete users"
-      );
-    }
-  }
-);
-
-export const updateUserStatus = createAsyncThunk(
-  "user/updateUserStatus",
-  async (
-    { id, status }: { id: string; status: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await usersApi.updateUserStatus(id, status);
-      return response.data;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to update user status"
-      );
-    }
-  }
-);
-
-export const updateMultipleUserStatus = createAsyncThunk(
-  "user/updateMultipleUserStatus",
-  async (
-    { ids, status }: { ids: string[]; status: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      // Update multiple users status
-      const promises = ids.map((id) => usersApi.updateUserStatus(id, status));
-      const responses = await Promise.all(promises);
-      return { ids, status, users: responses.map((r) => r.data) };
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to update users status"
-      );
-    }
-  }
-);
-
-export const resetUserPassword = createAsyncThunk(
-  "user/resetUserPassword",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await usersApi.resetPassword(id);
-      return response.data;
-    } catch (error: any) {
-      const err = error as AxiosError<{ message: string }>;
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to reset password"
-      );
-    }
-  }
-);
+  fetchUsersThunk,
+  fetchUserByIdThunk,
+  updateUserThunk,
+  createUserThunk,
+  deleteUsersThunk,
+  updateUserStatusThunk,
+  updateMultipleUserStatusThunk,
+  resetUserPasswordThunk,
+} from "@/app/store/thunks/userThunks";
 
 // State interface
 interface UserState {
@@ -201,13 +39,11 @@ const initialState: UserState = {
   filters: {
     search: "",
     status: "",
-    role: "",
-    department: "",
   },
-  loading: false,
+  loading: true,
   error: null,
   successMessage: null,
-  operationLoading: false,
+  operationLoading: true,
   operationError: null,
 };
 
@@ -250,8 +86,6 @@ const userSlice = createSlice({
       state.filters = {
         search: "",
         status: "",
-        role: "",
-        department: "",
       };
       state.pagination.currentPage = 1;
     },
@@ -287,45 +121,49 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch Users
     builder
-      .addCase(fetchUsers.pending, (state) => {
+      .addCase(fetchUsersThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
+      .addCase(fetchUsersThunk.fulfilled, (state, action) => {
         state.loading = false;
+        state.operationLoading = false;
         state.users = action.payload.users;
         state.pagination = action.payload.pagination;
         state.filters = action.payload.filters;
         state.successMessage = null;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
+      .addCase(fetchUsersThunk.rejected, (state, action) => {
         state.loading = false;
+        state.operationLoading = false;
         state.error = action.payload as string;
       });
 
     // Fetch User By ID
     builder
-      .addCase(fetchUserById.pending, (state) => {
+      .addCase(fetchUserByIdThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
       })
-      .addCase(fetchUserById.fulfilled, (state, action) => {
+      .addCase(fetchUserByIdThunk.fulfilled, (state, action) => {
+        state.loading = false;
         state.operationLoading = false;
         state.currentUser = action.payload;
       })
-      .addCase(fetchUserById.rejected, (state, action) => {
+      .addCase(fetchUserByIdThunk.rejected, (state, action) => {
+        state.loading = false;
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Update User
     builder
-      .addCase(updateUser.pending, (state) => {
+      .addCase(updateUserThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
         state.successMessage = null;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
         state.operationLoading = false;
 
         // Update in users list
@@ -343,19 +181,19 @@ const userSlice = createSlice({
 
         state.successMessage = "User updated successfully";
       })
-      .addCase(updateUser.rejected, (state, action) => {
+      .addCase(updateUserThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Create User
     builder
-      .addCase(createUser.pending, (state) => {
+      .addCase(createUserThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
         state.successMessage = null;
       })
-      .addCase(createUser.fulfilled, (state, action) => {
+      .addCase(createUserThunk.fulfilled, (state, action) => {
         state.operationLoading = false;
 
         // Add new user to the beginning of the list
@@ -369,19 +207,19 @@ const userSlice = createSlice({
 
         state.successMessage = "User created successfully";
       })
-      .addCase(createUser.rejected, (state, action) => {
+      .addCase(createUserThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Delete Users
     builder
-      .addCase(deleteUsers.pending, (state) => {
+      .addCase(deleteUsersThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
         state.successMessage = null;
       })
-      .addCase(deleteUsers.fulfilled, (state, action) => {
+      .addCase(deleteUsersThunk.fulfilled, (state, action) => {
         state.operationLoading = false;
 
         // Remove deleted users from list
@@ -400,18 +238,18 @@ const userSlice = createSlice({
 
         state.successMessage = `${action.payload.length} user(s) deleted successfully`;
       })
-      .addCase(deleteUsers.rejected, (state, action) => {
+      .addCase(deleteUsersThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Update User Status (Single)
     builder
-      .addCase(updateUserStatus.pending, (state) => {
+      .addCase(updateUserStatusThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
       })
-      .addCase(updateUserStatus.fulfilled, (state, action) => {
+      .addCase(updateUserStatusThunk.fulfilled, (state, action) => {
         state.operationLoading = false;
 
         // Update user in list
@@ -427,19 +265,19 @@ const userSlice = createSlice({
           (id) => id !== action.payload._id
         );
       })
-      .addCase(updateUserStatus.rejected, (state, action) => {
+      .addCase(updateUserStatusThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Update Multiple User Status
     builder
-      .addCase(updateMultipleUserStatus.pending, (state) => {
+      .addCase(updateMultipleUserStatusThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
         state.successMessage = null;
       })
-      .addCase(updateMultipleUserStatus.fulfilled, (state, action) => {
+      .addCase(updateMultipleUserStatusThunk.fulfilled, (state, action) => {
         state.operationLoading = false;
 
         // Update users in list
@@ -449,28 +287,25 @@ const userSlice = createSlice({
             state.users[index] = updatedUser as User;
           }
         });
-
         // Clear selected users
         state.selectedUsers = [];
-
-        state.successMessage = `${action.payload.ids.length} user(s) status updated to ${action.payload.status}`;
       })
-      .addCase(updateMultipleUserStatus.rejected, (state, action) => {
+      .addCase(updateMultipleUserStatusThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
 
     // Reset User Password
     builder
-      .addCase(resetUserPassword.pending, (state) => {
+      .addCase(resetUserPasswordThunk.pending, (state) => {
         state.operationLoading = true;
         state.operationError = null;
       })
-      .addCase(resetUserPassword.fulfilled, (state) => {
+      .addCase(resetUserPasswordThunk.fulfilled, (state) => {
         state.operationLoading = false;
         state.successMessage = "Password reset email sent successfully";
       })
-      .addCase(resetUserPassword.rejected, (state, action) => {
+      .addCase(resetUserPasswordThunk.rejected, (state, action) => {
         state.operationLoading = false;
         state.operationError = action.payload as string;
       });
