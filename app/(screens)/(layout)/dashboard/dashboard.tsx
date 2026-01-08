@@ -1,11 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import {
-  fetchDashboardSummary,
-  fetchDashboardChart,
-} from "@/app/store/thunks/dashboardThunks";
-import { fetchBookings } from "@/app/store/thunks/bookingThunks";
+import { useMemo, useState } from "react";
 import StatCard from "@/app/components/dashboard/StatCard";
 import ActivityTable from "@/app/components/dashboard/ActivityTable";
 import ChartBar from "@/app/components/dashboard/ChartBar";
@@ -18,8 +12,10 @@ import {
 } from "@/app/loading/dashboard";
 
 import { FaClipboardList, FaStore, FaTruck, FaUsers } from "react-icons/fa";
-import { Stats, StatsCard } from "@/app/types/dashboard";
-import { fetchProfileThunk } from "@/app/store/thunks/profileThunks";
+import { StatsCard } from "@/app/types/dashboard";
+import { useSummaryQuery, useChartQuery } from "@/app/react_queries/dashboard";
+import { useProfileQuery } from "@/app/react_queries/profile";
+import { useBookingQuery } from "@/app/react_queries/bookings";
 
 const RANGE = [
   { label: "Today", value: "today" },
@@ -34,31 +30,36 @@ const ENTITY = [
 ];
 
 export default function DashboardPage() {
-  const dispatch = useAppDispatch();
   const [entity, setEntity] = useState("user");
   const [range, setRange] = useState("week");
-  const { loading } = useAppSelector((state) => state.profile);
-  const { summary, summaryLoading, chartLoading, error } = useAppSelector(
-    (state) => state.dashboard
-  );
-  const { bookingLoading } = useAppSelector((state) => state.booking);
 
-  useEffect(() => {
-    dispatch(fetchDashboardSummary());
-    dispatch(fetchBookings());
-    dispatch(fetchProfileThunk());
-  }, [dispatch]);
+  const {
+    data: summaryData,
+    isLoading: summaryLoading,
+    isError: summaryError,
+  } = useSummaryQuery();
 
-  useEffect(() => {
-    dispatch(fetchDashboardChart({ entity, range }));
-  }, [dispatch, entity, range]);
+  const {
+    data: chartData,
+    isLoading: chartLoading,
+    isError: chartError,
+  } = useChartQuery({ entity, range });
 
-  /* Memoized Cards */
-  const cards = useMemo(() => buildStatsCards(summary as Stats), [summary]);
+  const { data: profileData } = useProfileQuery();
+  const { data: bookingData, isLoading: bookingLoading } = useBookingQuery();
 
-  if (loading) {
+  const isPageLoading = summaryLoading && !summaryData;
+  const isPageError = summaryError || chartError;
+
+  const cards = useMemo(() => {
+    if (!summaryData?.data) return [];
+    return buildStatsCards(summaryData.data);
+  }, [summaryData]);
+
+  /* 🔹 Global loading */
+  if (isPageLoading) {
     return (
-      <div className="w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-8">
+      <div className="w-full max-w-[1600px] mx-auto p-6 flex flex-col gap-8">
         <CardSkeleton />
         <ChartSkeleton />
         <ActiveTableSkeleton />
@@ -66,8 +67,8 @@ export default function DashboardPage() {
     );
   }
 
-  // Error State
-  if (error) {
+  /* 🔹 Global error */
+  if (isPageError) {
     return (
       <div className="p-6 text-red-500 font-medium">
         Failed to load dashboard data
@@ -76,48 +77,36 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="flex-1 overflow-y-auto">
-      <div className="w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-8">
+    <main className="flex-1 overflow-y-auto bg-background text-foreground">
+      <div className="w-full max-w-[1600px] mx-auto p-6 flex flex-col gap-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:justify-between gap-4">
+        <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
-              Dashboard Overview
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400">
-              Here is an overview of your managed system performance.
+            <h1 className="text-3xl font-black">Dashboard Overview</h1>
+            <p className="text-slate-500">
+              Here is an overview of your system performance.
             </p>
           </div>
-          <ProfileDropdown />
+
+          {profileData && <ProfileDropdown profile={profileData.data} />}
         </div>
 
         {/* Stats */}
-        {summaryLoading ? (
-          <CardSkeleton />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {cards.map((card, index) => (
-              <StatCard key={index} {...card} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cards.map((card, index) => (
+            <StatCard key={index} {...card} />
+          ))}
+        </div>
 
         {/* Chart */}
-        <div className="rounded-xl border bg-white dark:bg-[#1e293b] p-6">
+        <div className="rounded-xl border bg-background text-foreground p-6">
           <div className="flex justify-between mb-6">
-            <h3 className="text-lg font-bold">Booking Analytics</h3>
+            <h3 className="text-lg font-bold">Analytics</h3>
+
             <div className="flex gap-2">
-              <select
-                value={range}
-                onChange={(e) => setRange(e.target.value)}
-                className="select"
-              >
+              <select value={range} onChange={(e) => setRange(e.target.value)}>
                 {RANGE.map((r) => (
-                  <option
-                    key={r.value}
-                    value={r.value}
-                    className="text-[14px] font-normal text-[#333]"
-                  >
+                  <option key={r.value} value={r.value}>
                     {r.label}
                   </option>
                 ))}
@@ -126,14 +115,9 @@ export default function DashboardPage() {
               <select
                 value={entity}
                 onChange={(e) => setEntity(e.target.value)}
-                className="select"
               >
                 {ENTITY.map((e) => (
-                  <option
-                    key={e.value}
-                    value={e.value}
-                    className="text-[14px] font-normal text-[#333]"
-                  >
+                  <option key={e.value} value={e.value}>
                     {e.label}
                   </option>
                 ))}
@@ -141,21 +125,23 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {chartLoading ? <ChartSkeleton /> : <ChartBar />}
+          {chartData &&
+            (chartLoading ? <ChartSkeleton /> : <ChartBar data={chartData} />)}
         </div>
 
         {/* Activity */}
-        {bookingLoading ? <ActiveTableSkeleton /> : <ActivityTable />}
+        {bookingData &&
+          (bookingLoading ? (
+            <ActiveTableSkeleton />
+          ) : (
+            <ActivityTable data={bookingData} />
+          ))}
       </div>
     </main>
   );
 }
-
 // Stats Card Builder
-const buildStatsCards = (stats: Stats): StatsCard[] => {
-  console.log("starts", stats);
-  if (!stats) return [];
-
+const buildStatsCards = (stats: any): StatsCard[] => {
   return [
     {
       title: "Bookings Today",

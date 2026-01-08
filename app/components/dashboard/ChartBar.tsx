@@ -1,10 +1,10 @@
 "use client";
-import { useAppSelector } from "@/app/store/hooks";
 import NoData from "@/app/NoData";
-const ChartBar = () => {
-  const { chart } = useAppSelector((state) => state.dashboard);
-
-  const maxValue = Math.max(...chart.map((item) => item.maxValue));
+import { ChartItem } from "@/app/types/dashboard";
+const ChartBar = ({ data }: { data: any }) => {
+  const { chart } = data;
+  console.log("DATA", chart);
+  const maxValue = Math.max(...chart.map((item: ChartItem) => item.maxValue));
 
   if (chart && chart.length == 0) {
     return <NoData />;
@@ -12,13 +12,13 @@ const ChartBar = () => {
 
   return (
     <div className="relative h-48 w-full flex items-end justify-between gap-2 px-2">
-      {chart.map((item, index) => {
+      {chart.map((item: ChartItem, index: number) => {
         const heightPercentage = (item.value / maxValue) * 100;
 
         return (
           <div
             key={index}
-            className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg relative group transition-all duration-300"
+            className="w-full rounded-t-lg relative group transition-all duration-300"
             style={{ height: `${heightPercentage}%` }}
           >
             <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">

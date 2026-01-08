@@ -1,167 +1,201 @@
-import { User, UserUpdateData } from "@/app/types/usermanager";
+"use client";
+
+import { User, UserUpdateData } from "@/app/types/user";
 import React, { useState } from "react";
-import { useAppDispatch } from "@/app/store/hooks";
-import { updateUserThunk } from "@/app/store/thunks/userThunks";
+import { MdClose } from "react-icons/md";
 
-const EditUserDetails = ({
-  userData,
-  onClose,
-}: {
-  userData: User;
+interface UserProps {
+  showEditModal: boolean;
+  user: User;
   onClose: () => void;
-}) => {
-  const dispatch = useAppDispatch();
+  handleSubmit: (data: UserUpdateData) => void;
+}
 
+const GENDER_OPTIONS = ["male", "female", "other", "prefer_not_to_say"];
+
+function EditUserDetails({
+  user,
+  showEditModal,
+  onClose,
+  handleSubmit,
+}: UserProps) {
   const [form, setForm] = useState<UserUpdateData>({
-    first_name: userData.first_name,
-    last_name: userData.last_name,
-    email: userData.email,
-    phone: userData.auth_user_id?.phone || "",
-    gender: userData.gender,
-    dob: userData.dob,
-    address: userData.address,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    phone: user.phone || "",
+    gender: user.gender || "",
+    dob: user.dob || "",
+    address: user.address || "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
-    const { name, value, type } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submitForm = (e: React.FormEvent) => {
     e.preventDefault();
-    await dispatch(updateUserThunk({ ...form, id: userData._id }));
+    handleSubmit(form);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center">
-      {/* Sheet */}
-      <div className="bg-white dark:bg-[#232f48] w-full max-w-xl h-[90vh] rounded-xl shadow-xl flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-[#e5e7eb] dark:border-[#324467]">
-          <h2 className="text-2xl font-bold text-[#111418] dark:text-white">
-            Edit User Details
-          </h2>
-          <p className="text-sm text-[#637588] dark:text-[#92a4c9] mt-1">
-            Update profile and access information
-          </p>
+    <div
+      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${
+        showEditModal ? "w-[400px]" : "w-0"
+      }`}
+    >
+      {/* Header */}
+      <div className="relative p-6 border-b border-gray-200 dark:border-[#324467]">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Edit User Details
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+          Update user profile
+        </p>
+
+        {/* Close button */}
+        <div
+          className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition-transform duration-150"
+          onClick={onClose}
+        >
+          <MdClose size={24} />
+        </div>
+      </div>
+
+      {/* Form */}
+      <form className="p-6 space-y-4" onSubmit={submitForm}>
+        {/* First Name */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="first_name"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            value={form.first_name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
+          />
         </div>
 
-        {/* Scrollable Content */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto p-6 space-y-6"
-        >
-          {/* Names */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="First Name"
-              name="first_name"
-              value={form.first_name}
-              onChange={handleChange}
-            />
-            <Input
-              label="Last Name"
-              name="last_name"
-              value={form.last_name}
-              onChange={handleChange}
-            />
-          </div>
+        {/* Last Name */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="last_name">
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            value={form.last_name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
+          />
+        </div>
 
-          {/* Email */}
-          <Input
-            label="Email"
-            name="email"
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="email">
+            Email
+          </label>
+          <input
             type="email"
+            id="email"
+            name="email"
             value={form.email}
             onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
           />
+        </div>
 
-          {/* Phone */}
-          <Input
-            label="Phone"
-            name="phone"
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="phone">
+            Phone
+          </label>
+          <input
             type="tel"
+            id="phone"
+            name="phone"
             value={form.phone}
             onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           />
+        </div>
 
-          {/* Gender */}
-          <Input
-            label="Gender"
+        {/* Gender */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="gender">
+            Gender
+          </label>
+          <select
+            id="gender"
             name="gender"
             value={form.gender}
             onChange={handleChange}
-          />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="">Select Gender</option>
+            {GENDER_OPTIONS.map((g) => (
+              <option key={g} value={g}>
+                {g.charAt(0).toUpperCase() + g.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          {/* Date of Birth */}
-          <Input
-            label="Date of Birth"
+        {/* DOB */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="dob">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="dob"
             name="dob"
-            type="string"
             value={form.dob}
             onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           />
+        </div>
 
-          {/* Address */}
-          <Input
-            label="Address"
+        {/* Address */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="address">
+            Address
+          </label>
+          <textarea
+            id="address"
             name="address"
             value={form.address}
             onChange={handleChange}
-          />
-        </form>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-[#e5e7eb] dark:border-[#324467] flex justify-end gap-3 bg-white dark:bg-[#232f48]">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 cursor-pointer rounded-lg border border-[#e5e7eb] dark:border-[#324467] text-sm font-medium text-[#111418] dark:text-white"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-5 py-2 cursor-pointer rounded-lg bg-primary text-white text-sm font-bold"
-          >
-            Save Changes
-          </button>
+            rows={3}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          ></textarea>
         </div>
-      </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors duration-150"
+        >
+          Update User
+        </button>
+      </form>
     </div>
   );
-};
-
-type InputProps = {
-  label: string;
-  name: string;
-  value: string | number | undefined;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-};
-
-const Input = ({ label, name, value, onChange, type = "text" }: InputProps) => {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-semibold text-[#111418] dark:text-white">
-        {label}
-      </span>
-      <input
-        type={type}
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        className="h-11 rounded-lg border border-[#e5e7eb] dark:border-[#324467] bg-white dark:bg-[#1f2a44] px-4 text-sm text-[#111418] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition"
-      />
-    </label>
-  );
-};
+}
 
 export default EditUserDetails;

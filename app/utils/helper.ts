@@ -87,3 +87,15 @@ export function formatDateTime(
         second: "numeric",
       });
 }
+
+export function getUserNameFirstChar(first_name: string, last_name: string): string {
+  if (!first_name && !last_name) return '';
+  return `${first_name?.[0] || ''}${last_name?.[0] || ''}`;
+}
+
+export function getFullName(first_name: string, last_name: string): string {
+  if (!first_name && !last_name) return '';
+  return `${first_name} ${last_name}`;
+}
+
+

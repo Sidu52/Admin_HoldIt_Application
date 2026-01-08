@@ -1,16 +1,21 @@
 "use client";
 
 import { FaEye } from "react-icons/fa";
-import { useAppSelector } from "@/app/store/hooks";
 import { Booking } from "@/app/types/booking";
 import NoData from "@/app/NoData";
+import { Pagination } from "@/app/types/user";
 
-const ActivityTable = () => {
-  const { bookings, pagination } = useAppSelector((state) => state.booking);
+type Props = {
+  bookings: Booking[];
+  pagination: Pagination;
+};
 
-  if (bookings && bookings.length==0){
-  return <NoData/>
-} 
+const ActivityTable = ({ data }: { data: { data: Props } }) => {
+  const { bookings, pagination } = data.data;
+  console.log("Bookings",data)
+  if (bookings && bookings.length == 0) {
+    return <NoData />
+  }
 
   const getStatusStyles = (status: Booking["status"]) => {
     const styles = {

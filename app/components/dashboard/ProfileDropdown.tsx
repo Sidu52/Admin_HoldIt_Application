@@ -4,17 +4,16 @@ import { useState, useRef, useEffect } from "react";
 import {
   FaUser,
   FaSignOutAlt,
-  FaCog,
   FaEnvelope,
   FaIdBadge,
 } from "react-icons/fa";
 import { useAuth } from "@/app/hooks/useAuth";
-import { useAppSelector } from "@/app/store/hooks";
 import { parseTimestamp } from "@/app/utils/helper";
+import { UserProfile } from "@/app/types/profile";
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({ profile }: { profile: UserProfile }) => {
   const { logout, logoutLoading, logoutSuccess } = useAuth();
-  const { profile } = useAppSelector((state) => state.profile);
+
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

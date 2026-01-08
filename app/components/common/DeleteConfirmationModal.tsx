@@ -1,27 +1,24 @@
 "use client";
-
 import React from "react";
 import { MdDelete, MdWarning } from "react-icons/md";
 
 interface DeleteConfirmationModalProps {
+  count: number;
   modalTitle: string;
-  isOpen: boolean;
+  modalDescription?: string;
+  loading: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  count: number;
-  isLoading: boolean;
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
+  count,
   modalTitle,
-  isOpen,
+  modalDescription,
+  loading,
   onClose,
   onConfirm,
-  count,
-  isLoading,
 }) => {
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-surface-dark border border-surface-border rounded-xl w-full max-w-md">
@@ -41,8 +38,12 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               <p className="text-slate-400 text-sm">
                 Are you sure you want to delete{" "}
                 {count === 1 ? "this driver" : `these ${count} ${modalTitle}s`}?
-                This action cannot be undone. All associated data will be
-                permanently removed.
+                {modalDescription && (
+                  <span className="text-slate-400 text-sm">
+                    {" "}
+                    {modalDescription}
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -54,7 +55,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               </span>
               <p className="text-sm text-slate-300">
                 <span className="font-semibold text-white">Note:</span> Deleting
-                drivers will:
+                {modalTitle} will:
               </p>
             </div>
             <ul className="mt-2 text-sm text-slate-400 space-y-1 ml-8">
@@ -67,7 +68,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              disabled={isLoading}
+              disabled={loading}
               className="px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
@@ -75,10 +76,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               type="button"
               onClick={onConfirm}
-              disabled={isLoading}
+              disabled={loading}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isLoading ? (
+              {loading ? (
                 <>
                   <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Deleting...

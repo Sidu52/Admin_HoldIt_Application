@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
+/* Define CSS Variables for Light and Dark Mode */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --primary: #135bec;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --text: #111722;
+  --muted: #6b7aa6;
+  --border: #e5e7eb;
+  --disabled: #c0c2c7;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #111722;
+    --surface: #232f48;
+    --text: #f6f6f8;
+    --muted: #92a4c9;
+    --border: #2d3b55;
+    --disabled: #6d6e70;
   }
+}
+
+@layer utilities {
+  .bg-background { background: var(--bg); }
+  .bg-surface { background: var(--surface); }
+  .bg-disabled { background: var(--disabled); }
+  .text-foreground { color: var(--text); }
+  .text-muted { color: var(--muted); }
+  .border-theme { border-color: var(--border); }
+  .border-disabled { border-color: var(--disabled); }
+  .bg-primary { background: var(--primary); }
+  .text-primary { color: var(--primary); }
+  .text-disabled { color: var(--disabled); }
+  .ring-primary { --tw-ring-color: var(--primary); }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* Scrollbar Styling */
+* {
+  /* Style the scrollbar container */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #111722 #f1f1f1; /* For Firefox */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 4px; /* Width of the vertical scrollbar */
+  height: 4px; /* Height of the horizontal scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+  border-radius: 10px; /* Round the corners of the track */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #111722; /* Thumb color */
+  border-radius: 10px; /* Round the corners of the thumb */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #111722; /* Hover color for thumb */
+}
+
+*::-webkit-scrollbar-button {
+  background-color: transparent; /* Buttons on scrollbar (if any) */
 }

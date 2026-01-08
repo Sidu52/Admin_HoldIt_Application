@@ -49,7 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="flex items-center justify-between px-4 py-8">
+    <nav className="flex items-center justify-between px-4 py-4">
       {/* Previous */}
       <div className="flex w-0 flex-1">
         <button

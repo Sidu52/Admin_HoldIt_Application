@@ -17,15 +17,6 @@ import {
 import { RiShieldKeyholeFill, RiAdminFill } from "react-icons/ri";
 import { useAuth } from "@/app/hooks/useAuth";
 
-type ApiResponse = {
-  success: boolean;
-  message: string;
-  data?: {
-    email: string;
-    admin: string;
-    [key: string]: any;
-  };
-};
 interface SignupPageProps {
   data: {
     email: string;
@@ -209,14 +200,6 @@ export default function SignupPage({ data, token }: SignupPageProps) {
     }
   };
 
-  console.log("formData", formData);
-
-  const formatDateForInput = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden py-10">
       {/* Background Pattern Effect */}
@@ -299,7 +282,7 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Email
                     </label>
                     <input
-                      className="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-500 dark:text-[#92a4c9] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#324467] bg-gray-100 dark:bg-[#1a2335] h-12 px-4 text-base font-normal leading-normal transition-all cursor-not-allowed"
+                      className="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-500 dark:text-[#92a4c9] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#324467] bg-[#393b3f] dark:bg-[#393b3f] h-12 px-4 text-base font-normal leading-normal transition-all cursor-not-allowed"
                       value={formData.email}
                       readOnly
                       disabled
@@ -433,8 +416,8 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Role
                     </label>
                     <input
-                      className="form-input uppercase flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-500 dark:text-[#92a4c9] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#324467] bg-gray-100 dark:bg-[#1a2335] h-12 px-4 text-base font-normal leading-normal transition-all cursor-not-allowed"
-                      value={formData.role}
+                      className="form-input flex w-full capitalize min-w-0 resize-none overflow-hidden rounded-lg text-gray-500 dark:text-[#92a4c9] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#324467] bg-[#393b3f] dark:bg-[#393b3f] h-12 px-4 text-base font-normal leading-normal transition-all cursor-not-allowed"
+                      value={formData.role.replaceAll("_", " ")}
                       readOnly
                       disabled
                     />

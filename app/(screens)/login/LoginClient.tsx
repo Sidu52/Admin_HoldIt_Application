@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useAuth } from "@/app/hooks/useAuth";
 import LoadingSpinner from "@/app/components/common/LoadingSpinner";
@@ -24,57 +23,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Top center glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-500/20 blur-[120px] rounded-full opacity-40"></div>
-        {/* Bottom right accent */}
-        <div className="absolute bottom-0 right-0 w-[600px] h-[400px] bg-indigo-900/20 blur-[100px] rounded-full opacity-30"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-100 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#f8fafc_1px,transparent_1px),linear-gradient(#f8fafc_1px,transparent_1px)] bg-[size:32px_32px] opacity-10"></div>
       </div>
 
       <div className="layout-container flex h-full grow flex-col relative z-10 items-center justify-center p-4 sm:p-6">
-        {/* Login Card */}
-        <div className="w-full max-w-[460px] flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700/60 overflow-hidden backdrop-blur-sm">
-          {/* Header Section */}
-          <div className="px-8 pt-10 pb-6 flex flex-col items-center">
-            {/* Logo */}
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 mb-6">
-              <RiAdminFill className="text-white text-[32px]" />
+        <div className="w-full max-w-[440px] flex flex-col bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
+          <div className="relative px-8 pt-10 pb-8 flex flex-col items-center">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500"></div>
+            <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 mb-6 group hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-2xl opacity-90 group-hover:opacity-100 transition-opacity"></div>
+              <RiAdminFill className="text-white text-[34px] relative z-10" />
+              <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:border-white/40 transition-colors"></div>
             </div>
-            <h2 className="text-gray-900 dark:text-white tracking-tight text-[28px] font-bold leading-tight text-center">
-              Admin Portal
+            <h2 className="text-gray-900 text-[32px] font-bold leading-tight text-center tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              Welcome Back
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal pt-2 text-center max-w-[320px]">
-              Welcome back to Admin Portal. Please enter your details to sign
-              in.
+            <p className="text-gray-600 text-base font-normal leading-relaxed pt-3 text-center max-w-[320px]">
+              Sign in to your admin account to continue
             </p>
           </div>
 
           {/* Form Section */}
           <div className="px-8 pb-10 w-full">
-            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded">
-                  <p className="text-red-700 dark:text-red-300 text-sm">
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4 animate-fadeIn">
+                  <p className="text-red-600 text-sm font-medium flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
                     {error}
                   </p>
                 </div>
               )}
 
               {/* Email Field */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <label
-                  className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal"
+                  className="text-gray-700 text-sm font-semibold leading-normal tracking-wide"
                   htmlFor="email"
                 >
-                  Email
+                  Email Address
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FaMailBulk className="text-gray-400 group-focus-within:text-blue-600 transition-colors text-[20px]" />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
+                    <div className="p-2 rounded-lg bg-blue-50 group-focus-within:bg-blue-100 transition-colors">
+                      <FaMailBulk className="text-blue-500 group-focus-within:text-blue-600 text-[18px]" />
+                    </div>
                   </div>
                   <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-0 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-blue-600 dark:focus:border-blue-500 h-12 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-11 pr-4 text-base font-normal leading-normal transition-all shadow-sm"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 bg-white/50 hover:bg-white h-14 placeholder:text-gray-400 pl-[68px] pr-4 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 shadow-sm"
                     id="email"
                     placeholder="admin@example.com"
                     type="email"
@@ -82,59 +83,68 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
                     required
+                    autoComplete="username"
                   />
                 </div>
               </div>
 
               {/* Password Field */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <label
-                    className="text-gray-700 dark:text-gray-200 text-sm font-medium leading-normal"
+                    className="text-gray-700 text-sm font-semibold leading-normal tracking-wide"
                     htmlFor="password"
                   >
                     Password
                   </label>
                   <a
-                    className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                    className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors cursor-pointer hover:underline"
                     href="#"
                   >
                     Forgot password?
                   </a>
                 </div>
-                <div className="relative flex w-full flex-1 items-stretch rounded-lg group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                    <FaKey className="text-gray-400 group-focus-within:text-blue-600 transition-colors text-[20px]" />
+                <div className="relative flex w-full flex-1 items-stretch rounded-xl group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
+                    <div className="p-2 rounded-lg bg-blue-50 group-focus-within:bg-blue-100 transition-colors">
+                      <FaKey className="text-blue-500 group-focus-within:text-blue-600 text-[18px]" />
+                    </div>
                   </div>
                   <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-0 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-blue-600 dark:focus:border-blue-500 h-12 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-11 pr-12 text-base font-normal leading-normal transition-all shadow-sm z-0"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 bg-white/50 hover:bg-white h-14 placeholder:text-gray-400 pl-[68px] pr-14 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 shadow-sm"
                     id="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
                     required
+                    autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
-                    className="absolute right-0 top-0 h-12 w-12 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-white transition-colors cursor-pointer z-10 focus:outline-none disabled:opacity-50"
+                    className="absolute right-0 top-0 h-14 w-14 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:rounded-lg disabled:opacity-50"
                   >
                     {showPassword ? (
-                      <FaEyeSlash className="text-[20px]" />
+                      <div className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <FaEyeSlash className="text-[20px]" />
+                      </div>
                     ) : (
-                      <FaEye className="text-[20px]" />
+                      <div className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <FaEye className="text-[20px]" />
+                      </div>
                     )}
                   </button>
                 </div>
               </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 active:from-blue-800 active:to-blue-900 h-12 px-5 text-white text-base font-bold leading-normal tracking-wide shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none"
+                className="mt-4 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 active:from-blue-800 active:to-cyan-800 h-14 px-5 text-white text-base font-bold leading-normal tracking-wide shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-lg"
               >
                 {isLoading ? (
                   <>
@@ -143,43 +153,15 @@ export default function LoginPage() {
                   </>
                 ) : (
                   <>
-                    <FaShieldAlt className="text-lg" />
-                    <span>Log In</span>
+                    <div className="p-1.5 rounded-lg bg-white/20">
+                      <FaShieldAlt className="text-lg" />
+                    </div>
+                    <span>Sign in to Dashboard</span>
                   </>
                 )}
               </button>
             </form>
           </div>
-
-          {/* Card Footer */}
-          <div className="bg-gray-50 dark:bg-gray-900 px-8 py-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Don't have an account?{" "}
-              <span className="text-gray-400 dark:text-gray-600 cursor-not-allowed">
-                Contact Super Admin
-              </span>
-            </p>
-          </div>
-        </div>
-
-        {/* Page Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-500 dark:text-gray-600 text-xs">
-            © {new Date().getFullYear()} Admin Portal Inc. ·{" "}
-            <a
-              className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer"
-              href="#"
-            >
-              Privacy
-            </a>{" "}
-            ·{" "}
-            <a
-              className="hover:text-gray-400 dark:hover:text-gray-500 transition-colors cursor-pointer"
-              href="#"
-            >
-              Terms
-            </a>
-          </p>
         </div>
       </div>
     </div>

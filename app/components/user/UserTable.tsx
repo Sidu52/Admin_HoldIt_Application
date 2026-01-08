@@ -1,189 +1,129 @@
 "use client";
 
-import React, { useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/useUserStore";
-import {
-  selectUser,
-  selectAllUsers,
-  setPage,
-} from "@/app/store/slices/userSlice";
-import UserTableRow from "./UserTableRow";
-import { BsExclamationTriangle } from "react-icons/bs";
-import { FilterState, User } from "@/app/types/usermanager";
-import LoadingSpinner from "../common/LoadingSpinner";
+import React, { useCallback, useMemo } from "react";
+import { User } from "@/app/types/user";
 import Pagination from "../common/Pagination";
-import { MdPersonOff } from "react-icons/md";
-import { fetchUsersThunk } from "@/app/store/thunks/userThunks";
+import { MdDelete, MdPerson } from "react-icons/md";
+import {
+  formatDateTime,
+  getFullName,
+  getUserNameFirstChar,
+} from "@/app/utils/helper";
+import { getStatusBadge } from "../common/GetStatus";
+
+interface PaginationProps {
+  page: number;
+  totalPages: number;
+}
 
 interface UserTableProps {
-  onEditUser: (user: User) => void;
+  users: User[];
+  selectedUsers: User[];
+  onSelectionChange: (users: User[]) => void;
   onViewDetails: (user: User) => void;
-  filters: FilterState;
+  onDeleteClick: () => void;
+  pagination: PaginationProps;
+  onPageChange: (page: number) => void;
 }
 
 const UserTable: React.FC<UserTableProps> = ({
-  onEditUser,
+  users,
+  selectedUsers,
+  onSelectionChange,
   onViewDetails,
-  filters,
+  onDeleteClick,
+  pagination,
+  onPageChange,
 }) => {
-  const dispatch = useAppDispatch();
-
-  const { users, selectedUsers, pagination, loading, error } = useAppSelector(
-    (state) => state.user
+  // ---------------- SELECTION HELPERS ----------------
+  const selectedIds = useMemo(
+    () => new Set(selectedUsers.map((u) => u._id)),
+    [selectedUsers]
   );
 
+  const allSelected =
+    users.length > 0 && users.every((u) => selectedIds.has(u._id));
+  const someSelected = users.some((u) => selectedIds.has(u._id));
+
+  // ---------------- HANDLERS ----------------
   const handleSelectUser = useCallback(
-    (userId: string) => {
-      dispatch(selectUser(userId));
+    (user: User) => {
+      if (selectedIds.has(user._id)) {
+        onSelectionChange(selectedUsers.filter((u) => u._id !== user._id));
+      } else {
+        onSelectionChange([...selectedUsers, user]);
+      }
     },
-    [dispatch]
+    [selectedIds, selectedUsers, onSelectionChange]
   );
 
   const handleSelectAll = useCallback(() => {
-    dispatch(selectAllUsers());
-  }, [dispatch]);
+    if (allSelected) {
+      const remaining = selectedUsers.filter(
+        (u) => !users.some((usr) => usr._id === u._id)
+      );
+      onSelectionChange(remaining);
+    } else {
+      const merged = [
+        ...selectedUsers.filter((u) => !users.some((usr) => usr._id === u._id)),
+        ...users,
+      ];
+      onSelectionChange(merged);
+    }
+  }, [allSelected, users, selectedUsers, onSelectionChange]);
 
-  const handlePageChange = useCallback(async (page: number) => {
-    // Dispatch action to change page
-    await dispatch(setPage(page));
-    await dispatch(
-      fetchUsersThunk({
-        page: page,
-        limit: pagination.itemsPerPage,
-        ...filters,
-      })
-    );
-  }, []);
-
-  const allSelected = users.length > 0 && selectedUsers.length === users.length;
-
-  if (loading) {
-    return (
-      <div className="flex flex-col h-full bg-surface-dark border border-surface-border rounded-xl shadow-sm overflow-hidden">
-        <div className="flex-1 flex items-center justify-center">
-          <LoadingSpinner />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col h-full bg-surface-dark border border-surface-border rounded-xl shadow-sm overflow-hidden">
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
-          <BsExclamationTriangle className="text-red-500 text-4xl mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">
-            Error Loading Users
-          </h3>
-          <p className="text-slate-400 text-center">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-  if (!users || users.length === 0) {
-    return (
-      <div className="flex flex-col h-full bg-surface-dark border border-surface-border rounded-xl shadow-sm overflow-hidden">
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
-          <div className="text-center">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-slate-800/50 mb-4">
-              <span className="material-symbols-outlined text-slate-400 text-3xl">
-                <MdPersonOff />
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">
-              No Users Found
-            </h3>
-            <p className="text-slate-400 mb-6">
-              No users match your current filters. Try adjusting your search
-              criteria.
-            </p>
-            <button
-              onClick={() => {
-                // Reset filters or add first user
-                console.log("Add new user");
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-            >
-              <span className="material-symbols-outlined">add</span>
-              Add New User
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // ---------------- RENDER ----------------
   return (
-    <div className="flex flex-col h-full bg-surface-dark border border-surface-border rounded-xl shadow-sm overflow-hidden">
-      {/* Table Container */}
+    <div className="flex flex-col h-full bg-surface-dark border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+      {/* TABLE */}
       <div className="flex-1 overflow-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-surface-border/30 sticky top-0 z-10 backdrop-blur-sm">
-            <tr>
-              {/* Checkbox Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 w-16 text-center">
+        <table className="w-full border-collapse text-sm">
+          {/* HEAD */}
+          <thead className="sticky top-0 z-10 bg-surface-dark/95 backdrop-blur border-b border-surface-border">
+            <tr className="text-slate-400">
+              <th className="w-14 px-4 py-3 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
+                  ref={(el) => {
+                    if (el) el.indeterminate = !allSelected && someSelected;
+                  }}
                   onChange={handleSelectAll}
-                  className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-offset-surface-dark focus:ring-primary/50"
+                  className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-primary/40"
                 />
               </th>
-              {/* Name Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 min-w-[200px]">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  Name
-                </button>
+
+              <th className="px-4 py-3 text-left font-semibold tracking-wide uppercase text-xs">
+                User
               </th>
 
-              {/* Email Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 min-w-[200px] hidden lg:table-cell">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  Email
-                </button>
+              <th className="px-4 py-3 text-left font-semibold tracking-wide uppercase text-xs hidden lg:table-cell">
+                Phone
               </th>
 
-              {/* Role Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  Role
-                </button>
+              <th className="px-4 py-3 text-left font-semibold tracking-wide uppercase text-xs">
+                Status
               </th>
 
-              {/* Status Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  Status
-                </button>
+              <th className="px-4 py-3 text-left font-semibold tracking-wide uppercase text-xs hidden md:table-cell">
+                Last login
               </th>
 
-              {/* Last Login Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 hidden md:table-cell">
-                <button className="flex items-center gap-1 hover:text-white transition-colors">
-                  Last Login
-                </button>
-              </th>
-
-              {/* Actions Column */}
-              <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right">
+              <th className="px-4 py-3 text-right font-semibold tracking-wide uppercase text-xs">
                 Actions
               </th>
             </tr>
           </thead>
+
+          {/* BODY */}
           <tbody className="divide-y divide-surface-border">
             {users.map((user) => (
               <UserTableRow
                 key={user._id}
                 user={user}
-                isSelected={selectedUsers.includes(user._id)}
-                onSelect={() => handleSelectUser(user._id)}
-                onEdit={() => onEditUser(user)}
+                isSelected={selectedIds.has(user._id)}
+                onSelect={() => handleSelectUser(user)}
+                onDelete={onDeleteClick}
                 onViewDetails={() => onViewDetails(user)}
               />
             ))}
@@ -191,17 +131,107 @@ const UserTable: React.FC<UserTableProps> = ({
         </table>
       </div>
 
-      {/* Pagination */}
-      {!loading && users.length > 0 && (
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          onPageChange={handlePageChange}
-          siblingCount={1}
-        />
+      {/* PAGINATION */}
+      {pagination.totalPages > 1 && (
+        <div className="border-t border-surface-border">
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={onPageChange}
+            siblingCount={1}
+          />
+        </div>
       )}
     </div>
   );
 };
 
 export default UserTable;
+
+// ======================================================
+// =================== ROW COMPONENT ====================
+// ======================================================
+
+interface UserTableRowProps {
+  isSelected: boolean;
+  onSelect: () => void;
+  onViewDetails: () => void;
+  user: User;
+  onDelete: () => void;
+}
+
+const UserTableRow = ({
+  isSelected,
+  onSelect,
+  onViewDetails,
+  user,
+  onDelete,
+}: UserTableRowProps) => {
+  return (
+    <tr
+      className={`group transition-colors ${
+        isSelected ? "bg-primary/5" : "hover:bg-white/[0.03]"
+      }`}
+    >
+      {/* CHECKBOX */}
+      <td className="px-4 py-4 text-center align-middle">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={onSelect}
+          className="rounded border-slate-600 bg-surface-dark text-primary focus:ring-primary/40"
+        />
+      </td>
+
+      {/* USER */}
+      <td className="px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center font-bold text-white">
+            {getUserNameFirstChar(user.first_name, user.last_name)}
+          </div>
+
+          <div className="leading-tight">
+            <p className="font-semibold text-white">
+              {getFullName(user.first_name, user.last_name)}
+            </p>
+            <p className="text-xs text-slate-400">
+              ID: {user._id.slice(-6).toUpperCase()}
+            </p>
+          </div>
+        </div>
+      </td>
+
+      {/* PHONE */}
+      <td className="px-4 py-4 hidden lg:table-cell text-slate-300">
+        {user.phone || "-"}
+      </td>
+
+      {/* STATUS */}
+      <td className="px-4 py-4">{getStatusBadge(user.status)}</td>
+
+      {/* LAST LOGIN */}
+      <td className="px-4 py-4 hidden md:table-cell text-slate-300">
+        {user.last_login_at ? formatDateTime(user.last_login_at, "date") : "-"}
+      </td>
+
+      {/* ACTIONS */}
+      <td className="px-4 py-4 text-right">
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onViewDetails}
+            className="p-2 rounded-lg border border-surface-border hover:border-primary/40 hover:bg-primary/10 text-primary transition"
+          >
+            <MdPerson size={18} />
+          </button>
+
+          <button
+            onClick={onDelete}
+            className="p-2 rounded-lg border border-surface-border hover:border-red-400/40 hover:bg-red-500/10 text-red-400 transition"
+          >
+            <MdDelete size={18} />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+};

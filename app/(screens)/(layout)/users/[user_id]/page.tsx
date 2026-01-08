@@ -1,4 +1,3 @@
-import React from "react";
 import UserDetailPage from "./userDetails";
 
 const page = async ({ params }: { params: Promise<{ user_id: string }> }) => {

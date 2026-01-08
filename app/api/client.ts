@@ -1,5 +1,5 @@
 import { api } from "@/app/lib/axios";
-import { User, UserUpdateData } from "../types/usermanager";
+import {UserUpdateData } from "../types/user";
 import { Driver, DriverUpdateData } from "../types/driver";
 import { ApiResponse } from "../types/common";
 import { Booking } from "../types/booking";
@@ -35,16 +35,12 @@ export const usersApi = {
     limit: number = 10,
     status: string = "",
     search: string = "",
-    role: string = "",
-    department: string = ""
   ): Promise<ApiResponse> => {
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
       ...(status && { status }),
       ...(search && { search }),
-      ...(role && { role }),
-      ...(department && { department }),
     });
 
     const response = await api.get(`/users?${queryParams}`);
@@ -62,14 +58,6 @@ export const usersApi = {
     data: UserUpdateData & { id: string }
   ): Promise<ApiResponse> => {
     const response = await api.put("/users/update", data);
-    return response.data;
-  },
-
-  // Create User
-  createUser: async (
-    data: Omit<UserUpdateData, "id">
-  ): Promise<ApiResponse> => {
-    const response = await api.post("/users", data);
     return response.data;
   },
 
