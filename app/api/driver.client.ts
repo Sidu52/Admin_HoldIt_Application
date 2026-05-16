@@ -1,19 +1,19 @@
 import { api } from "../lib/axios";
-import { Driver, DriverUpdateData } from "../types/driver";
+import { DriverUpdateData, UpdateDriverStatusData } from "../types/driver";
 
 // Driver API endpoints
 const driverApi = {
-  getDrivers: async (
-    page = 1,
-    limit = 10,
-    status = "",
-    search = ""
-  ): Promise<{
-    drivers: Driver[];
-    total: number;
+  getDrivers: async({
+    page,
+    limit,
+    status,
+    search,
+  }: {
     page: number;
     limit: number;
-  }> => {
+    status: string;
+    search: string;
+  }) => {
     const res = await api.get("/driver", {
       params: { page, limit, status, search },
     });
@@ -28,21 +28,20 @@ const driverApi = {
   updateDriver: async (
     data: DriverUpdateData & { id: string }
   )=> {
-    const res = await api.put("/driver/update", data);
+    const { id, ...rest } = data;
+    const res = await api.put(`/driver/${id}`, rest);
     return res.data;
   },
 
-  deleteDrivers: async (ids: string[]): Promise<void> => {
-    await api.delete("/drivers/bulk-delete", {
+  deleteDrivers: async (ids: string[]) => {
+    await api.delete("/driver/bulk-delete", {
       data: { ids },
     });
   },
 
-  updateDriverStatus: async (
-    id: string,
-    status: string
-  )=> {
-    const res = await api.patch(`/drivers/${id}/status`, { status });
+  updateDriverStatus: async (data: UpdateDriverStatusData & { id: string }) => {
+    const { id, ...rest } = data;
+    const res = await api.patch(`/drivers/${id}/status`, { ...rest });
     return res.data;
   },
 };

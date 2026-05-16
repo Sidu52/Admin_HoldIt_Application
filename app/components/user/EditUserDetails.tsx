@@ -26,7 +26,6 @@ function EditUserDetails({
     phone: user.phone || "",
     gender: user.gender || "",
     dob: user.dob || "",
-    address: user.address || "",
   });
 
   const handleChange = (
@@ -171,20 +170,7 @@ function EditUserDetails({
           />
         </div>
 
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="address">
-            Address
-          </label>
-          <textarea
-            id="address"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-            rows={3}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-          ></textarea>
-        </div>
+
 
         {/* Submit Button */}
         <button

@@ -4,14 +4,14 @@ import { UserProfile } from "../types/profile";
 // Profile API endpoints
 const profileApi = {
   getProfile: async () => {
-    const res = await api.get("/admins/profile");
+    const res = await api.get("/profile");
     return res.data;
   },
 
   updateProfile: async (
     data: Partial<UserProfile>
   ) => {
-    const res = await api.put("/admins/profile", data);
+    const res = await api.put("/profile", data);
     return res.data;
   },
 };

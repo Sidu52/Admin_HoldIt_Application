@@ -33,7 +33,6 @@ export const verifyToken = async (): Promise<User> => {
 };
 
 export const verifyInvviteToken = async (token: string) => {
-  console.log("token", token);
   const response = await api.get("/auth/verify-invite", {
     params: { token },
   });

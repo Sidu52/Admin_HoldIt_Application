@@ -3,7 +3,6 @@ import NoData from "@/app/NoData";
 import { ChartItem } from "@/app/types/dashboard";
 const ChartBar = ({ data }: { data: any }) => {
   const { chart } = data;
-  console.log("DATA", chart);
   const maxValue = Math.max(...chart.map((item: ChartItem) => item.maxValue));
 
   if (chart && chart.length == 0) {

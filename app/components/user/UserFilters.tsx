@@ -35,8 +35,8 @@ const STATUS_OPTIONS = [
     color: "text-amber-500",
   },
   {
-    label: "Suspended",
-    value: "suspended",
+    label: "Blocked",
+    value: "blocked",
     icon: <BiLock />,
     color: "text-red-500",
   },

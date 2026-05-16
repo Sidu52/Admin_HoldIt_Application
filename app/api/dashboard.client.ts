@@ -4,7 +4,6 @@ import { api } from "../lib/axios";
 const dashboardApi = {
   getSummary: async () => {
     const res = await api.get("/dashboard/summary");
-    console.log("RES",res.data)
     return res.data;
   },
 

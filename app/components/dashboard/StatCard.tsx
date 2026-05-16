@@ -12,51 +12,58 @@ interface StatCardProps {
     bgColor?: string;
     textColor?: string;
   }[];
-  emptyStateText?: string; // Optional: Custom text for "no data" state
-  emptyStateIcon?: ReactNode; // Optional: Custom icon for "no data" state
+  emptyStateText?: string;
+  emptyStateIcon?: ReactNode;
 }
 
 const StatCard = ({
   title,
   value,
   icon,
-  iconBgColor = "bg-slate-100 dark:bg-slate-800",
-  iconColor = "text-slate-600 dark:text-slate-300",
+  iconBgColor = "bg-primary/10",
+  iconColor = "text-primary",
   stats = [],
-  emptyStateText = "No data available", // Default "No data available" message
-  emptyStateIcon = <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-4xl mb-2">info</span>, // Default "info" icon
+  emptyStateText = "No data available",
+  emptyStateIcon,
 }: StatCardProps) => {
   return (
-    <div className="relative flex flex-col gap-3 rounded-xl p-5 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden group">
-      {/* Empty State (if no data is available) */}
-      <div className="hidden absolute inset-0 z-10 bg-white/80 dark:bg-[#1e293b]/80 backdrop-blur-sm flex-col items-center justify-center text-center p-4 group-hover:flex">
-        {emptyStateIcon}
-        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{emptyStateText}</p>
-      </div>
+    <div className="card-premium p-6 group relative overflow-hidden">
+      {/* Background Accent */}
+      <div className={`absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${iconBgColor}`}></div>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{title}</p>
-        <div className={`p-1.5 rounded-md ${iconBgColor} ${iconColor}`}>
-          {icon}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col gap-1">
+          <p className="text-text-muted-light dark:text-text-muted-dark text-xs font-bold uppercase tracking-widest">{title}</p>
+          <p className="text-text-main-light dark:text-text-main-dark text-3xl font-extrabold font-display tracking-tight leading-none">{value}</p>
+        </div>
+        <div className={`h-12 w-12 flex items-center justify-center rounded-2xl shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${iconBgColor} ${iconColor}`}>
+          <span className="text-2xl">{icon}</span>
         </div>
       </div>
 
-      {/* Main Value */}
-      <p className="text-slate-900 dark:text-white text-3xl font-bold">{value}</p>
-
-      {/* Status Blocks */}
+      {/* Stats Breakdown */}
       {stats.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+        <div className="flex gap-3 pt-4 border-t border-border-light dark:border-border-dark mt-2">
           {stats.map((item, idx) => (
             <div
               key={idx}
-              className={`rounded-md px-2 py-1 text-xs font-medium ${item.bgColor ?? "bg-slate-100 dark:bg-slate-800"} ${item.textColor ?? "text-slate-600 dark:text-slate-300"}`}
+              className="flex-1 flex flex-col gap-0.5"
             >
-              <p className="leading-tight">{item.label}</p>
-              <p className="font-semibold text-sm">{item.value}</p>
+              <p className="text-[10px] font-bold text-text-muted-light dark:text-text-muted-dark uppercase tracking-wider">{item.label}</p>
+              <div className="flex items-baseline gap-1">
+                <span className={`text-sm font-bold ${item.textColor ?? "text-text-main-light dark:text-text-main-dark"}`}>{item.value}</span>
+                {/* Optional trend indicator can be added here */}
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Empty State Overlay (if needed) */}
+      {!value && value !== 0 && (
+        <div className="absolute inset-0 z-10 bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
+          <p className="text-xs font-bold text-text-muted-light dark:text-text-muted-dark uppercase tracking-widest">{emptyStateText}</p>
         </div>
       )}
     </div>
@@ -64,3 +71,4 @@ const StatCard = ({
 };
 
 export default StatCard;
+

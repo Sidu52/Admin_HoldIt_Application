@@ -29,10 +29,6 @@ export interface AuthResponse {
 }
 
 export interface RefreshTokenResponse {
-  data: {
-    accessToken: string;
-    expiresIn: number;
-  };
   message: string;
   status: string;
 }

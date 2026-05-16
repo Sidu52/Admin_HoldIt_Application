@@ -10,127 +10,125 @@ import UserSkeleton from "@/app/loading/user/UserSkeleton";
 import NoData from "@/app/NoData";
 
 import { User } from "@/app/types/user";
-import { useDeleteUsers, useUsersQuery } from "@/app/react_queries/users";
+import { useGetUsersQuery, useBulkDeactivateUsersMutation } from "../../../services/userApi";
+import { useToast } from "../../../hooks/useToast";
 
 function UserClient() {
   const router = useRouter();
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-  });
-
-  const [filter, setFilter] = useState({
-    search: "",
-    status: "all",
-  });
-
+  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+  const [filter, setFilter] = useState({ search: "", status: "all" });
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { data, isLoading, isError } = useUsersQuery({
+  const toast = useToast();
+  const { data, isLoading, isFetching, isError } = useGetUsersQuery({  // ✅ add isFetching
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
     status: filter.status === "all" ? undefined : filter.status,
   });
 
-  const deleteUsersMutation = useDeleteUsers();
+  const [bulkDeactivateUsers, { isLoading: isDeleting }] = useBulkDeactivateUsersMutation();
 
-  // ---------------- HANDLERS ----------------
-  const handleViewUser = (user: User) => {
-    router.push(`/users/${user._id}`);
+  const handleViewUser = (user: User) => router.push(`/users/${user._id}`);
+
+  const handleDeleteUser = async () => {
+    try {
+      await bulkDeactivateUsers({ userIds: selectedUsers.map((u) => u._id) }).unwrap();
+      toast.success("Users successfully deactivated");
+      setSelectedUsers([]);
+      setShowDeleteModal(false);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to deactivate users");
+    }
   };
 
-  const handleDeleteUser = () => {
-    deleteUsersMutation.mutate(
-      selectedUsers.map((u) => u._id),
-      {
-        onSuccess: () => {
-          setSelectedUsers([]);
-          setShowDeleteModal(false);
-        },
-      }
-    );
-  };
-
-  const handleFilterChange = ({
-    search,
-    status,
-  }: {
-    search: string;
-    status: string;
-  }) => {
+  const handleFilterChange = ({ search, status }: { search: string; status: string }) => {
     setFilter({ search, status });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 
-  // ---------------- UI STATES ----------------
   if (isLoading) return <UserSkeleton />;
-  if (isError || !data) return <NoData />;
+  if (isError) return <NoData />;
 
-  const users = data.data.users || [];
+  const users = data?.data?.users || [];
+  const paginationData = data?.data?.pagination;
 
-  // ---------------- RENDER ----------------
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-background text-foreground py-4 px-6 relative">
       {/* HEADER */}
-      <header className="flex flex-col gap-6 pt-8 pb-4 shrink-0">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+      <header className="flex flex-col gap-6 pt-6 pb-2 shrink-0">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div className="flex flex-col max-w-2xl gap-1.5">
+            <h1 className="text-[28px] font-bold text-slate-900 tracking-tight">
               User Management
             </h1>
-
-            <p className="text-secondary text-base">
-              Manage and view all registered users across the platform.
+            <p className="text-slate-500 text-sm leading-relaxed">
+              Manage and view all registered users across the platform through an
+              editorial-grade interface designed for high-level orchestration.
             </p>
-
-            <div className="flex items-center gap-4 mt-2">
-              <span className="text-sm">
-                Total Users:{" "}
-                <b className="text-foreground">{data.totalRecords}</b>
-              </span>
-            </div>
           </div>
-
-          {selectedUsers.length > 0 && (
-            <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-4">
+            {selectedUsers.length > 0 && (
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="flex items-center gap-2 h-9 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-sm font-medium rounded-lg"
+                className="flex items-center gap-2 h-10 px-4 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-sm font-medium rounded-lg transition-colors"
               >
                 <MdOutlineDelete size={18} />
                 Delete ({selectedUsers.length})
               </button>
+            )}
+            <div className="bg-[#f8f9fc] border border-slate-200/60 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  Total Users
+                </span>
+                <span className="text-2xl font-bold text-slate-900 mt-0.5">
+                  {paginationData?.totalItems.toLocaleString() ?? "0"}
+                </span>
+              </div>
+              <div className="h-10 w-10 bg-[#1a2332] rounded-xl flex items-center justify-center text-white shadow-md ml-4">
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </header>
 
       {/* FILTERS */}
       <UserFilters filter={filter} onFilterChange={handleFilterChange} />
-
-      {/* TABLE */}
-      <UserTable
-        users={users}
-        selectedUsers={selectedUsers}
-        onSelectionChange={setSelectedUsers}
-        onViewDetails={handleViewUser}
-        onDeleteClick={handleDeleteUser}
-        pagination={{
-          page: data.data.pagination.page,
-          totalPages: data.data.pagination.totalPages,
-        }}
-        onPageChange={(page) => setPagination((p) => ({ ...p, page }))}
-      />
+      <div className={`flex-1 flex flex-col overflow-hidden transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+        {users.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-slate-400">
+              <p className="text-sm">No users found for the current filters.</p>
+            </div>
+          </div>
+        ) : (
+          <UserTable
+            users={users}
+            selectedUsers={selectedUsers}
+            onSelectionChange={setSelectedUsers}
+            onViewDetails={handleViewUser}
+            onDeleteClick={handleDeleteUser}
+            pagination={{
+              page: paginationData?.page ?? 1,
+              totalPages: paginationData?.totalPages ?? 1,
+            }}
+            onPageChange={(page) => setPagination((p) => ({ ...p, page }))}
+          />
+        )}
+      </div>
 
       {/* DELETE MODAL */}
       {showDeleteModal && (
         <DeleteConfirmationModal
           count={selectedUsers.length}
           modalTitle="user"
-          modalDescription="This action cannot be undone. All associated data will be permanently removed."
-          loading={deleteUsersMutation.isPending}
+          modalDescription="This action cannot be undone."
+          loading={isDeleting}
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleDeleteUser}
         />

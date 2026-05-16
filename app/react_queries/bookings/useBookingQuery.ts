@@ -6,7 +6,6 @@ const useBookingQuery = () => {
     queryKey: ["booking"],
     queryFn:async () =>{ 
         const data =await bookingApi.getBookings();
-        console.log("DATA",data)
         return data;
     }
   });

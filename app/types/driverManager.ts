@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "editor" | "viewer";
+export type UserRole = "super_admin" | "admin" | "operation_manager" | "customer_support" | "store_owner" | "driver" | "store" | "user";
 export type UserStatus = "active" | "pending" | "blocked" | "inactive";
 export type Gender = "male" | "female" | "other";
 

@@ -3,7 +3,7 @@ import { usersApi } from "@/app/api";
 
 const useUserByIdQuery = (id: string) => {
   return useQuery({
-    queryKey: ["user", id],
+    queryKey: ["userById", id],
     queryFn: () => usersApi.userById(id),
     enabled: !!id,
     placeholderData: keepPreviousData,

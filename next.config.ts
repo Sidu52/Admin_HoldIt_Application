@@ -4,10 +4,10 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/:path*',
+        source: '/api/v1/admin/:path*',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: 'http://localhost:4000' },
+          { key: 'Access-Control-Allow-Origin', value: 'http://localhost:5000' },
           { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT,OPTIONS' },
           { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
         ],
@@ -18,8 +18,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'http://localhost:3001/api/:path*', // Your backend URL
+        source: '/api/v1/admin/:path*',
+        destination: 'http://localhost:5000/api/v1/admin/:path*', // Your production backend
       },
     ];
   },

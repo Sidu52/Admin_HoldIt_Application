@@ -2,6 +2,12 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import Sidebar from "../../components/layout/Sidebar";
+import Topbar from "../../components/layout/Topbar";
+import { useTheme } from "../../providers/ThemeProvider";
+import { useGetProfileQuery } from "../../services/adminApi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/app/store/slices/authSlice";
+import { api } from "../../services/api";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -10,6 +16,17 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
+
+  const { data: profileData } = useGetProfileQuery();
+
+  useEffect(() => {
+    if (profileData?.data) {
+      dispatch(setCredentials({ user: profileData.data }));
+    }
+  }, [profileData, dispatch]);
+
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
@@ -43,7 +60,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           />
 
           {/* Main Content Area */}
-          <div className="flex flex-1 flex-col">{children}</div>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <Topbar
+              onMenuClick={toggleMobileSidebar}
+              isDarkMode={theme === "dark"}
+              onToggleDarkMode={toggleTheme}
+            />
+            <div className="flex-1 overflow-y-auto">
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </div>

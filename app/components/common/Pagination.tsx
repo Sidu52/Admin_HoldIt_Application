@@ -14,6 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
   siblingCount = 1,
 }) => {
+
   const paginationRange = useMemo(() => {
     if (totalPages <= 1) return [];
 
@@ -40,7 +41,6 @@ const Pagination: React.FC<PaginationProps> = ({
     }
 
     if (showRightDots) pages.push("...");
-
     if (totalPages > 1) pages.push(totalPages);
 
     return pages;
@@ -49,13 +49,13 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="flex items-center justify-between px-4 py-4">
+    <nav className="flex items-center justify-between px-4 py-4 w-full border-t border-gray-200">
       {/* Previous */}
       <div className="flex w-0 flex-1">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="inline-flex cursor-pointer hover:text-[#0056b8] items-center pr-1 pt-4 text-sm font-medium text-gray-500"
+          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pr-1 pt-4 text-sm font-medium text-gray-500"
         >
           <GoArrowLeft className="mr-1 size-5" />
           Previous
@@ -64,18 +64,18 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Pages */}
       <div className="hidden md:flex">
-        {paginationRange.map((page, index) => (
+        {paginationRange.map((p, index) => (
           <button
             key={index}
-            disabled={page === "..."}
-            onClick={() => typeof page === "number" && onPageChange(page)}
-            className={`inline-flex items-center px-3 pt-4 text-sm font-medium ${
-              page === currentPage
-                ? "text-[#0056b8]"
-                : "text-gray-500 hover:text-gray-700"
+            disabled={p === "..."}
+            onClick={() => typeof p === "number" && onPageChange(p)}
+            className={`inline-flex items-center px-4 pt-4 text-sm font-medium border-t-2 ${
+              p === currentPage
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
-            {page}
+            {p}
           </button>
         ))}
       </div>
@@ -85,7 +85,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="inline-flex cursor-pointer hover:text-[#0056b8] items-center pl-1 pt-4 text-sm font-medium text-gray-500"
+          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pl-1 pt-4 text-sm font-medium text-gray-500"
         >
           Next
           <GoArrowRight className="ml-1 size-5" />

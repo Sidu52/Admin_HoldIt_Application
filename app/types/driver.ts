@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "editor" | "viewer";
+export type UserRole = "super_admin" | "admin" | "operation_manager" | "customer_support" | "store_owner" | "driver" | "store" | "user";
 export type UserStatus = "active" | "pending" | "blocked" | "inactive";
 export type Gender = "male" | "female" | "other";
 
@@ -9,7 +9,7 @@ export interface Driver {
   last_name: string;
   email: string;
   gender: string;
-  dob: string;
+  date_of_birth: string;
   address: string;
   is_online: boolean;
   last_active_at: Date;
@@ -21,12 +21,9 @@ export interface Driver {
   is_serviceable: boolean;
   createdAt: Date;
   updatedAt: Date;
-  auth_user_id: {
-    role: string;
-    phone: number;
-    last_login_at: Date;
-    isVerified: boolean;
-  };
+  phone: string;
+  last_login_at: Date;
+  isVerified: boolean;
 }
 
 export interface DriverUpdateData {
@@ -34,14 +31,12 @@ export interface DriverUpdateData {
   last_name: string;
   email: string;
   gender: string;
-  dob: string;
+  date_of_birth: string;
   address: string;
   phone: string;
   licenseNumber: string;
   vehicleType: string;
   verification_status: string;
-  status: string;
-  role: string;
   is_online: boolean;
   documents: string[];
   currentLocation: {
@@ -49,6 +44,12 @@ export interface DriverUpdateData {
     lng: number;
     address: string;
   };
+}
+
+export interface UpdateDriverStatusData {
+  status: string;
+  reason: string;
+  is_active: boolean;
 }
 
 export interface Pagination {
@@ -61,7 +62,6 @@ export interface Pagination {
 export interface FilterState {
   search: string;
   status: string;
-  vehicleType: string;
   is_online: boolean | null;
 }
 

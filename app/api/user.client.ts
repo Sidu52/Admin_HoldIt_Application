@@ -14,32 +14,32 @@ const usersApi = {
     status: string;
     search: string;
   }) => {
-    const res = await api.get("/users", {
+    const res = await api.get("/user", {
       params: { page, limit, status, search },
     });
     return res.data;
   },
 
   userById: async (id: string) => {
-    const res = await api.get(`/users/${id}`);
+    const res = await api.get(`/user/${id}`);
     return res.data;
   },
 
   updateUser: async (data: UserUpdateData & { id: string }) => {
     const { id, ...rest } = data;
-    const res = await api.put(`/users/${id}`, rest);
+    const res = await api.put(`/user/${id}`, rest);
     return res.data;
   },
 
   deleteUsers: async (ids: string[]) => {
-    await api.delete("/users/bulk-delete", {
+    await api.delete("/user/bulk-delete", {
       data: { ids },
     });
   },
 
   updateUserStatus: async (data: UpdateUserStatusData & { id: string }) => {
     const { id, ...rest } = data;
-    const res = await api.patch(`/users/${id}/status`, { ...rest });
+    const res = await api.patch(`/user/${id}/status`, { ...rest });
     return res.data;
   },
 };

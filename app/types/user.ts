@@ -1,4 +1,15 @@
-// app/types/user.ts
+export interface Address {
+  _id?: string;
+  street: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  coordinates?: number[];
+  is_serviceable?: boolean;
+  is_default?: boolean;
+}
+
 export interface User {
   _id: string;
   first_name: string;
@@ -11,9 +22,8 @@ export interface User {
   is_serviceable: boolean;
   createdAt: Date;
   updatedAt: Date;
-  address: string;
+  addresses?: Address[];
   phone: string;
-  role: string;
   is_active: boolean;
   last_active_at: Date;
   isVerified: boolean;
@@ -26,7 +36,7 @@ export interface UserUpdateData {
   phone: string;
   gender: string;
   dob: string;
-  address: string;
+  addresses?: Address[];
 }
 
 export interface UpdateUserStatusData {

@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useAuth } from "@/app/hooks/useAuth";
-import LoadingSpinner from "@/app/components/common/LoadingSpinner";
+import { useLoginMutation } from "../../services/authApi";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useToast } from "../../hooks/useToast";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import Link from "next/link";
 import {
   FaEye,
   FaEyeSlash,
@@ -12,14 +16,23 @@ import {
 import { RiAdminFill } from "react-icons/ri";
 
 export default function LoginPage() {
-  const { login, logoutLoading: isLoading, loginError: error } = useAuth();
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login({ email, password });
+    try {
+      await login({ email, password }).unwrap();
+      toast.success("Successfully logged in");
+      router.push("/dashboard");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Login failed");
+    }
   };
 
   return (
@@ -51,14 +64,7 @@ export default function LoginPage() {
           {/* Form Section */}
           <div className="px-8 pb-10 w-full">
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              {error && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 animate-fadeIn">
-                  <p className="text-red-600 text-sm font-medium flex items-center gap-2">
-                    <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
-                    {error}
-                  </p>
-                </div>
-              )}
+
 
               {/* Email Field */}
               <div className="flex flex-col gap-3">
@@ -97,12 +103,12 @@ export default function LoginPage() {
                   >
                     Password
                   </label>
-                  <a
+                  <Link
                     className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors cursor-pointer hover:underline"
-                    href="#"
+                    href="/forgot-password"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <div className="relative flex w-full flex-1 items-stretch rounded-xl group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">

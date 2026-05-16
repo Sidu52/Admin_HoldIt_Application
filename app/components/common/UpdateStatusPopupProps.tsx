@@ -43,7 +43,7 @@ const UpdateStatusPopup: React.FC<UpdateStatusPopupProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-surface-dark border border-surface-border rounded-xl w-full max-w-md">
+      <div className="bg-[#fff] border border-surface-border rounded-xl w-full max-w-md">
         {/* Header */}
         <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">

@@ -12,7 +12,6 @@ type Props = {
 
 const ActivityTable = ({ data }: { data: { data: Props } }) => {
   const { bookings, pagination } = data.data;
-  console.log("Bookings",data)
   if (bookings && bookings.length == 0) {
     return <NoData />
   }
@@ -73,8 +72,11 @@ const ActivityTable = ({ data }: { data: { data: Props } }) => {
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {bookings.map((activity) => {
-              const statusStyles = getStatusStyles(activity.status);
-
+              const statusStyles = getStatusStyles(activity.status) ?? {
+                bg: "bg-blue-100 dark:bg-blue-500/10",
+                text: "text-blue-800 dark:text-blue-400",
+                border: "border-blue-200 dark:border-blue-500/20",
+              };
               return (
                 <tr
                   key={activity.id}
