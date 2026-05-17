@@ -37,9 +37,9 @@ export const userApi = api.injectEndpoints({
     }),
     bulkDeactivateUsers: builder.mutation<any, { userIds: string[] }>({
       query: (data) => ({
-        url: "/users/bulk-deactivate",
+        url: "/users/bulk-delete",
         method: "POST",
-        body: data,
+        body: { ids: data.userIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "User", id: "PARTIAL-LIST" }],
     }),

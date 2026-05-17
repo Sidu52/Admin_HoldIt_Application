@@ -18,6 +18,7 @@ function UserClient() {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [filter, setFilter] = useState({ search: "", status: "all" });
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const toast = useToast();
@@ -32,11 +33,18 @@ function UserClient() {
 
   const handleViewUser = (user: User) => router.push(`/users/${user._id}`);
 
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteUser = async () => {
     try {
-      await bulkDeactivateUsers({ userIds: selectedUsers.map((u) => u._id) }).unwrap();
+      const ids = userToDelete ? [userToDelete._id] : selectedUsers.map((u) => u._id);
+      await bulkDeactivateUsers({ userIds: ids }).unwrap();
       toast.success("Users successfully deactivated");
       setSelectedUsers([]);
+      setUserToDelete(null);
       setShowDeleteModal(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to deactivate users");
@@ -112,7 +120,7 @@ function UserClient() {
             selectedUsers={selectedUsers}
             onSelectionChange={setSelectedUsers}
             onViewDetails={handleViewUser}
-            onDeleteClick={handleDeleteUser}
+            onDeleteClick={handleDeleteClick}
             pagination={{
               page: paginationData?.page ?? 1,
               totalPages: paginationData?.totalPages ?? 1,
@@ -125,11 +133,14 @@ function UserClient() {
       {/* DELETE MODAL */}
       {showDeleteModal && (
         <DeleteConfirmationModal
-          count={selectedUsers.length}
+          count={userToDelete ? 1 : selectedUsers.length}
           modalTitle="user"
           modalDescription="This action cannot be undone."
           loading={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setUserToDelete(null);
+          }}
           onConfirm={handleDeleteUser}
         />
       )}

@@ -47,7 +47,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const toast = useToast();
 
-  const user = data?.data?.admin;
+  const user = data?.data;
 
   const [updateTeamMember, { isLoading: isUpdating }] = useUpdateTeamMemberMutation();
   
@@ -123,12 +123,12 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                 </h1>
                 <span
                   className={`${
-                    user.is_active
+                    user.status === "active"
                       ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                       : "bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/20"
                   } text-xs font-bold px-2 py-1 rounded-full border uppercase tracking-wide`}
                 >
-                  {user.is_active ? "Active" : "Inactive"}
+                  {user.status === "active" ? "Active" : "Inactive"}
                 </span>
                 <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
                   {user.role}
@@ -285,12 +285,12 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                   </span>
                   <span
                     className={`text-xs font-bold px-2 py-1 rounded-md tracking-wide uppercase ${
-                      user.isVerified
+                      user.is_verified
                         ? "bg-green-100 text-green-700"
                         : "bg-amber-100 text-amber-700"
                     }`}
                   >
-                    {user.isVerified ? "Verified" : "Unverified"}
+                    {user.is_verified ? "Verified" : "Unverified"}
                   </span>
                 </div>
 
@@ -322,7 +322,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
       </div>
 
       <UpdateStatusPopup
-        is_active={user.is_active}
+        is_active={user.status === "active"}
         show={showUpdateStatusModal}
         currentStatus={user.status}
         onClose={() => setShowUpdateStatusModal(false)}

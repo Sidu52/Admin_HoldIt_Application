@@ -17,6 +17,7 @@ function StoreOwnerClient() {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [filter, setFilter] = useState({ search: "", status: "all" });
   const [selectedStoreOwner, setSelectedStoreOwner] = useState<StoreOwner[]>([]);
+  const [ownerToDelete, setOwnerToDelete] = useState<StoreOwner | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const toast = useToast();
@@ -31,11 +32,18 @@ function StoreOwnerClient() {
 
   const handleViewStoreOwner = (storeOwner: StoreOwner) => router.push(`/storeowner/${storeOwner._id}`);
 
+  const handleDeleteClick = (owner: StoreOwner) => {
+    setOwnerToDelete(owner);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteStoreOwner = async () => {
     try {
-      await deleteStoreOwners({ ownerIds: selectedStoreOwner.map((u) => u._id) }).unwrap();
+      const ids = ownerToDelete ? [ownerToDelete._id] : selectedStoreOwner.map((u) => u._id);
+      await deleteStoreOwners({ ownerIds: ids }).unwrap();
       toast.success("Store owners successfully deactivated");
       setSelectedStoreOwner([]);
+      setOwnerToDelete(null);
       setShowDeleteModal(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to deactivate store owners");
@@ -110,7 +118,7 @@ function StoreOwnerClient() {
             selectedStoreOwners={selectedStoreOwner}
             onSelectionChange={setSelectedStoreOwner}
             onViewDetails={handleViewStoreOwner}
-            onDeleteClick={handleDeleteStoreOwner}
+            onDeleteClick={handleDeleteClick}
             pagination={{
               page: paginationData?.page ?? 1,
               totalPages: paginationData?.totalPages ?? 1,
@@ -123,11 +131,14 @@ function StoreOwnerClient() {
       {/* DELETE MODAL */}
       {showDeleteModal && (
         <DeleteConfirmationModal
-          count={selectedStoreOwner.length}
+          count={ownerToDelete ? 1 : selectedStoreOwner.length}
           modalTitle="store owner"
           modalDescription="This action cannot be undone."
           loading={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setOwnerToDelete(null);
+          }}
           onConfirm={handleDeleteStoreOwner}
         />
       )}

@@ -22,7 +22,7 @@ interface DriverTableProps {
   selectedDrivers: Driver[];
   onSelectionChange: (drivers: Driver[]) => void;
   onViewDetails: (driver: Driver) => void;
-  onDeleteClick: () => void;
+  onDeleteClick: (driver: Driver) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
 }
@@ -148,7 +148,7 @@ const DriverTable: React.FC<DriverTableProps> = ({
                       <MdOutlineEdit size={18} />
                     </button>
                     <button
-                      onClick={onDeleteClick}
+                      onClick={() => onDeleteClick(dri)}
                       className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
                     >
                       <MdOutlineDelete size={18} />

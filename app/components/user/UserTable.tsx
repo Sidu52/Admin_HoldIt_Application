@@ -20,7 +20,7 @@ interface UserTableProps {
   selectedUsers: User[];
   onSelectionChange: (users: User[]) => void;
   onViewDetails: (user: User) => void;
-  onDeleteClick: () => void;
+  onDeleteClick: (user: User) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
 }
@@ -154,7 +154,7 @@ const UserTable: React.FC<UserTableProps> = ({
                       <MdOutlineEdit size={18} />
                     </button>
                     <button
-                      onClick={onDeleteClick}
+                      onClick={() => onDeleteClick(user)}
                       className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
                     >
                       <MdOutlineDelete size={18} />

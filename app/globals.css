@@ -99,3 +99,9 @@ h1, h2, h3, h4, .font-display {
     @apply bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark shadow-soft hover:shadow-premium transition-all duration-300 rounded-xl;
   }
 }
+
+/* Sticky Table Header Background Color fix */
+th.sticky {
+  background-color: var(--bg) !important;
+  transition: background-color 0.3s ease;
+}

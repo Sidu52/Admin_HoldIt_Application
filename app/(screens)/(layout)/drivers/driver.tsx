@@ -20,6 +20,7 @@ function DriverClient() {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [filter, setFilter] = useState({ search: "", status: "all" });
   const [selectedDriver, setSelectedDriver] = useState<Driver[]>([]);
+  const [driverToDelete, setDriverToDelete] = useState<Driver | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const dispatch = useDispatch();
 
@@ -39,11 +40,18 @@ function DriverClient() {
 
   const handleViewDriver = (driver: Driver) => router.push(`/drivers/${driver._id}`);
 
+  const handleDeleteClick = (driver: Driver) => {
+    setDriverToDelete(driver);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteDriver = async () => {
     try {
-      await bulkDeactivateDrivers({ driverIds: selectedDriver.map((u) => u._id) }).unwrap();
+      const ids = driverToDelete ? [driverToDelete._id] : selectedDriver.map((u) => u._id);
+      await bulkDeactivateDrivers({ driverIds: ids }).unwrap();
       toast.success("Drivers successfully deactivated");
       setSelectedDriver([]);
+      setDriverToDelete(null);
       setShowDeleteModal(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to deactivate drivers");
@@ -119,7 +127,7 @@ function DriverClient() {
             selectedDrivers={selectedDriver}
             onSelectionChange={setSelectedDriver}
             onViewDetails={handleViewDriver}
-            onDeleteClick={handleDeleteDriver}
+            onDeleteClick={handleDeleteClick}
             pagination={{
               page: paginationData?.page ?? 1,
               totalPages: paginationData?.totalPages ?? 1,
@@ -132,11 +140,14 @@ function DriverClient() {
       {/* DELETE MODAL */}
       {showDeleteModal && (
         <DeleteConfirmationModal
-          count={selectedDriver.length}
+          count={driverToDelete ? 1 : selectedDriver.length}
           modalTitle="driver"
           modalDescription="This action will deactivate the selected driver accounts."
           loading={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setDriverToDelete(null);
+          }}
           onConfirm={handleDeleteDriver}
         />
       )}

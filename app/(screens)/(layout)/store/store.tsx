@@ -17,6 +17,7 @@ function StoreClient() {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [filter, setFilter] = useState({ search: "", status: "all" });
   const [selectedStore, setSelectedStore] = useState<Store[]>([]);
+  const [storeToDelete, setStoreToDelete] = useState<Store | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const toast = useToast();
@@ -31,11 +32,18 @@ function StoreClient() {
 
   const handleViewStore = (store: Store) => router.push(`/store/${store._id}`);
 
+  const handleDeleteClick = (store: Store) => {
+    setStoreToDelete(store);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteStore = async () => {
     try {
-      await deleteStores({ storeIds: selectedStore.map((u) => u._id) }).unwrap();
+      const ids = storeToDelete ? [storeToDelete._id] : selectedStore.map((u) => u._id);
+      await deleteStores({ storeIds: ids }).unwrap();
       toast.success("Stores successfully deactivated");
       setSelectedStore([]);
+      setStoreToDelete(null);
       setShowDeleteModal(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to deactivate stores");
@@ -110,7 +118,7 @@ function StoreClient() {
             selectedStore={selectedStore}
             onSelectionChange={setSelectedStore}
             onViewDetails={handleViewStore}
-            onDeleteClick={handleDeleteStore}
+            onDeleteClick={handleDeleteClick}
             pagination={{
               page: paginationData?.page ?? 1,
               totalPages: paginationData?.totalPages ?? 1,
@@ -123,11 +131,14 @@ function StoreClient() {
       {/* DELETE MODAL */}
       {showDeleteModal && (
         <DeleteConfirmationModal
-          count={selectedStore.length}
+          count={storeToDelete ? 1 : selectedStore.length}
           modalTitle="store"
           modalDescription="This action cannot be undone."
           loading={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setStoreToDelete(null);
+          }}
           onConfirm={handleDeleteStore}
         />
       )}

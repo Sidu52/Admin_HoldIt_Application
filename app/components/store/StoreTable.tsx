@@ -17,7 +17,7 @@ interface StoreTableProps {
   selectedStore: Store[];
   onSelectionChange: (stores: Store[]) => void;
   onViewDetails: (store: Store) => void;
-  onDeleteClick: () => void;
+  onDeleteClick: (store: Store) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
 }
@@ -160,7 +160,7 @@ const StoreTable: React.FC<StoreTableProps> = ({
                       <MdOutlineEdit size={18} />
                     </button>
                     <button
-                      onClick={onDeleteClick}
+                      onClick={() => onDeleteClick(data)}
                       className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
                     >
                       <MdOutlineDelete size={18} />

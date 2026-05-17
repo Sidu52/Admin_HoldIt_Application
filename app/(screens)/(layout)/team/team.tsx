@@ -21,6 +21,7 @@ function TeamClient() {
   const [filter, setFilter] = useState({ search: "", status: "all", role: "all" });
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [selectedTeamMember, setSelectTeamMember] = useState<TeamMember[]>([]);
+  const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const toast = useToast();
@@ -36,11 +37,18 @@ function TeamClient() {
 
   const handleViewDetail = (teamMember: TeamMember) => router.push(`/team/${teamMember._id}`);
 
+  const handleDeleteClick = (member: TeamMember) => {
+    setMemberToDelete(member);
+    setShowDeleteModal(true);
+  };
+
   const handleDeleteTeamMember = async () => {
     try {
-      await deleteAdmins({ adminIds: selectedTeamMember.map((u) => u._id) }).unwrap();
+      const ids = memberToDelete ? [memberToDelete._id] : selectedTeamMember.map((u) => u._id);
+      await deleteAdmins({ adminIds: ids }).unwrap();
       toast.success("Team members successfully deleted");
       setSelectTeamMember([]);
+      setMemberToDelete(null);
       setShowDeleteModal(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to delete team members");
@@ -128,32 +136,35 @@ function TeamClient() {
             </div>
           </div>
         ) : (
-          <TeamMemberTable
-            teamMember={teamMember}
-            selectedTeamMember={selectedTeamMember}
-            onSelectionChange={setSelectTeamMember}
-            onViewDetails={handleViewDetail}
-            onDeleteClick={handleDeleteTeamMember}
-            pagination={{
-              page: paginationData?.page ?? 1,
-              totalPages: paginationData?.totalPages ?? 1,
-            }}
-            onPageChange={(page: number) => setPagination((p) => ({ ...p, page }))}
-          />
-        )}
-      </div>
-
-      {/* DELETE MODAL */}
-      {showDeleteModal && (
-        <DeleteConfirmationModal
-          count={selectedTeamMember.length}
-          modalTitle="team member"
-          modalDescription="This action cannot be undone."
-          loading={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={handleDeleteTeamMember}
-        />
-      )}
+           <TeamMemberTable
+             teamMember={teamMember}
+             selectedTeamMember={selectedTeamMember}
+             onSelectionChange={setSelectTeamMember}
+             onViewDetails={handleViewDetail}
+             onDeleteClick={handleDeleteClick}
+             pagination={{
+               page: paginationData?.page ?? 1,
+               totalPages: paginationData?.totalPages ?? 1,
+             }}
+             onPageChange={(page: number) => setPagination((p) => ({ ...p, page }))}
+           />
+         )}
+       </div>
+ 
+       {/* DELETE MODAL */}
+       {showDeleteModal && (
+         <DeleteConfirmationModal
+           count={memberToDelete ? 1 : selectedTeamMember.length}
+           modalTitle="team member"
+           modalDescription="This action cannot be undone."
+           loading={isDeleting}
+           onClose={() => {
+             setShowDeleteModal(false);
+             setMemberToDelete(null);
+           }}
+           onConfirm={handleDeleteTeamMember}
+         />
+       )}
 
       <InviteMemberModal
         isOpen={showInviteModal}

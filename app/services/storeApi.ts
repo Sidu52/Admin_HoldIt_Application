@@ -99,9 +99,9 @@ export const storeApi = api.injectEndpoints({
     }),
     deleteStores: builder.mutation<any, { storeIds: string[] }>({
       query: ({ storeIds }) => ({
-        url: `/stores`,
-        method: "DELETE",
-        body: { storeIds },
+        url: `/stores/bulk-delete`,
+        method: "POST",
+        body: { ids: storeIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "Store", id: "PARTIAL-LIST" }],
     }),

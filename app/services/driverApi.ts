@@ -45,9 +45,9 @@ export const driverApi = api.injectEndpoints({
     }),
     bulkDeactivateDrivers: builder.mutation<any, { driverIds: string[] }>({
       query: (data) => ({
-        url: "/driver/bulk-deactivate",
+        url: "/driver/bulk-delete",
         method: "POST",
-        body: data,
+        body: { ids: data.driverIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "Driver", id: "PARTIAL-LIST" }],
     }),

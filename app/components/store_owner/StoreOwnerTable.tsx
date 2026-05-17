@@ -22,7 +22,7 @@ interface StoreOwnerTableProps {
   selectedStoreOwners: StoreOwner[];
   onSelectionChange: (owners: StoreOwner[]) => void;
   onViewDetails: (owner: StoreOwner) => void;
-  onDeleteClick: () => void;
+  onDeleteClick: (owner: StoreOwner) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
 }
@@ -148,7 +148,7 @@ const StoreOwnerTable: React.FC<StoreOwnerTableProps> = ({
                       <MdOutlineEdit size={18} />
                     </button>
                     <button
-                      onClick={onDeleteClick}
+                      onClick={() => onDeleteClick(data)}
                       className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
                     >
                       <MdOutlineDelete size={18} />

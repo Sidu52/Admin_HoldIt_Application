@@ -65,7 +65,7 @@ export const adminApi = api.injectEndpoints({
       query: (data) => ({
         url: "/bulk-delete",
         method: "POST",
-        body: data,
+        body: { ids: data.adminIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: ["Team"],
     }),

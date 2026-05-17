@@ -57,9 +57,9 @@ export const storeOwnerApi = api.injectEndpoints({
     }),
     deleteStoreOwners: builder.mutation<any, { ownerIds: string[] }>({
       query: ({ ownerIds }) => ({
-        url: `/storeowner`,
-        method: "DELETE",
-        body: { ownerIds },
+        url: `/storeowner/bulk-delete`,
+        method: "POST",
+        body: { ids: ownerIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "StoreOwner", id: "PARTIAL-LIST" }],
     }),
