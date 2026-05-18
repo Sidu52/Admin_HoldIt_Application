@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { driverApi } from "@/app/api/client";
-import { DriverUpdateData } from "@/app/types/driver";
+import driverApi from "@/app/api/driver.client";
+import { DriverUpdateData } from "@/app/types/driverManager";
 
 export const fetchDriversThunk = createAsyncThunk(
   "driver/fetchDrivers",
@@ -24,7 +24,7 @@ export const fetchDriversThunk = createAsyncThunk(
         vehicleType = "",
         is_online = null,
       } = params;
-      const response = await driverApi.getDrivers(page, limit, status, search);
+      const response = await driverApi.getDrivers({page, limit, status, search});
       return {
         drivers: response.drivers,
         pagination: {
@@ -59,7 +59,7 @@ export const fetchDriverByIdThunk = createAsyncThunk(
 
 export const updateDriverThunk = createAsyncThunk(
   "driver/updateDriver",
-  async (data: DriverUpdateData & { id: string }, { rejectWithValue }) => {
+  async (data: any, { rejectWithValue }) => {
     try {
       const response = await driverApi.updateDriver(data);
       return response;
@@ -92,7 +92,7 @@ export const updateDriverStatusThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await driverApi.updateDriverStatus(id, status);
+      const response = await driverApi.updateDriverStatus({ id, status } as any);
       return response;
     } catch (error: any) {
       return rejectWithValue(
@@ -111,7 +111,7 @@ export const updateMultipleDriverStatusThunk = createAsyncThunk(
     try {
       // Update multiple drivers status
       const promises = ids.map((id) =>
-        driverApi.updateDriverStatus(id, status)
+        driverApi.updateDriverStatus({ id, status } as any)
       );
       const responses = await Promise.all(promises);
       return { ids, status, drivers: responses };

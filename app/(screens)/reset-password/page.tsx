@@ -7,7 +7,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
-export default function ResetPasswordPage() {
+import { Suspense } from "react";
+
+function ResetPasswordContent() {
   const [password, setPassword] = useState("");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -79,5 +81,13 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="lg" /></div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
