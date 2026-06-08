@@ -15,7 +15,7 @@ import { StoreFilter, StoreTable } from "@/app/components/store";
 function StoreClient() {
   const router = useRouter();
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", status: "all" });
+  const [filter, setFilter] = useState({ search: "", account_status: "all" });
   const [selectedStore, setSelectedStore] = useState<Store[]>([]);
   const [storeToDelete, setStoreToDelete] = useState<Store | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -25,7 +25,7 @@ function StoreClient() {
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
-    status: filter.status === "all" ? undefined : filter.status,
+    account_status: filter.account_status === "all" ? undefined : filter.account_status,
   });
 
   const [deleteStores, { isLoading: isDeleting }] = useDeleteStoresMutation();
@@ -50,8 +50,8 @@ function StoreClient() {
     }
   };
 
-  const handleFilterChange = ({ search, status }: { search: string; status: string }) => {
-    setFilter({ search, status });
+  const handleFilterChange = ({ search, account_status }: { search: string; account_status: string }) => {
+    setFilter({ search, account_status });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 

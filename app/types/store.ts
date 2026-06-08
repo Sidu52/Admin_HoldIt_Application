@@ -1,48 +1,54 @@
+import { StoreOwner } from "./storeOwner";
 
 export interface Store {
     _id: string;
+    phone: string
     store_name: string;
-    store_address: string;
     store_open_time: string;
     store_close_time: string;
     store_description: string;
     store_contact_number: string;
+    store_deactivated_reason: string;
     location: {
         type: string;
         coordinates: number[];
         address: string;
     };
-    service_area_id: string;
     is_online: boolean;
     verification_status: string;
-    status: string;
+    account_status: string;
     current_booking_count: number;
     max_booking_capacity: number;
-    rating: number;
+    rating_avg: number;
+    rating_count: number;
     last_active_at: Date;
-    // Relation to StoreOwner
-    store_owner_id: string;
+    store_owner_id: StoreOwner;
+    deactivated_at: Date;
+    updatedAt: Date;
 }
 
 export interface StoreUpdateData {
     store_name: string;
-    store_address: string;
     store_open_time: string;
     store_close_time: string;
     store_description: string;
     store_contact_number: string;
+    verification_status: string;
+    max_booking_capacity: number;
+}
+
+export interface UpdateStoreLocation {
     location: {
-        type: string;
-        coordinates: number[];
+        lat: number;
+        lng: number;
         address: string;
-    };
+    }
 }
 
 export interface UpdateStoreStatusData {
-    status: string;
+    account_status: string;
     reason: string;
-    is_active: boolean;
-}                       
+}
 
 export interface Pagination {
     currentPage: number;
@@ -53,7 +59,7 @@ export interface Pagination {
 
 export interface FilterState {
     search: string;
-    status: string;
+    account_status: string;
 }
 
 export interface StoresResponse {

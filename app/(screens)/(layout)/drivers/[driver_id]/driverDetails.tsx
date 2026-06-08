@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import {
   BiBadge,
-  BiBlock,
   BiCheckCircle,
   BiEdit,
   BiHome,
@@ -24,11 +23,12 @@ import NoData from "@/app/NoData";
 import { formatDateTime } from "@/app/utils/helper";
 import UpdateStatusPopup from "@/app/components/common/UpdateStatusPopupProps";
 import { StatusBadge } from "../../../../components/common/StatusBadge";
-import { useGetDriverQuery, useUpdateDriverInfoMutation, useUpdateDriverStatusMutation } from "../../../../services/driverApi";
+import { useGetDriverQuery, useUpdateDriverInfoMutation, useUpdateDriverLocationMutation, useUpdateDriverStatusMutation } from "../../../../services/driverApi";
 import { useToast } from "../../../../hooks/useToast";
 import { DriverUpdateData } from "@/app/types/driver";
 import { DriverDetailSkeleton } from "@/app/loading/driver";
 import EditDriverDetails from "@/app/components/driver/EditDriverDetails";
+import UpdateDriverLocation from "@/app/components/driver/UpdateDriverCurrentLocation";
 
 const driverDetails = ({ driver_id }: { driver_id: string }) => {
   const toast = useToast();
@@ -39,6 +39,7 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
   const driver = data?.data;
 
   const [updateDriver] = useUpdateDriverInfoMutation();
+  const [updateDriverLocation] = useUpdateDriverLocationMutation();
 
   const handleSubmit = async (formData: DriverUpdateData) => {
     try {
@@ -51,18 +52,13 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
   };
 
   const [updateDriverStatus] = useUpdateDriverStatusMutation();
-  const handleUpdateStatus = async (
-    status: string,
-    reason: string,
-    is_active: boolean
-  ) => {
+
+  const handleUpdateStatus = async (account_status: string, reason: string) => {
     try {
-      await updateDriverStatus({ driverId: driver_id, status, reason, is_active }).unwrap();
+      await updateDriverStatus({ driverId: driver_id, account_status, account_deactivated_reason: reason }).unwrap();
       toast.success("Driver status updated");
       setShowUpdateStatusModal(false);
-    } catch {
-      toast.error("Failed to update status");
-    }
+    } catch (err) { }
   };
 
   if (isLoading) return <DriverDetailSkeleton />;
@@ -109,15 +105,7 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
                 <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
                   {driver.first_name} {driver.last_name}
                 </h1>
-                <span
-                  className={`${
-                    driver.is_active
-                      ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/20 text-red-600 dark:text-red-400"
-                  } text-xs font-bold px-2 py-1 rounded-full border border-emerald-500/20 uppercase tracking-wide`}
-                >
-                  {driver.is_active ? "Active" : "Inactive"}
-                </span>
+                <StatusBadge account_status={driver.account_status} />
               </div>
               <p className="text-[#637588] dark:text-[#92a4c9] text-[13px] font-normal leading-normal flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">
@@ -243,7 +231,7 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
                       Date of Birth
                     </span>
                     <span className="text-[#111418] dark:text-white font-medium text-sm">
-                      {formatDateTime(driver.dob, "date")}
+                      {formatDateTime(driver.date_of_birth, "date")}
                     </span>
                   </div>
                 </div>
@@ -272,16 +260,23 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
               </h3>
 
               <div className="space-y-4">
-                {/* Account Status */}
                 <div className="flex justify-between items-center py-2 border-b border-[#f0f2f4] dark:border-[#324467]">
                   <span className="text-[#637588] dark:text-[#92a4c9] text-sm">
-                    Account Status
+                    Durty
                   </span>
-                  <span className="text-[#111418] capitalize  dark:text-white font-medium text-sm">
-                    <StatusBadge status={driver.status} />
+                  <span
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium flex-shrink-0 ${driver.is_online
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                      : "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                      }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full bg-current ${driver.is_online ? "animate-pulse" : ""
+                        }`}
+                    />
+                    {driver.is_online ? "Online" : "Offline"}
                   </span>
                 </div>
-
                 {/* Last Login */}
                 <div className="flex justify-between items-center py-2 border-b border-[#f0f2f4] dark:border-[#324467]">
                   <span className="text-[#637588] dark:text-[#92a4c9] text-sm">
@@ -310,13 +305,12 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
                     Verified
                   </span>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      driver.isVerified
-                        ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                    }`}
+                    className={`text-sm font-medium px-2 py-1 rounded ${driver.verification_status === "verified"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-yellow-100 text-yellow-600"
+                      }`}
                   >
-                    {driver.isVerified ? "Verified" : "Not Verified"}
+                    {driver.verification_status}
                   </span>
                 </div>
                 {/* Serviceable */}
@@ -325,17 +319,18 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
                     Serviceable
                   </span>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      driver.is_serviceable
-                        ? "bg-blue-100 text-blue-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
+                    className={`text-sm font-medium px-2 py-1 rounded ${driver.is_serviceable
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-gray-100 text-gray-600"
+                      }`}
                   >
                     {driver.is_serviceable ? "Yes" : "No"}
                   </span>
                 </div>
               </div>
             </div>
+            {/* Update Driver Location Card */}
+            <UpdateDriverLocation driver={driver} updateLocationMutation={updateDriverLocation} />
           </div>
         </div>
       </div>
@@ -348,9 +343,9 @@ const driverDetails = ({ driver_id }: { driver_id: string }) => {
       />
 
       <UpdateStatusPopup
-        is_active={driver.is_active}
         show={showUpdateStatusModal}
         currentStatus={driver.status}
+        reasonValue={driver.account_deactivated_reason || ""}
         onClose={() => setShowUpdateStatusModal(false)}
         onSubmit={handleUpdateStatus}
       />

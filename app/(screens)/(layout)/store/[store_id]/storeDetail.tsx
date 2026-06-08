@@ -6,6 +6,7 @@ import {
   BiHome,
 } from "react-icons/bi";
 import {
+  MdAccountBox,
   MdAccountCircle,
   MdContactMail,
   MdUpdate,
@@ -16,22 +17,27 @@ import NoData from "@/app/NoData";
 import { formatDateTime } from "@/app/utils/helper";
 import UpdateStatusPopup from "@/app/components/common/UpdateStatusPopupProps";
 import { getStatusBadge } from "@/app/components/common/GetStatus";
-import { useGetStoreQuery, useUpdateStoreMutation, useToggleStoreStatusMutation } from "../../../../services/storeApi";
+import { useGetStoreQuery, useUpdateStoreMutation, useToggleStoreStatusMutation, useUpdateLocationMutation, useToggleStoreDutyMutation } from "../../../../services/storeApi";
 import { useToast } from "../../../../hooks/useToast";
 import { StatusBadge } from "../../../../components/common/StatusBadge";
 import { StoreUpdateData } from "@/app/types/store";
 import { StoreDetailSkeleton } from "@/app/loading/store";
 import { EditStoreDetails } from "@/app/components/store";
+import UpdateStoreCurrentLocation from "@/app/components/store/UpdateStoreCurrentLocation";
+import Toggle from "@/app/components/common/Toggle";
 
 const StoreDetail = ({ store_id }: { store_id: string }) => {
   const toast = useToast();
   const { data, isLoading, isError } = useGetStoreQuery(store_id);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showUpdateStatusModal, setShowUpdateStatusModal] = useState(false);
+  const [isStoreOnline, setIsStoreOnline] = useState(false);
 
   const store = data?.data;
 
   const [updateStore] = useUpdateStoreMutation();
+  const [updateStoreLocation] = useUpdateLocationMutation();
+  const [updateStoreOnline] = useToggleStoreDutyMutation();
 
   const handleSubmit = async (formData: StoreUpdateData) => {
     try {
@@ -45,16 +51,25 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
 
   const [updateStoreStatus] = useToggleStoreStatusMutation();
   const handleUpdateStatus = async (
-    status: string,
-    reason: string,
-    is_active: boolean
+    account_status: string,
+    store_deactivated_reason: string,
   ) => {
     try {
-      await updateStoreStatus({ storeId: store_id, status }).unwrap();
+      await updateStoreStatus({ storeId: store_id, account_status, store_deactivated_reason }).unwrap();
       toast.success("Store status updated");
       setShowUpdateStatusModal(false);
     } catch {
       toast.error("Failed to update status");
+    }
+  };
+
+  const handleToggleStoreDuty = async (checked: boolean) => {
+    setIsStoreOnline(checked);
+    try {
+      await updateStoreOnline({ storeId: store_id, is_online: checked }).unwrap();
+      toast.success("Store duty updated");
+    } catch {
+      toast.error("Failed to update duty");
     }
   };
 
@@ -102,15 +117,7 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
                 <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
                   {store.store_name}
                 </h1>
-                <span
-                  className={`${
-                    store.is_active
-                      ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/20 text-red-600 dark:text-red-400"
-                  } text-xs font-bold px-2 py-1 rounded-full border border-emerald-500/20 uppercase tracking-wide`}
-                >
-                  {store.is_active ? "Active" : "Inactive"}
-                </span>
+                <StatusBadge account_status={store.account_status} />
               </div>
               <p className="text-[#637588] dark:text-[#92a4c9] text-[13px] font-normal leading-normal flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">
@@ -145,6 +152,9 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
               </span>
               <span className="truncate">Update Status</span>
             </button>
+            {/* Online Offline toggle  */}
+            <Toggle checked={store.is_online} onChange={handleToggleStoreDuty} labelOn="Online" labelOff="Offline" />
+
           </div>
         </div>
 
@@ -169,15 +179,196 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
-                      Full Name
+                      Store Name
                     </span>
                     <span className="text-[#111418] dark:text-white font-medium text-sm">
                       {store.store_name}
                     </span>
                   </div>
                 </div>
-                {/* Contact Number */}
-                
+
+                {/* Phone Number */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Phone Number
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.phone}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Store Contact Number */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Contact Number
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_contact_number}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Store Open Time */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Open Time
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_open_time}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Store Close Time */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Close Time
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_close_time}
+                    </span>
+                  </div>
+                </div>
+                {/* Current Booking Count */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Current Booking Count
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.current_booking_count}
+                    </span>
+                  </div>
+                </div>
+                {/* Max Booking Count */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Max Booking Count
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.max_booking_count}
+                    </span>
+                  </div>
+                </div>
+                {/* Store Deactive Reason */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Deactive Reason
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_deactive_reason}
+                    </span>
+                  </div>
+                </div>
+                {/* Store Deactive At */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Deactive At
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_deactive_at}
+                    </span>
+                  </div>
+                </div>
+                {/* Store Deactive By */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Store Deactive By
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_deactive_by}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Store Owner Details */}
+            <div className="bg-white dark:bg-[#232f48] rounded-xl p-5 border border-[#e5e7eb] dark:border-[#324467] shadow-sm">
+              <h3 className="text-[#111418] dark:text-white text-lg font-bold leading-tight mb-4 flex items-center gap-2">
+                <MdAccountBox className="text-primary" />
+                Store Owner Details
+              </h3>
+              <div className="space-y-4">
+                {/* Owner Full Name */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Owner Name
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_owner_id.first_name + " " + store.store_owner_id.last_name}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Owner Email */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Owner Email
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_owner_id.email}
+                    </span>
+                  </div>
+                </div>
+                {/* Owner Contact Number */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-primary">
+                    <MdAccountCircle size={20} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#637588] dark:text-[#92a4c9] text-xs font-medium uppercase tracking-wider">
+                      Owner Contact Number
+                    </span>
+                    <span className="text-[#111418] dark:text-white font-medium text-sm">
+                      {store.store_owner_id.phone}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -195,7 +386,7 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
                     Account Status
                   </span>
                   <span className="text-[#111418] capitalize  dark:text-white font-medium text-sm">
-                    <StatusBadge status={store.status} />
+                    <StatusBadge account_status={store.account_status} />
                   </span>
                 </div>
                 {/* Last Active */}
@@ -215,13 +406,12 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
                     Verified
                   </span>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      store.isVerified
-                        ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                    }`}
+                    className={`text-sm font-medium px-2 py-1 rounded ${store.verification_status === "verified"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-yellow-100 text-yellow-600"
+                      }`}
                   >
-                    {store.isVerified ? "Verified" : "Not Verified"}
+                    {store.verification_status}
                   </span>
                 </div>
                 {/* Serviceable */}
@@ -230,17 +420,19 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
                     Serviceable
                   </span>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      store.is_serviceable
-                        ? "bg-blue-100 text-blue-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
+                    className={`text-sm font-medium px-2 py-1 rounded ${store.is_serviceable
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-gray-100 text-gray-600"
+                      }`}
                   >
                     {store.is_serviceable ? "Yes" : "No"}
                   </span>
                 </div>
               </div>
             </div>
+
+            {/* Store Loation */}
+            <UpdateStoreCurrentLocation store={store} updateLocationMutation={updateStoreLocation} />
           </div>
         </div>
       </div>
@@ -253,9 +445,9 @@ const StoreDetail = ({ store_id }: { store_id: string }) => {
       />
 
       <UpdateStatusPopup
-        is_active={store.is_active}
         show={showUpdateStatusModal}
-        currentStatus={store.status}
+        reasonValue={store.store_deactivated_reason || ""}
+        currentStatus={store.account_status}
         onClose={() => setShowUpdateStatusModal(false)}
         onSubmit={handleUpdateStatus}
       />

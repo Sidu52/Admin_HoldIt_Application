@@ -10,26 +10,36 @@ import { TeamMember } from "@/app/types/team";
 import {
   useGetTeamQuery,
   useDeleteAdminsMutation,
+  useInviteTeamMemberMutation,
 } from "../../../services/adminApi";
 import { useToast } from "../../../hooks/useToast";
 import { TeamMemberFilter, TeamMemberTable } from "@/app/components/team";
 import InviteMemberModal from "@/app/components/team/InviteMemberModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { hasControl } from "@/app/utils/role";
 
 function TeamClient() {
   const router = useRouter();
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", status: "all", role: "all" });
+  const [filter, setFilter] = useState({ search: "", account_status: "all", role: "all" });
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [selectedTeamMember, setSelectTeamMember] = useState<TeamMember[]>([]);
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
+  const canControl = hasControl(loggedInUser?.role, "teams");
+
+  // Mutation
+  const [inviteTeamMember, { isLoading: isInviting }] = useInviteTeamMemberMutation();
 
   const toast = useToast();
   const { data, isLoading, isFetching, isError } = useGetTeamQuery({
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
-    status: filter.status === "all" ? undefined : filter.status,
+    account_status: filter.account_status === "all" ? undefined : filter.account_status,
     role: filter.role === "all" ? undefined : filter.role,
   });
 
@@ -45,7 +55,7 @@ function TeamClient() {
   const handleDeleteTeamMember = async () => {
     try {
       const ids = memberToDelete ? [memberToDelete._id] : selectedTeamMember.map((u) => u._id);
-      await deleteAdmins({ adminIds: ids }).unwrap();
+      await deleteAdmins({ auth_id: ids }).unwrap();
       toast.success("Team members successfully deleted");
       setSelectTeamMember([]);
       setMemberToDelete(null);
@@ -55,12 +65,17 @@ function TeamClient() {
     }
   };
 
-  const handleInviteMember = () => {
-    setShowInviteModal(true);
+  const handleInviteMember = async (data: { email: string; role: string }) => {
+    try {
+      await inviteTeamMember(data).unwrap();
+      toast.success("Team member invited successfully");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to invite team member");
+    }
   };
 
-  const handleFilterChange = ({ search, status, role }: { search: string; status: string; role: string }) => {
-    setFilter({ search, status, role });
+  const handleFilterChange = ({ search, account_status, role }: { search: string; account_status: string; role: string }) => {
+    setFilter({ search, account_status, role });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 
@@ -92,7 +107,7 @@ function TeamClient() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {selectedTeamMember.length > 0 && (
+            {canControl && selectedTeamMember.length > 0 && (
               <button
                 onClick={() => setShowDeleteModal(true)}
                 className="flex items-center gap-2 h-10 px-4 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-sm font-medium rounded-lg transition-colors"
@@ -101,13 +116,15 @@ function TeamClient() {
                 Delete ({selectedTeamMember.length})
               </button>
             )}
-            <button
-              onClick={() => setShowInviteModal(true)}
-              className="flex items-center gap-2 h-10 px-4 bg-primary hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors"
-            >
-              <MdAdd size={20} />
-              Add Team Member
-            </button>
+            {canControl && (
+              <button
+                onClick={() => setShowInviteModal(true)}
+                className="flex items-center gap-2 h-10 px-4 bg-primary hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors"
+              >
+                <MdAdd size={20} />
+                Add Team Member
+              </button>
+            )}
             <div className="bg-[#f8f9fc] border border-slate-200/60 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -132,39 +149,42 @@ function TeamClient() {
         {teamMember.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center text-slate-400">
-              <p className="text-sm">No team members found for the current filters.</p>
+              <p className="text-sm">
+                No team members found for the current filters.
+              </p>
             </div>
           </div>
         ) : (
-           <TeamMemberTable
-             teamMember={teamMember}
-             selectedTeamMember={selectedTeamMember}
-             onSelectionChange={setSelectTeamMember}
-             onViewDetails={handleViewDetail}
-             onDeleteClick={handleDeleteClick}
-             pagination={{
-               page: paginationData?.page ?? 1,
-               totalPages: paginationData?.totalPages ?? 1,
-             }}
-             onPageChange={(page: number) => setPagination((p) => ({ ...p, page }))}
-           />
-         )}
-       </div>
- 
-       {/* DELETE MODAL */}
-       {showDeleteModal && (
-         <DeleteConfirmationModal
-           count={memberToDelete ? 1 : selectedTeamMember.length}
-           modalTitle="team member"
-           modalDescription="This action cannot be undone."
-           loading={isDeleting}
-           onClose={() => {
-             setShowDeleteModal(false);
-             setMemberToDelete(null);
-           }}
-           onConfirm={handleDeleteTeamMember}
-         />
-       )}
+          <TeamMemberTable
+            teamMember={teamMember}
+            selectedTeamMember={selectedTeamMember}
+            onSelectionChange={setSelectTeamMember}
+            onViewDetails={handleViewDetail}
+            onDeleteClick={handleDeleteClick}
+            actorRole={loggedInUser?.role}
+            pagination={{
+              page: paginationData?.page ?? 1,
+              totalPages: paginationData?.totalPages ?? 1,
+            }}
+            onPageChange={(page: number) => setPagination((p) => ({ ...p, page }))}
+          />
+        )}
+      </div>
+
+      {/* DELETE MODAL */}
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          count={memberToDelete ? 1 : selectedTeamMember.length}
+          modalTitle="team member"
+          modalDescription="This action cannot be undone."
+          loading={isDeleting}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setMemberToDelete(null);
+          }}
+          onConfirm={handleDeleteTeamMember}
+        />
+      )}
 
       <InviteMemberModal
         isOpen={showInviteModal}

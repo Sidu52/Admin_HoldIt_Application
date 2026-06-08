@@ -86,7 +86,9 @@ const StoreTable: React.FC<StoreTableProps> = ({
               </th>
               <th className="sticky top-0 z-10 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Store Identity</th>
               <th className="sticky top-0 z-10 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark hidden lg:table-cell">Contact Info</th>
+              <th className="sticky top-0 z-10 px-6 py-4 text-center text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark hidden lg:table-cell">Store Owner</th>
               <th className="sticky top-0 z-10 px-6 py-4 text-center text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Status</th>
+              <th className="sticky top-0 z-10 px-6 py-4 text-center text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Is Online</th>
               <th className="sticky top-0 z-10 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Operational Load</th>
               <th className="sticky top-0 z-10 px-6 py-4 text-right text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Actions</th>
             </tr>
@@ -95,9 +97,8 @@ const StoreTable: React.FC<StoreTableProps> = ({
             {store.map((data) => (
               <tr
                 key={data._id}
-                className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${
-                  selectedIds.has(data._id) ? "bg-primary/[0.02]" : ""
-                }`}
+                className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${selectedIds.has(data._id) ? "bg-primary/[0.02]" : ""
+                  }`}
               >
                 <td className="px-6 py-5 text-center">
                   <input
@@ -123,11 +124,25 @@ const StoreTable: React.FC<StoreTableProps> = ({
                 <td className="px-6 py-5 hidden lg:table-cell">
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark">{data.store_contact_number || "N/A"}</span>
-                    <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">{data.store_address || "No Address"}</span>
+                    <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">{data.location.address || "No Address"}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-5 hidden lg:table-cell">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark">{data.store_owner_id.first_name + " " + data.store_owner_id.last_name || "N/A"}</span>
+                    <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">{data.store_owner_id.phone || "No Email"}</span>
                   </div>
                 </td>
                 <td className="px-6 py-5 text-center">
-                  {getStatusBadge(data.status)}
+                  {getStatusBadge(data.account_status)}
+                </td>
+                <td className="px-6 py-5 text-center">
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${data.is_online
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"
+                    : "bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400"
+                    }`}>
+                    {data.is_online ? "Online" : "Offline"}
+                  </span>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex flex-col gap-1.5 w-32">
@@ -138,14 +153,13 @@ const StoreTable: React.FC<StoreTableProps> = ({
                       </span>
                     </div>
                     <div className="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-700 ease-out rounded-full ${
-                          ((data.current_booking_count || 0) / (data.max_booking_capacity || 1)) > 0.8 
-                          ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]" 
-                          : ((data.current_booking_count || 0) / (data.max_booking_capacity || 1)) > 0.5 
-                          ? "bg-amber-500" 
-                          : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
-                        }`}
+                      <div
+                        className={`h-full transition-all duration-700 ease-out rounded-full ${((data.current_booking_count || 0) / (data.max_booking_capacity || 1)) > 0.8
+                          ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]"
+                          : ((data.current_booking_count || 0) / (data.max_booking_capacity || 1)) > 0.5
+                            ? "bg-amber-500"
+                            : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+                          }`}
                         style={{ width: `${Math.min(100, ((data.current_booking_count || 0) / (data.max_booking_capacity || 1)) * 100)}%` }}
                       />
                     </div>

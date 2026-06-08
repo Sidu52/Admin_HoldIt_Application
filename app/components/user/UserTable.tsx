@@ -9,6 +9,7 @@ import {
   getUserNameFirstChar,
 } from "@/app/utils/helper";
 import { getStatusBadge } from "../common/GetStatus";
+import { hasControl } from "@/app/utils/role";
 
 interface PaginationProps {
   page: number;
@@ -23,6 +24,7 @@ interface UserTableProps {
   onDeleteClick: (user: User) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
+  actorRole?: string;
 }
 
 const UserTable: React.FC<UserTableProps> = ({
@@ -33,7 +35,10 @@ const UserTable: React.FC<UserTableProps> = ({
   onDeleteClick,
   pagination,
   onPageChange,
+  actorRole,
 }) => {
+  const canControlModule = hasControl(actorRole, "users");
+
   const selectedIds = useMemo(
     () => new Set(selectedUsers.map((u) => u._id)),
     [selectedUsers]
@@ -79,11 +84,12 @@ const UserTable: React.FC<UserTableProps> = ({
                   <input
                     type="checkbox"
                     checked={allSelected}
+                    disabled={!canControlModule}
                     ref={(el) => {
                       if (el) el.indeterminate = !allSelected && someSelected;
                     }}
                     onChange={handleSelectAll}
-                    className="rounded-lg border-border-light dark:border-border-dark text-primary focus:ring-primary/30 cursor-pointer h-4 w-4 transition-all"
+                    className="rounded-lg border-border-light dark:border-border-dark text-primary focus:ring-primary/30 cursor-pointer h-4 w-4 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   />
                 </div>
               </th>
@@ -95,74 +101,79 @@ const UserTable: React.FC<UserTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-border-light dark:divide-border-dark">
-            {users.map((user) => (
-              <tr
-                key={user._id}
-                className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${
-                  selectedIds.has(user._id) ? "bg-primary/[0.02]" : ""
-                }`}
-              >
-                <td className="px-6 py-5 text-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(user._id)}
-                    onChange={() => handleSelectUser(user)}
-                    className="rounded-lg border-border-light dark:border-border-dark text-primary focus:ring-primary/30 cursor-pointer h-4 w-4 transition-all"
-                  />
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 shrink-0 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-xs shadow-lg shadow-primary/10">
-                      {getUserNameFirstChar(user.first_name, user.last_name)}
+            {users.map((user) => {
+              const modifiable = canControlModule;
+              return (
+                <tr
+                  key={user._id}
+                  className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${selectedIds.has(user._id) ? "bg-primary/[0.02]" : ""
+                    }`}
+                >
+                  <td className="px-6 py-5 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(user._id)}
+                      disabled={!modifiable}
+                      onChange={() => handleSelectUser(user)}
+                      className="rounded-lg border-border-light dark:border-border-dark text-primary focus:ring-primary/30 cursor-pointer h-4 w-4 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    />
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 shrink-0 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-xs shadow-lg shadow-primary/10">
+                        {getUserNameFirstChar(user.first_name, user.last_name)}
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">
+                          {getFullName(user.first_name, user.last_name)}
+                        </span>
+                        <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">ID-{user._id.slice(-6).toUpperCase()}</span>
+                      </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-5 hidden lg:table-cell">
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">
-                        {getFullName(user.first_name, user.last_name)}
-                      </span>
-                      <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">ID-{user._id.slice(-6).toUpperCase()}</span>
+                      <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark">{user.phone || "N/A"}</span>
+                      <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">{user.email}</span>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-5 hidden lg:table-cell">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark">{user.phone || "N/A"}</span>
-                    <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-tight">{user.email}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-5 text-center">
-                  {getStatusBadge(user.status)}
-                </td>
-                <td className="px-6 py-5 hidden md:table-cell text-center">
-                  <div className="flex justify-center">
-                    {user.is_serviceable ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
-                        <MdCheckCircle size={14} /> Serviceable
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-600 text-[10px] font-bold border border-slate-500/20">
-                        <MdCancel size={14} /> Non-serviceable
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-5 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => onViewDetails(user)}
-                      className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:bg-primary/10 transition-all"
-                    >
-                      <MdOutlineEdit size={18} />
-                    </button>
-                    <button
-                      onClick={() => onDeleteClick(user)}
-                      className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
-                    >
-                      <MdOutlineDelete size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-6 py-5 text-center">
+                    {getStatusBadge(user.account_status)}
+                  </td>
+                  <td className="px-6 py-5 hidden md:table-cell text-center">
+                    <div className="flex justify-center">
+                      {user.is_serviceable ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
+                          <MdCheckCircle size={14} /> Serviceable
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-500/10 text-slate-600 text-[10px] font-bold border border-slate-500/20">
+                          <MdCancel size={14} /> Non-serviceable
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => onViewDetails(user)}
+                        className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:bg-primary/10 transition-all"
+                      >
+                        <MdOutlineEdit size={18} />
+                      </button>
+                      {modifiable && (
+                        <button
+                          onClick={() => onDeleteClick(user)}
+                          className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
+                        >
+                          <MdOutlineDelete size={18} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
             {users.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-6 py-20 text-center">

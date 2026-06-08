@@ -1,5 +1,6 @@
 "use client";
 
+import { GENDER } from "@/app/enum";
 import { User, UserUpdateData } from "@/app/types/user";
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
@@ -10,8 +11,6 @@ interface UserProps {
   onClose: () => void;
   handleSubmit: (data: UserUpdateData) => void;
 }
-
-const GENDER_OPTIONS = ["male", "female", "other", "prefer_not_to_say"];
 
 function EditUserDetails({
   user,
@@ -25,7 +24,8 @@ function EditUserDetails({
     email: user.email,
     phone: user.phone || "",
     gender: user.gender || "",
-    dob: user.dob || "",
+    date_of_birth: user.date_of_birth || "",
+    verification_status: user.verification_status || "",
   });
 
   const handleChange = (
@@ -43,9 +43,7 @@ function EditUserDetails({
   };
 
   return (
-    <div
-      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${
-        showEditModal ? "w-[400px]" : "w-0"
+    <div className={`fixed top-0 right-0 h-screen z-40 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
       }`}
     >
       {/* Header */}
@@ -147,7 +145,7 @@ function EditUserDetails({
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           >
             <option value="">Select Gender</option>
-            {GENDER_OPTIONS.map((g) => (
+            {Object.values(GENDER).map((g) => (
               <option key={g} value={g}>
                 {g.charAt(0).toUpperCase() + g.slice(1)}
               </option>
@@ -157,20 +155,43 @@ function EditUserDetails({
 
         {/* DOB */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="dob">
+          <label className="block text-sm font-medium mb-1" htmlFor="date_of_birth">
             Date of Birth
           </label>
           <input
             type="date"
-            id="dob"
-            name="dob"
-            value={form.dob}
+            id="date_of_birth"
+            name="date_of_birth"
+            value={form.date_of_birth}
             onChange={handleChange}
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           />
         </div>
+        {/* Verified Status Toggle */}
+        {/* <div className="flex items-center justify-between p-3 border rounded-lg dark:border-gray-600">
+          <div>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              Verified Status
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Toggle to verify or unverify this account
+            </p>
+          </div>
 
-
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, verification_status: form.verification_status === "verified" ? "rejected" : "verified" })}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300
+      ${form.verification_status === "verified" ? "bg-green-600" : "bg-gray-400"}
+    `}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300
+        ${form.verification_status === "verified" ? "translate-x-6" : "translate-x-1"}
+      `}
+            />
+          </button>
+        </div> */}
 
         {/* Submit Button */}
         <button

@@ -12,21 +12,27 @@ import NoData from "@/app/NoData";
 import { User } from "@/app/types/user";
 import { useGetUsersQuery, useBulkDeactivateUsersMutation } from "../../../services/userApi";
 import { useToast } from "../../../hooks/useToast";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { hasControl } from "@/app/utils/role";
 
 function UserClient() {
   const router = useRouter();
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", status: "all" });
+  const [filter, setFilter] = useState({ search: "", account_status: "all" });
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
+  const canControl = hasControl(loggedInUser?.role, "users");
 
   const toast = useToast();
   const { data, isLoading, isFetching, isError } = useGetUsersQuery({  // ✅ add isFetching
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
-    status: filter.status === "all" ? undefined : filter.status,
+    account_status: filter.account_status === "all" ? undefined : filter.account_status,
   });
 
   const [bulkDeactivateUsers, { isLoading: isDeleting }] = useBulkDeactivateUsersMutation();
@@ -51,8 +57,8 @@ function UserClient() {
     }
   };
 
-  const handleFilterChange = ({ search, status }: { search: string; status: string }) => {
-    setFilter({ search, status });
+  const handleFilterChange = ({ search, account_status }: { search: string; account_status: string }) => {
+    setFilter({ search, account_status });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 
@@ -77,7 +83,7 @@ function UserClient() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {selectedUsers.length > 0 && (
+            {canControl && selectedUsers.length > 0 && (
               <button
                 onClick={() => setShowDeleteModal(true)}
                 className="flex items-center gap-2 h-10 px-4 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-sm font-medium rounded-lg transition-colors"
@@ -97,7 +103,7 @@ function UserClient() {
               </div>
               <div className="h-10 w-10 bg-[#1a2332] rounded-xl flex items-center justify-center text-white shadow-md ml-4">
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
-                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                 </svg>
               </div>
             </div>
@@ -121,6 +127,7 @@ function UserClient() {
             onSelectionChange={setSelectedUsers}
             onViewDetails={handleViewUser}
             onDeleteClick={handleDeleteClick}
+            actorRole={loggedInUser?.role}
             pagination={{
               page: paginationData?.page ?? 1,
               totalPages: paginationData?.totalPages ?? 1,

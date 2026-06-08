@@ -14,11 +14,9 @@ import {
 import { FaClipboardList, FaStore, FaTruck, FaUsers } from "react-icons/fa";
 import { StatsCard } from "@/app/types/dashboard";
 import { useGetSummaryQuery, useGetChartQuery } from "../../../services/dashboardApi";
-import { useGetProfileQuery } from "../../../services/adminApi";
 import { useGetBookingsQuery } from "../../../services/bookingApi";
 import { RoleGuard } from "../../../components/common/RoleGuard";
 import { useDispatch, useSelector } from "react-redux";
-import { setCredentials } from "@/app/store/slices/authSlice";
 import { RootState } from "@/app/store";
 import { useSocket } from "@/app/hooks/useSocket";
 import { api } from "../../../services/api";
@@ -73,7 +71,7 @@ export default function DashboardPage() {
     dispatch(api.util.invalidateTags(["Booking"]));
   });
 
-  /* 🔹 Global loading */
+  /* Global loading */
   if (isPageLoading) {
     return (
       <div className="w-full max-w-[1600px] mx-auto p-6 flex flex-col gap-8">
@@ -84,7 +82,7 @@ export default function DashboardPage() {
     );
   }
 
-  /* 🔹 Global error */
+  /* Global error */
   if (isPageError) {
     return (
       <div className="p-6 text-red-500 font-medium">
@@ -95,85 +93,85 @@ export default function DashboardPage() {
 
   return (
     <RoleGuard allowedRoles={["SUPER_ADMIN", "ADMIN", "OPERATION_MANAGER"]} fallback={<div className="p-8 text-center font-bold uppercase tracking-widest text-text-muted-light">Access Denied</div>}>
-    <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
-      <div className="w-full max-w-[1600px] mx-auto p-8 flex flex-col gap-10">
-        {/* Header */}
-        <div className="flex justify-between items-end">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">Dashboard</h1>
-            <p className="text-text-muted-light dark:text-text-muted-dark font-medium tracking-wide">
-              System performance and operational overview.
-            </p>
-          </div>
-
-          <div className="hidden sm:block">
-
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cards.map((card, index) => (
-            <StatCard key={index} {...card} />
-          ))}
-        </div>
-
-        {/* Analytics Section */}
-        <div className="card-premium p-8 bg-surface-light dark:bg-surface-dark border-none shadow-premium/5">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+        <div className="w-full max-w-[1600px] mx-auto p-8 flex flex-col gap-10">
+          {/* Header */}
+          <div className="flex justify-between items-end">
             <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-bold font-display text-text-main-light dark:text-text-main-dark">Analytics</h3>
-              <p className="text-xs font-bold text-text-muted-light uppercase tracking-widest">Growth & Trends</p>
+              <h1 className="text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">Dashboard</h1>
+              <p className="text-text-muted-light dark:text-text-muted-dark font-medium tracking-wide">
+                System performance and operational overview.
+              </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <select 
-                value={range} 
-                onChange={(e) => setRange(e.target.value)}
-                className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              >
-                {RANGE.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
+            <div className="hidden sm:block">
 
-              <select
-                value={entity}
-                onChange={(e) => setEntity(e.target.value)}
-                className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              >
-                {ENTITY.map((e) => (
-                  <option key={e.value} value={e.value}>
-                    {e.label}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 
-          <div className="h-[400px] w-full">
-            {chartData &&
-              (chartLoading ? <ChartSkeleton /> : <ChartBar data={chartData?.data} />)}
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {cards.map((card, index) => (
+              <StatCard key={index} {...card} />
+            ))}
           </div>
-        </div>
 
-        {/* Recent Activity */}
-        <div className="flex flex-col gap-6">
-           <div className="flex flex-col gap-1">
+          {/* Analytics Section */}
+          <div className="card-premium p-8 bg-surface-light dark:bg-surface-dark border-none shadow-premium/5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-bold font-display text-text-main-light dark:text-text-main-dark">Analytics</h3>
+                <p className="text-xs font-bold text-text-muted-light uppercase tracking-widest">Growth & Trends</p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <select
+                  value={range}
+                  onChange={(e) => setRange(e.target.value)}
+                  className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                >
+                  {RANGE.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={entity}
+                  onChange={(e) => setEntity(e.target.value)}
+                  className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                >
+                  {ENTITY.map((e) => (
+                    <option key={e.value} value={e.value}>
+                      {e.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="h-[400px] w-full">
+              {chartData &&
+                (chartLoading ? <ChartSkeleton /> : <ChartBar data={chartData?.data} />)}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
               <h3 className="text-xl font-bold font-display text-text-main-light dark:text-text-main-dark">Recent Activity</h3>
               <p className="text-xs font-bold text-text-muted-light uppercase tracking-widest">Latest Bookings</p>
             </div>
-          {bookingData &&
-            (bookingLoading ? (
-              <ActiveTableSkeleton />
-            ) : (
-              <ActivityTable data={bookingData} />
-            ))}
+            {bookingData &&
+              (bookingLoading ? (
+                <ActiveTableSkeleton />
+              ) : (
+                <ActivityTable data={bookingData} />
+              ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
     </RoleGuard>
   );
 }

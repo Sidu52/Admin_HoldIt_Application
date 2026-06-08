@@ -1,6 +1,6 @@
 "use client";
 
-import { ROLES } from "@/app/constants/constant";
+import { ROLES } from "@/app/enum";
 import { useState } from "react";
 
 interface InviteMemberModalProps {
@@ -15,7 +15,7 @@ export default function InviteMemberModal({
   onSubmit,
 }: InviteMemberModalProps) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState(Object.values(ROLES)[0]);
+  const [role, setRole] = useState(ROLES.ADMIN);
   const [error, setError] = useState("");
 
   if (!isOpen) return null;
@@ -29,13 +29,13 @@ export default function InviteMemberModal({
 
     // reset + close
     setEmail("");
-    setRole(ROLES[0]);
+    setRole(ROLES.ADMIN);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-2xl bg-background text-foreground p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl bg-[#fff] text-[#000] p-6 shadow-xl">
         <h2 className="text-xl font-semibold mb-4">Invite Team Member</h2>
 
         {/* Email */}
@@ -58,7 +58,7 @@ export default function InviteMemberModal({
             onChange={(e) => setRole(e.target.value)}
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 bg-background text-foreground "
           >
-            {ROLES.filter(r => r !== "super_admin").map((r) => (
+            {Object.values(ROLES).filter(r => r !== "super_admin").map((r) => (
               <option className="capitalize" key={r} value={r}>
                 {r.replaceAll("_", " ")}
               </option>

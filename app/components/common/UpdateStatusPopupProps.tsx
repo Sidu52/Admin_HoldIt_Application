@@ -3,39 +3,32 @@
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
 import { toast } from "react-hot-toast";
+import { ACCOUNT_STATUS } from "@/app/enum";
 
 interface UpdateStatusPopupProps {
-  is_active: boolean;
   show: boolean;
+  reasonValue: string;
   currentStatus: string;
   onClose: () => void;
-  onSubmit: (status: string, reason: string, is_active: boolean) => void;
+  onSubmit: (account_status: string, reason: string) => void;
 }
 
-const ACCOUNT_STATUS = {
-  ACTIVE: "active",
-  PENDING: "pending",
-  BLOCKED: "blocked",
-  INACTIVE: "inactive",
-};
-
 const UpdateStatusPopup: React.FC<UpdateStatusPopupProps> = ({
-  is_active,
   show,
+  reasonValue,
   currentStatus,
   onClose,
   onSubmit,
 }) => {
-  const [status, setStatus] = useState(currentStatus || ACCOUNT_STATUS.PENDING);
-  const [reason, setReason] = useState("");
-  const [isActive, setIsActive] = useState(is_active);
+  const [account_status, setAccountStatus] = useState(currentStatus || ACCOUNT_STATUS.PENDING);
+  const [reason, setReason] = useState(reasonValue || "");
 
   const handleSubmit = () => {
     if (!reason.trim()) {
       toast.error("Please provide a reason");
       return;
     }
-    onSubmit(status, reason, isActive);
+    onSubmit(account_status, reason);
     setReason("");
   };
 
@@ -55,18 +48,15 @@ const UpdateStatusPopup: React.FC<UpdateStatusPopupProps> = ({
             onClick={onClose}
           />
         </div>
-
-        {/* Body */}
         <div className="p-5 space-y-4">
-          {/* Status */}
           <div>
             <label className="block text-sm font-medium mb-1" htmlFor="status">
               Account Status
             </label>
             <select
               id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              value={account_status}
+              onChange={(e) => setAccountStatus(e.target.value)}
               className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
             >
               {Object.values(ACCOUNT_STATUS).map((s) => (
@@ -76,10 +66,9 @@ const UpdateStatusPopup: React.FC<UpdateStatusPopupProps> = ({
               ))}
             </select>
           </div>
-          {/* Description/Reason */}
           <div>
             <label className="block text-sm font-medium mb-1" htmlFor="reason">
-              Reason / Description
+              Reason
             </label>
             <textarea
               id="reason"
@@ -89,32 +78,6 @@ const UpdateStatusPopup: React.FC<UpdateStatusPopupProps> = ({
               placeholder="Why are you changing the account status?"
               className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
             />
-          </div>
-
-          {/* Active and Inactive  Toggle  */}
-          <div className="flex items-center justify-between p-3 border rounded-lg dark:border-gray-600">
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Account Status
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Toggle to activate or deactivate this account
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsActive((prev) => !prev)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300
-      ${isActive ? "bg-green-600" : "bg-gray-400"}
-    `}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300
-        ${isActive ? "translate-x-6" : "translate-x-1"}
-      `}
-              />
-            </button>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
-export const getStatusBadge = (status: string) => {
+export const getStatusBadge = (account_status: string) => {
   const base = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-300";
 
-  switch (status.toLowerCase()) {
+  switch (account_status?.toLowerCase()) {
     case "active":
       return (
         <span className={`${base} bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.1)]`}>
@@ -29,7 +29,7 @@ export const getStatusBadge = (status: string) => {
     default:
       return (
         <span className={`${base} bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20`}>
-          {status}
+          {account_status}
         </span>
       );
   }

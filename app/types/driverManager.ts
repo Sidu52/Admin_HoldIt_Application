@@ -8,7 +8,7 @@ export interface Driver {
   last_name: string;
   email: string;
   gender: string;
-  dob: string;
+  date_of_birth: string;
   address: string;
   is_online: boolean;
   last_active_at: Date;
@@ -16,7 +16,7 @@ export interface Driver {
   vehicleType: string;
   licenseNumber: string;
   verification_status: string;
-  status: string;
+  account_status: string;
   is_serviceable: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -30,7 +30,7 @@ export interface Driver {
 
 export interface FilterState {
   search: string;
-  status: UserStatus | "";
+  account_status: UserStatus | "";
 }
 
 export interface DriverUpdateData {
@@ -38,13 +38,13 @@ export interface DriverUpdateData {
   last_name: string;
   email: string;
   gender: string;
-  dob: string;
+  date_of_birth: string;
   address: string;
   phone: string;
   licenseNumber: string;
   vehicleType: string;
   verification_status: string;
-  status: string;
+  account_status: string;
   role: string;
   is_online: boolean;
   documents: string[];

@@ -10,9 +10,9 @@ export const driverApi = api.injectEndpoints({
       providesTags: (result) =>
         result && result.data && result.data.drivers
           ? [
-              ...result.data.drivers.map(({ _id }: { _id: string }) => ({ type: "Driver" as const, id: _id })),
-              { type: "Driver", id: "PARTIAL-LIST" },
-            ]
+            ...result.data.drivers.map(({ _id }: { _id: string }) => ({ type: "Driver" as const, id: _id })),
+            { type: "Driver", id: "PARTIAL-LIST" },
+          ]
           : [{ type: "Driver", id: "PARTIAL-LIST" }],
     }),
     getDriver: builder.query<any, string>({
@@ -27,19 +27,11 @@ export const driverApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { driverId }) => [{ type: "Driver", id: driverId }, { type: "Driver", id: "PARTIAL-LIST" }],
     }),
-    updateDriverLocation: builder.mutation<any, { driverId: string; lat: number; lng: number }>({
-      query: ({ driverId, lat, lng }) => ({
+    updateDriverLocation: builder.mutation<any, { driverId: string; lat: number; lng: number, address?: string }>({
+      query: ({ driverId, lat, lng, address }) => ({
         url: `/driver/${driverId}/location`,
         method: "PATCH",
-        body: { lat, lng },
-      }),
-      invalidatesTags: (result, error, { driverId }) => [{ type: "Driver", id: driverId }, { type: "Driver", id: "PARTIAL-LIST" }],
-    }),
-    updateDriverAccount: builder.mutation<any, { driverId: string; data: any }>({
-      query: ({ driverId, data }) => ({
-        url: `/driver/${driverId}/account`,
-        method: "PATCH",
-        body: data,
+        body: { lat, lng, address },
       }),
       invalidatesTags: (result, error, { driverId }) => [{ type: "Driver", id: driverId }, { type: "Driver", id: "PARTIAL-LIST" }],
     }),
@@ -51,12 +43,27 @@ export const driverApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Driver", id: "PARTIAL-LIST" }],
     }),
-    updateDriverStatus: builder.mutation<any, { driverId: string; status: string; reason?: string; is_active?: boolean }>({
+    updateDriverStatus: builder.mutation<any, { driverId: string; account_status: string; account_deactivated_reason?: string }>({
       query: ({ driverId, ...data }) => ({
         url: `/driver/${driverId}/status`,
         method: "PATCH",
         body: data,
       }),
+      async onQueryStarted({ driverId, account_status, account_deactivated_reason }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          driverApi.util.updateQueryData("getDriver", driverId, (draft) => {
+            if (draft) {
+              if (account_status) draft.account_status = account_status;
+              if (account_deactivated_reason) draft.account_deactivated_reason = account_deactivated_reason;
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
       invalidatesTags: (result, error, { driverId }) => [{ type: "Driver", id: driverId }, { type: "Driver", id: "PARTIAL-LIST" }],
     }),
   }),
@@ -67,7 +74,6 @@ export const {
   useGetDriverQuery,
   useUpdateDriverInfoMutation,
   useUpdateDriverLocationMutation,
-  useUpdateDriverAccountMutation,
   useBulkDeactivateDriversMutation,
   useUpdateDriverStatusMutation,
 } = driverApi;

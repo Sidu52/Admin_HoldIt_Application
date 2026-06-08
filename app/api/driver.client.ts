@@ -1,48 +1,62 @@
-import { api } from "../lib/axios";
-import { DriverUpdateData, UpdateDriverStatusData } from "../types/driver";
+import { api } from "@/app/lib/axios";
+import { Driver, DriversResponse, DriverUpdateData } from "@/app/types/driver";
 
-// Driver API endpoints
+interface GetDriversParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+  vehicleType?: string;
+  is_online?: boolean | null;
+}
+
+interface UpdateDriverStatusParams {
+  id: string;
+  status: string;
+  account_deactivated_reason?: string;
+}
+
 const driverApi = {
-  getDrivers: async({
-    page,
-    limit,
-    status,
-    search,
+  getDrivers: async (params: GetDriversParams): Promise<DriversResponse> => {
+    const response = await api.get<{ data: DriversResponse }>("/driver", {
+      params,
+    });
+    return response.data.data;
+  },
+
+  getDriverById: async (id: string): Promise<Driver> => {
+    const response = await api.get<{ data: Driver }>(`/driver/${id}`);
+    return response.data.data;
+  },
+
+  updateDriver: async ({
+    id,
+    data,
   }: {
-    page: number;
-    limit: number;
-    status: string;
-    search: string;
-  }) => {
-    const res = await api.get("/driver", {
-      params: { page, limit, status, search },
-    });
-    return res.data;
+    id: string;
+    data: Partial<DriverUpdateData>;
+  }): Promise<Driver> => {
+    const response = await api.patch<{ data: Driver }>(`/driver/${id}`, data);
+    return response.data.data;
   },
 
-  getDriverById: async (id: string) => {
-    const res = await api.get(`/driver/${id}`);
-    return res.data;
-  },
-
-  updateDriver: async (
-    data: DriverUpdateData & { id: string }
-  )=> {
-    const { id, ...rest } = data;
-    const res = await api.put(`/driver/${id}`, rest);
-    return res.data;
-  },
-
-  deleteDrivers: async (ids: string[]) => {
-    await api.delete("/driver/bulk-delete", {
-      data: { ids },
+  deleteDrivers: async (ids: string[]): Promise<void> => {
+    await api.post("/driver/bulk-delete", {
+      ids,
+      reason: "Admin bulk deactivation",
     });
   },
 
-  updateDriverStatus: async (data: UpdateDriverStatusData & { id: string }) => {
-    const { id, ...rest } = data;
-    const res = await api.patch(`/drivers/${id}/status`, { ...rest });
-    return res.data;
+  updateDriverStatus: async ({
+    id,
+    status,
+    account_deactivated_reason,
+  }: UpdateDriverStatusParams): Promise<Driver> => {
+    const response = await api.patch<{ data: Driver }>(`/driver/${id}/status`, {
+      account_status: status,
+      account_deactivated_reason,
+    });
+    return response.data.data;
   },
 };
 

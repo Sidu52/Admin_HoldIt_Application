@@ -1,3 +1,4 @@
+import { useGetProfileQuery } from "../services/adminApi";
 import { ParsedDateTime } from "../types/helper";
 
 export function parseTimestamp(input: string | number | Date): ParsedDateTime {
@@ -31,9 +32,8 @@ export function parseTimestamp(input: string | number | Date): ParsedDateTime {
 
     // Formatted
     time24: `${pad(hour)}:${pad(minute)}:${pad(second)}`,
-    time12: `${pad(hour % 12 || 12)}:${pad(minute)}:${pad(second)} ${
-      hour >= 12 ? "PM" : "AM"
-    }`,
+    time12: `${pad(hour % 12 || 12)}:${pad(minute)}:${pad(second)} ${hour >= 12 ? "PM" : "AM"
+      }`,
     date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
       date.getDate()
     )}`,
@@ -68,17 +68,17 @@ export function formatDateTime(
 
   return format === "date"
     ? date.toLocaleDateString(locale, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : format === "time"
-    ? date.toLocaleTimeString(locale, {
+      ? date.toLocaleTimeString(locale, {
         hour: "numeric",
         minute: "numeric",
         second: "numeric",
       })
-    : date.toLocaleString(locale, {
+      : date.toLocaleString(locale, {
         year: "numeric",
         month: "long",
         day: "numeric",

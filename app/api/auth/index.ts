@@ -14,16 +14,16 @@ export const login = async (
   return response.data;
 };
 export const signup = async (payload: SignupPayload): Promise<AuthResponse> => {
-  const { token, credentials } = payload;
+  const { credentials } = payload;
   const response = await api.post<AuthResponse>("/auth/signup", credentials, {
-    params: { token },
+    params: { token: credentials.invite_token },
   });
 
   return response.data;
 };
 
 export const refreshToken = async (): Promise<any> => {
-  const response = await api.get<any>("/auth/refresh");
+  const response = await api.post<any>("/auth/refresh");
   return response.data;
 };
 

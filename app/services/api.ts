@@ -2,8 +2,11 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError 
 import { logout } from "../store/slices/authSlice";
 import { Mutex } from "async-mutex";
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4000/api/v1/admin";
+//                                                     ↑ direct to backend, not proxied
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "/api/v1/admin",
+  baseUrl: BASE_URL,
   credentials: "include",
 });
 
@@ -21,7 +24,6 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
-        // Hit /auth/refresh — browser sends refreshToken cookie automatically
         const refreshResult = await baseQuery(
           { url: "/auth/refresh", method: "POST" },
           api,
@@ -29,7 +31,6 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         );
 
         if (refreshResult.data) {
-          // Backend has set a new accessToken cookie; retry original request
           result = await baseQuery(args, api, extraOptions);
         } else {
           api.dispatch(logout());
@@ -42,6 +43,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
   return result;
 };
 

@@ -44,7 +44,7 @@ const STATUS_OPTIONS = [
 
 interface DriverFiltersProps {
   filter: FilterState;
-  onFilterChange: (value: { search: string; status: string }) => void;
+  onFilterChange: (value: { search: string; account_status: string }) => void;
 }
 
 export default function DriverFilters({
@@ -52,12 +52,12 @@ export default function DriverFilters({
   onFilterChange,
 }: DriverFiltersProps) {
   const [searchInput, setSearchInput] = useState(filter.search);
-  const [status, setStatus] = useState(filter.status);
+  const [status, setStatus] = useState(filter.account_status);
 
   // ---------------- Debounced handler ----------------
   const debouncedFilter = useMemo(
     () =>
-      debounce((payload: { search: string; status: string }) => {
+      debounce((payload: { search: string; account_status: string }) => {
         onFilterChange(payload);
       }, 500),
     [onFilterChange]
@@ -72,12 +72,12 @@ export default function DriverFilters({
 
   const handleClearSearch = () => {
     setSearchInput("");
-    onFilterChange({ search: "", status });
+    onFilterChange({ search: "", account_status: status });
   };
 
   const handleStatusChange = (statusValue: string) => {
     setStatus(statusValue);
-    onFilterChange({ search: searchInput, status: statusValue });
+    onFilterChange({ search: searchInput, account_status: statusValue });
   };
 
   // ---------------- Render ----------------
@@ -157,10 +157,9 @@ export default function DriverFilters({
                   className={`w-full text-left px-4 py-2.5 text-sm
                     hover:bg-slate-50 dark:hover:bg-[#232f48]
                     transition-colors flex items-center gap-2
-                    ${
-                      status === option.value
-                        ? "text-primary bg-primary/10"
-                        : "text-slate-700 dark:text-slate-300"
+                    ${status === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
                     }`}
                 >
                   <span className={`text-lg ${option.color}`}>

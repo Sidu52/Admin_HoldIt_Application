@@ -127,32 +127,33 @@ export default function SignupPage({ data, token }: SignupPageProps) {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       signup({
-        token,
         credentials: {
+          invite_token: token,
           first_name: formData.firstName,
           last_name: formData.lastName,
+          email: data?.email,
           phone: formData.phone,
           address: formData.address,
-          dateOfBirth: formData.dateOfBirth,
+          date_of_birth: formData.dateOfBirth,
           password: formData.password,
-          confirmPassword: formData.confirmPassword,
+          confirm_password: formData.confirmPassword,
           gender: formData.gender,
         },
       });
 
       // Reset form after successful submission
-      setFormData({
-        email: data?.email || "",
-        role: data?.role || "",
-        gender: "",
-        firstName: "",
-        lastName: "",
-        phone: "",
-        address: "",
-        dateOfBirth: "",
-        password: "",
-        confirmPassword: "",
-      });
+      // setFormData({
+      //   email: data?.email || "",
+      //   role: data?.role || "",
+      //   gender: "",
+      //   firstName: "",
+      //   lastName: "",
+      //   phone: "",
+      //   address: "",
+      //   dateOfBirth: "",
+      //   password: "",
+      //   confirmPassword: "",
+      // });
     } catch (error) {
       console.error("Signup error:", error);
       alert("Failed to create account. Please try again.");
@@ -256,11 +257,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       First Name *
                     </label>
                     <input
-                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                        formErrors.firstName
-                          ? "border-red-500"
-                          : "border-gray-300 dark:border-[#324467]"
-                      } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
+                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.firstName
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-[#324467]"
+                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
                       name="firstName"
                       placeholder="First Name"
                       type="text"
@@ -299,11 +299,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Gender *
                     </label>
                     <select
-                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                        formErrors.gender
-                          ? "border-red-500"
-                          : "border-gray-300 dark:border-[#324467]"
-                      } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
+                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.gender
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-[#324467]"
+                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
@@ -331,11 +330,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Date of Birth *
                     </label>
                     <input
-                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                        formErrors.dateOfBirth
-                          ? "border-red-500"
-                          : "border-gray-300 dark:border-[#324467]"
-                      } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
+                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.dateOfBirth
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-[#324467]"
+                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
                       name="dateOfBirth"
                       type="date"
                       value={formData.dateOfBirth}
@@ -357,11 +355,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Phone Number *
                     </label>
                     <input
-                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                        formErrors.phone
-                          ? "border-red-500"
-                          : "border-gray-300 dark:border-[#324467]"
-                      } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
+                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.phone
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-[#324467]"
+                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
                       name="phone"
                       placeholder="000000000"
                       type="tel"
@@ -390,11 +387,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       Last Name *
                     </label>
                     <input
-                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                        formErrors.lastName
-                          ? "border-red-500"
-                          : "border-gray-300 dark:border-[#324467]"
-                      } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
+                      className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.lastName
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-[#324467]"
+                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] px-4 text-base font-normal leading-normal transition-all`}
                       name="lastName"
                       placeholder="Last Name"
                       type="text"
@@ -437,11 +433,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                         <RiShieldKeyholeFill className="text-gray-400 dark:text-[#92a4c9] group-focus-within:text-primary transition-colors text-[20px]" />
                       </div>
                       <input
-                        className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                          formErrors.password
-                            ? "border-red-500"
-                            : "border-gray-300 dark:border-[#324467]"
-                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] pl-11 pr-12 text-base font-normal leading-normal transition-all`}
+                        className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.password
+                          ? "border-red-500"
+                          : "border-gray-300 dark:border-[#324467]"
+                          } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] pl-11 pr-12 text-base font-normal leading-normal transition-all`}
                         name="password"
                         placeholder="Enter strong password"
                         type={showPassword ? "text" : "password"}
@@ -468,11 +463,10 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       {[1, 2, 3, 4, 5].map((level) => (
                         <div
                           key={level}
-                          className={`flex-1 rounded-full transition-all duration-300 ${
-                            level <= passwordStrength
-                              ? getStrengthColor()
-                              : "bg-gray-300 dark:bg-[#324467]"
-                          }`}
+                          className={`flex-1 rounded-full transition-all duration-300 ${level <= passwordStrength
+                            ? getStrengthColor()
+                            : "bg-gray-300 dark:bg-[#324467]"
+                            }`}
                         />
                       ))}
                     </div>
@@ -503,20 +497,18 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                     <div className="relative flex w-full items-stretch rounded-lg group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                         <FaCheck
-                          className={`text-[20px] transition-colors ${
-                            formData.confirmPassword &&
+                          className={`text-[20px] transition-colors ${formData.confirmPassword &&
                             formData.password === formData.confirmPassword
-                              ? "text-green-500"
-                              : "text-gray-400 dark:text-[#92a4c9] group-focus-within:text-primary"
-                          }`}
+                            ? "text-green-500"
+                            : "text-gray-400 dark:text-[#92a4c9] group-focus-within:text-primary"
+                            }`}
                         />
                       </div>
                       <input
-                        className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${
-                          formErrors.confirmPassword
-                            ? "border-red-500"
-                            : "border-gray-300 dark:border-[#324467]"
-                        } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] pl-11 pr-12 text-base font-normal leading-normal transition-all`}
+                        className={`form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border ${formErrors.confirmPassword
+                          ? "border-red-500"
+                          : "border-gray-300 dark:border-[#324467]"
+                          } bg-gray-50 dark:bg-[#192233] focus:border-primary h-12 placeholder:text-gray-400 dark:placeholder:text-[#92a4c9] pl-11 pr-12 text-base font-normal leading-normal transition-all`}
                         name="confirmPassword"
                         placeholder="Re-enter password"
                         type={showConfirmPassword ? "text" : "password"}
@@ -545,8 +537,8 @@ export default function SignupPage({ data, token }: SignupPageProps) {
                       </p>
                     )}
                     {formData.confirmPassword &&
-                    !formErrors.confirmPassword &&
-                    formData.password === formData.confirmPassword ? (
+                      !formErrors.confirmPassword &&
+                      formData.password === formData.confirmPassword ? (
                       <p className="text-xs text-green-500 dark:text-green-400 mt-1">
                         ✓ Passwords match
                       </p>

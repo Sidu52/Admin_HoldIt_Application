@@ -53,7 +53,7 @@ export const adminApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Team"],
     }),
-    updateAccountStatus: builder.mutation<any, { adminId: string; status: string }>({
+    updateAccountStatus: builder.mutation<any, { auth_id: string; account_status: string, account_deactivated_reason: string }>({
       query: (data) => ({
         url: "/account-status",
         method: "PUT",
@@ -61,11 +61,11 @@ export const adminApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Team"],
     }),
-    deleteAdmins: builder.mutation<any, { adminIds: string[] }>({
+    deleteAdmins: builder.mutation<any, { auth_id: string[] }>({
       query: (data) => ({
         url: "/bulk-delete",
-        method: "POST",
-        body: { ids: data.adminIds, reason: "Admin bulk deactivation" },
+        method: "DELETE",
+        body: { ids: data.auth_id, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: ["Team"],
     }),

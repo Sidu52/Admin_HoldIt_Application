@@ -19,6 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
+import { hasAccess } from "@/app/utils/role";
 
 interface SidebarItem {
   id: string;
@@ -71,7 +72,7 @@ const Sidebar = ({
       label: "Store Manager",
       icon: <RiStore2Line />,
       href: "/store",
-      active: pathname.startsWith("/store"),
+      active: pathname === "/store" || pathname.startsWith("/store/"),
     },
     {
       id: "store-owners",
@@ -165,7 +166,7 @@ const Sidebar = ({
 
           {/* Navigation Items */}
           <nav className="flex flex-col gap-1.5">
-            {sidebarItems.map((item) => (
+            {sidebarItems.filter((item) => hasAccess(user?.role, item.id)).map((item) => (
               <Link
                 key={item.id}
                 href={item.href}

@@ -3,7 +3,7 @@
 import { TeamMember, TeamMemberUpdateData } from "@/app/types/team";
 import React, { useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
-import { ROLES } from "@/app/constants/constant";
+import { ROLES, VERIFICATION_STATUS } from "@/app/enum";
 
 interface EditTeamMemberProps {
   showEditModal: boolean;
@@ -29,6 +29,7 @@ function EditTeamMember({
     date_of_birth: member.date_of_birth || "",
     address: member.address || "",
     role: member.role || "",
+    verification_status: member.verification_status || "",
   });
 
   useEffect(() => {
@@ -41,6 +42,7 @@ function EditTeamMember({
       date_of_birth: member.date_of_birth || "",
       address: member.address || "",
       role: member.role || "",
+      verification_status: member.verification_status || "",
     });
   }, [member]);
 
@@ -60,9 +62,8 @@ function EditTeamMember({
 
   return (
     <div
-      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-300 ease-in-out shadow-2xl overflow-auto ${
-        showEditModal ? "w-full sm:w-[450px]" : "w-0"
-      }`}
+      className={`fixed top-0 right-0 h-screen z-30 bg-background text-foreground transition-all duration-300 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-full sm:w-[450px]" : "w-0"
+        }`}
     >
       {/* Header */}
       <div className="relative p-6 border-b border-gray-200 dark:border-[#324467] bg-white dark:bg-[#1a2332]">
@@ -181,9 +182,9 @@ function EditTeamMember({
               className="w-full border border-gray-300 dark:border-[#324467] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white dark:bg-[#232f48] text-slate-900 dark:text-white capitalize"
             >
               <option value="">Select Role</option>
-              {ROLES.map((role) => (
+              {Object.values(ROLES).filter(r => r !== "super_admin").map((role) => (
                 <option key={role} value={role}>
-                  {role.split("_").join(" ")}
+                  {role}
                 </option>
               ))}
             </select>
@@ -203,6 +204,27 @@ function EditTeamMember({
             rows={3}
             className="w-full border border-gray-300 dark:border-[#324467] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white dark:bg-[#232f48] text-slate-900 dark:text-white"
           ></textarea>
+        </div>
+
+        {/* Verification Toggle */}
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 dark:text-[#92a4c9] mb-1.5" htmlFor="address">
+            Verification Status
+          </label>
+          <select
+            id="verificat ion_status"
+            name="verification_status"
+            value={form.verification_status}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-[#324467] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white dark:bg-[#232f48] text-slate-900 dark:text-white capitalize"
+          >
+            <option value="">Select Verification Status</option>
+            {Object.values(VERIFICATION_STATUS).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Submit Button */}

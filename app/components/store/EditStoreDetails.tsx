@@ -1,5 +1,6 @@
 "use client";
 
+import { VERIFICATION_STATUS } from "@/app/enum";
 import { Store, StoreUpdateData } from "@/app/types/store";
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
@@ -20,16 +21,14 @@ function EditStoreOwnerDetails({
 }: StoreProps) {
   const [form, setForm] = useState({
     store_name: store.store_name,
-    store_address: store.store_address,
+    phone: store.phone,
     store_open_time: store.store_open_time,
     store_close_time: store.store_close_time,
     store_description: store.store_description,
     store_contact_number: store.store_contact_number,
-    location: {
-      type: store.location.type,
-      coordinates: store.location.coordinates,
-      address: store.location.address,
-    },
+    current_booking_count: store.current_booking_count,
+    max_booking_capacity: store.max_booking_capacity,
+    verification_status: store.verification_status,
   }
   );
 
@@ -49,7 +48,7 @@ function EditStoreOwnerDetails({
 
   return (
     <div
-      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
+      className={`fixed top-0 right-0 h-screen z-30 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
         }`}
     >
       {/* Header */}
@@ -91,6 +90,24 @@ function EditStoreOwnerDetails({
           />
         </div>
 
+        {/* Update Register Mobile Number */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="phone"
+          >
+            Register Mobile Number
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
         {/* Contact Number */}
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor="store_contact_number">
@@ -121,19 +138,79 @@ function EditStoreOwnerDetails({
           ></textarea>
         </div>
 
-        {/* Address */}
+        {/* Store Open Time */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="store_address">
-            Address
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="store_open_time"
+          >
+            Store Open Time
           </label>
-          <textarea
-            id="store_address"
-            name="store_address"
-            value={form.store_address}
+          <input
+            type="time"
+            id="store_open_time"
+            name="store_open_time"
+            value={form.store_open_time}
             onChange={handleChange}
-            rows={3}
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-          ></textarea>
+          />
+        </div>
+
+        {/* Store Close Time */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="store_close_time"
+          >
+            Store Close Time
+          </label>
+          <input
+            type="time"
+            id="store_close_time"
+            name="store_close_time"
+            value={form.store_close_time}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        {/* Max Booking Capacity */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="max_booking_capacity"
+          >
+            Max Booking Capacity
+          </label>
+          <input
+            type="number"
+            id="max_booking_capacity"
+            name="max_booking_capacity"
+            value={form.max_booking_capacity}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        {/* Verification Status */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="verification_status"
+          >
+            Verification Status
+          </label>
+          {/* Dropdown */}
+          <select
+            name="verification_status"
+            value={form.verification_status}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          >
+            {Object.values(VERIFICATION_STATUS).map((status: string) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
         </div>
 
         {/* Submit Button */}

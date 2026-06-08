@@ -23,7 +23,7 @@ import { useToast } from "../../../../hooks/useToast";
 import UpdateStatusPopup from "@/app/components/common/UpdateStatusPopupProps";
 import { StatusBadge } from "../../../../components/common/StatusBadge";
 import { useGetTeamMemberByIdQuery, useUpdateTeamMemberMutation, useUpdateAccountStatusMutation } from "@/app/services/adminApi";
-import { TeamMemberUpdateData } from "@/app/types/team";
+import { TeamMember, TeamMemberUpdateData } from "@/app/types/team";
 import EditTeamMember from "@/app/components/team/EditTeamMember";
 
 // Loading component
@@ -47,10 +47,10 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const toast = useToast();
 
-  const user = data?.data;
+  const user: TeamMember = data?.data;
 
   const [updateTeamMember, { isLoading: isUpdating }] = useUpdateTeamMemberMutation();
-  
+
   const handleUpdateTeamMember = async (formData: TeamMemberUpdateData) => {
     try {
       await updateTeamMember({ memberId: team_id, data: formData }).unwrap();
@@ -64,12 +64,11 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
   const [updateStatus] = useUpdateAccountStatusMutation();
 
   const handleUpdateStatus = async (
-    status: string,
+    account_status: string,
     reason: string,
-    is_active: boolean
   ) => {
     try {
-      await updateStatus({ adminId: team_id, status }).unwrap();
+      await updateStatus({ auth_id: team_id, account_status, account_deactivated_reason: reason }).unwrap();
       toast.success("Team member status updated");
       setShowUpdateStatusModal(false);
     } catch {
@@ -121,15 +120,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                 <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
                   {user.first_name} {user.last_name}
                 </h1>
-                <span
-                  className={`${
-                    user.status === "active"
-                      ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                      : "bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/20"
-                  } text-xs font-bold px-2 py-1 rounded-full border uppercase tracking-wide`}
-                >
-                  {user.status === "active" ? "Active" : "Inactive"}
-                </span>
+                <StatusBadge account_status={user.account_status} />
                 <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
                   {user.role}
                 </span>
@@ -240,6 +231,20 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                     </span>
                   </div>
                 </div>
+                {/* Date of Birth */}
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-xl text-blue-600">
+                    <MdWc size={22} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-slate-500 dark:text-[#92a4c9] text-[11px] font-bold uppercase tracking-wider mb-0.5">
+                      Date of Birth
+                    </span>
+                    <span className="text-slate-800 dark:text-white font-medium text-sm capitalize">
+                      {user.date_of_birth || "Not specified"}
+                    </span>
+                  </div>
+                </div>
                 {/* Address */}
                 <div className="flex items-start gap-4">
                   <div className="mt-1 bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-xl text-blue-600">
@@ -274,23 +279,24 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                     Account Status
                   </span>
                   <span className="text-[#111418] capitalize dark:text-white font-medium text-sm">
-                    <StatusBadge status={user.status} />
+                    <StatusBadge account_status={user.account_status} />
                   </span>
                 </div>
 
                 {/* Email Verification */}
                 <div className="flex justify-between items-center py-3 border-b border-slate-100 dark:border-[#324467] group">
                   <span className="text-slate-500 dark:text-[#92a4c9] text-sm font-medium">
-                    Verified Email
+                    Verified Account
                   </span>
                   <span
-                    className={`text-xs font-bold px-2 py-1 rounded-md tracking-wide uppercase ${
-                      user.is_verified
-                        ? "bg-green-100 text-green-700"
+                    className={`text-xs font-bold px-2 py-1 rounded-md tracking-wide uppercase ${user.verification_status === "verified"
+                      ? "bg-green-100 text-green-700"
+                      : user.verification_status === "rejected"
+                        ? "bg-red-100 text-red-700"
                         : "bg-amber-100 text-amber-700"
-                    }`}
+                      }`}
                   >
-                    {user.is_verified ? "Verified" : "Unverified"}
+                    {user.verification_status}
                   </span>
                 </div>
 
@@ -322,9 +328,9 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
       </div>
 
       <UpdateStatusPopup
-        is_active={user.status === "active"}
         show={showUpdateStatusModal}
-        currentStatus={user.status}
+        currentStatus={user.account_status}
+        reasonValue={user.account_deactivated_reason}
         onClose={() => setShowUpdateStatusModal(false)}
         onSubmit={handleUpdateStatus}
       />

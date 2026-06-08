@@ -11,13 +11,29 @@ import { Suspense } from "react";
 
 function ResetPasswordContent() {
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  
+
   const { data, isLoading: verifying, error: verifyError } = useVerifyResetTokenQuery(token || "", { skip: !token });
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const toast = useToast();
   const router = useRouter();
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    try {
+      await resetPassword({ token, password, confirm_password: confirmPassword }).unwrap();
+      toast.success("Password reset successfully. You can now log in.");
+      router.push("/login");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to reset password");
+    }
+  };
 
   if (!token) {
     return (
@@ -57,7 +73,7 @@ function ResetPasswordContent() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow p-8 space-y-6">
         <h2 className="text-2xl font-bold text-center">Reset Password</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleResetPassword}>
           <div>
             <label className="block text-sm font-medium mb-1">New Password</label>
             <input
@@ -66,6 +82,20 @@ function ResetPasswordContent() {
               placeholder="Enter new password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          {/* Conform Password */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Confirm Password</label>
+            <input
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              type="password"
+              placeholder="Enter confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               minLength={6}
               required
               disabled={isLoading}

@@ -3,6 +3,7 @@
 import { Driver, DriverUpdateData } from "@/app/types/driver";
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
+import { GENDER } from "@/app/enum";
 
 interface DriverProps {
   showEditModal: boolean;
@@ -10,8 +11,6 @@ interface DriverProps {
   onClose: () => void;
   handleSubmit: (data: DriverUpdateData) => void;
 }
-
-const GENDER_OPTIONS = ["male", "female", "other", "prefer_not_to_say"];
 
 function EditDriverDetails({
   driver,
@@ -28,6 +27,8 @@ function EditDriverDetails({
       gender: driver.gender || "",
       date_of_birth: driver.date_of_birth || "",
       address: driver.address || "",
+      vehicle_type: driver.vehicle_type || "",
+      license_number: driver.license_number || "",
     }
   );
 
@@ -46,11 +47,7 @@ function EditDriverDetails({
   };
 
   return (
-    <div
-      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${
-        showEditModal ? "w-[400px]" : "w-0"
-      }`}
-    >
+    <div className={`fixed top-0 right-0 h-screen z-30 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"}`}>
       {/* Header */}
       <div className="relative p-6 border-b border-gray-200 dark:border-[#324467]">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -150,7 +147,7 @@ function EditDriverDetails({
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           >
             <option value="">Select Gender</option>
-            {GENDER_OPTIONS.map((g) => (
+            {Object.values(GENDER).map((g) => (
               <option key={g} value={g}>
                 {g.charAt(0).toUpperCase() + g.slice(1)}
               </option>
@@ -187,6 +184,37 @@ function EditDriverDetails({
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           ></textarea>
         </div>
+
+        {/* Vehicle Type */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="vehicle_type">
+            Vehicle Type
+          </label>
+          <input
+            type="text"
+            id="vehicle_type"
+            name="vehicle_type"
+            value={form.vehicle_type}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        {/* License Number */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="license_number">
+            License Number
+          </label>
+          <input
+            type="text"
+            id="license_number"
+            name="license_number"
+            value={form.license_number}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
 
         {/* Submit Button */}
         <button

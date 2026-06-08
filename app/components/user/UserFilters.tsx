@@ -15,7 +15,7 @@ import {
 import { FilterState } from "@/app/types/user";
 
 const STATUS_OPTIONS = [
-  { label: "All Status", value: "", icon: <BiUser />, color: "text-slate-400" },
+  { label: "All Status", value: "all", icon: <BiUser />, color: "text-slate-400" },
   {
     label: "Active",
     value: "active",
@@ -44,7 +44,7 @@ const STATUS_OPTIONS = [
 
 interface UserFiltersProps {
   filter: FilterState;
-  onFilterChange: (value: { search: string; status: string }) => void;
+  onFilterChange: (value: { search: string; account_status: string }) => void;
 }
 
 export default function UserFilters({
@@ -52,12 +52,11 @@ export default function UserFilters({
   onFilterChange,
 }: UserFiltersProps) {
   const [searchInput, setSearchInput] = useState(filter.search);
-  const [status, setStatus] = useState(filter.status);
+  const [status, setStatus] = useState(filter.account_status);
 
-  // ---------------- Debounced handler ----------------
   const debouncedFilter = useMemo(
     () =>
-      debounce((payload: { search: string; status: string }) => {
+      debounce((payload: { search: string; account_status: string }) => {
         onFilterChange(payload);
       }, 500),
     [onFilterChange]
@@ -67,20 +66,19 @@ export default function UserFilters({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchInput(value);
-    debouncedFilter({ search: value, status });
+    debouncedFilter({ search: value, account_status: status });
   };
 
   const handleClearSearch = () => {
     setSearchInput("");
-    onFilterChange({ search: "", status });
+    onFilterChange({ search: "", account_status: status });
   };
 
   const handleStatusChange = (statusValue: string) => {
     setStatus(statusValue);
-    onFilterChange({ search: searchInput, status: statusValue });
+    onFilterChange({ search: searchInput, account_status: statusValue });
   };
 
-  // ---------------- Render ----------------
   return (
     <div className="flex flex-col gap-4 pb-4">
       <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
@@ -124,7 +122,6 @@ export default function UserFilters({
 
         {/* FILTERS */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* STATUS FILTER */}
           <div className="relative group">
             <button
               className="flex items-center gap-2 h-10 px-3.5 bg-white dark:bg-[#111722]
@@ -157,10 +154,9 @@ export default function UserFilters({
                   className={`w-full text-left px-4 py-2.5 text-sm
                     hover:bg-slate-50 dark:hover:bg-[#232f48]
                     transition-colors flex items-center gap-2
-                    ${
-                      status === option.value
-                        ? "text-primary bg-primary/10"
-                        : "text-slate-700 dark:text-slate-300"
+                    ${status === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
                     }`}
                 >
                   <span className={`text-lg ${option.color}`}>

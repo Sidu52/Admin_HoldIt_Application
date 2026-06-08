@@ -15,7 +15,7 @@ import { StoreOwnerFilter, StoreOwnerTable } from "@/app/components/store_owner"
 function StoreOwnerClient() {
   const router = useRouter();
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", status: "all" });
+  const [filter, setFilter] = useState({ search: "", account_status: "all" });
   const [selectedStoreOwner, setSelectedStoreOwner] = useState<StoreOwner[]>([]);
   const [ownerToDelete, setOwnerToDelete] = useState<StoreOwner | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -25,7 +25,7 @@ function StoreOwnerClient() {
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
-    status: filter.status === "all" ? undefined : filter.status,
+    account_status: filter.account_status === "all" ? undefined : filter.account_status,
   });
 
   const [deleteStoreOwners, { isLoading: isDeleting }] = useDeleteStoreOwnersMutation();
@@ -50,8 +50,8 @@ function StoreOwnerClient() {
     }
   };
 
-  const handleFilterChange = ({ search, status }: { search: string; status: string }) => {
-    setFilter({ search, status });
+  const handleFilterChange = ({ search, account_status }: { search: string; account_status: string }) => {
+    setFilter({ search, account_status });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 

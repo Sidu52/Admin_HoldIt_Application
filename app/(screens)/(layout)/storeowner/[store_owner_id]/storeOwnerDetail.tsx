@@ -26,9 +26,10 @@ import { getStatusBadge } from "@/app/components/common/GetStatus";
 import { useGetStoreOwnerQuery, useUpdateStoreOwnerMutation, useUpdateStoreOwnerStatusMutation } from "../../../../services/storeOwnerApi";
 import { useToast } from "../../../../hooks/useToast";
 import { StatusBadge } from "../../../../components/common/StatusBadge";
-import { StoreOwnerUpdateData } from "@/app/types/storeOwner";
+import { StoreOwner, StoreOwnerUpdateData } from "@/app/types/storeOwner";
 import { StoreOwnerProfileDetailSkeleton } from "@/app/loading/storeOwner";
 import { EditStoreOwnerDetails } from "@/app/components/store_owner";
+import { VERIFICATION_STATUS } from "@/app/enum";
 
 const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
   const toast = useToast();
@@ -36,7 +37,7 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showUpdateStatusModal, setShowUpdateStatusModal] = useState(false);
 
-  const store_owner = data?.data;
+  const store_owner: StoreOwner = data?.data;
 
   const [updateStoreOwner] = useUpdateStoreOwnerMutation();
 
@@ -52,12 +53,11 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
 
   const [updateStoreOwnerStatus] = useUpdateStoreOwnerStatusMutation();
   const handleUpdateStatus = async (
-    status: string,
+    account_status: string,
     reason: string,
-    is_active: boolean
   ) => {
     try {
-      await updateStoreOwnerStatus({ ownerId: store_owner_id, status }).unwrap();
+      await updateStoreOwnerStatus({ ownerId: store_owner_id, account_status, account_deactivated_reason: reason }).unwrap();
       toast.success("Status updated successfully");
       setShowUpdateStatusModal(false);
     } catch {
@@ -94,7 +94,7 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
             /
           </span>
           <span className="text-[#111418] dark:text-white text-[13px] font-medium leading-normal">
-            {store_owner.first_name} {store_owner.last_name}
+            {store_owner?.first_name} {store_owner?.last_name}
           </span>
         </div>
 
@@ -102,34 +102,28 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
           {/* Profile Header */}
           <div className="flex gap-6 items-start">
             <div className="flex items-center justify-center px-4 py-3.5 bg-[#f0f2f4] dark:bg-[#324467] rounded-full">
-              <p> {store_owner.first_name[0] + store_owner.last_name[0]}</p>
+              <p> {store_owner?.first_name?.[0] + store_owner?.last_name?.[0]}</p>
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
-                  {store_owner.first_name} {store_owner.last_name}
+                  {store_owner?.first_name} {store_owner?.last_name}
                 </h1>
-                <span
-                  className={`${
-                    store_owner.is_active
-                      ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/20 text-red-600 dark:text-red-400"
-                  } text-xs font-bold px-2 py-1 rounded-full border border-emerald-500/20 uppercase tracking-wide`}
-                >
-                  {store_owner.is_active ? "Active" : "Inactive"}
+                <span className="text-xs font-bold px-2 py-1 rounded-full  uppercase tracking-wide">
+                  <StatusBadge account_status={store_owner?.account_status} />
                 </span>
               </div>
               <p className="text-[#637588] dark:text-[#92a4c9] text-[13px] font-normal leading-normal flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">
                   <BiBadge />
                 </span>
-                Store Owner ID: {store_owner._id}
+                Store Owner ID: {store_owner?._id}
               </p>
               <p className="text-[#637588] dark:text-[#92a4c9] text-[13px] font-normal leading-normal flex items-center gap-2 mt-1">
                 <span className="material-symbols-outlined text-[18px]">
                   <BsFillCalendarMonthFill />
                 </span>
-                Joined {formatDateTime(store_owner.createdAt)}
+                Joined {formatDateTime(store_owner?.createdAt)}
               </p>
             </div>
           </div>
@@ -243,7 +237,7 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
                       Date of Birth
                     </span>
                     <span className="text-[#111418] dark:text-white font-medium text-sm">
-                      {formatDateTime(store_owner.dob, "date")}
+                      {formatDateTime(store_owner.date_of_birth, "date")}
                     </span>
                   </div>
                 </div>
@@ -278,7 +272,7 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
                     Account Status
                   </span>
                   <span className="text-[#111418] capitalize  dark:text-white font-medium text-sm">
-                    <StatusBadge status={store_owner.status} />
+                    <StatusBadge account_status={store_owner.account_status} />
                   </span>
                 </div>
 
@@ -310,28 +304,56 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
                     Verified
                   </span>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      store_owner.isVerified
+                    className={`text-sm font-medium px-2 py-1 rounded 
+                    ${store_owner.verification_status == VERIFICATION_STATUS.VERIFIED
                         ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                    }`}
+                        : store_owner.verification_status == VERIFICATION_STATUS.REJECTED
+                          ? "bg-red-100 text-red-600"
+                          : store_owner.verification_status == VERIFICATION_STATUS.PENDING
+                            ? "bg-yellow-100 text-yellow-600"
+                            : "bg-gray-100 text-gray-600"}    
+                      `}
                   >
-                    {store_owner.isVerified ? "Verified" : "Not Verified"}
+                    {store_owner.verification_status}
                   </span>
                 </div>
-                {/* Serviceable */}
-                <div className="flex justify-between items-center py-2 border-[#f0f2f4] dark:border-[#324467]">
+              </div>
+            </div>
+
+            {/* Store Details */}
+            <div className="bg-white dark:bg-[#232f48] rounded-xl p-5 border border-[#e5e7eb] dark:border-[#324467] shadow-sm">
+              <h3 className="text-[#111418] dark:text-white text-lg font-bold leading-tight mb-4 flex items-center gap-2">
+                <MdAccountCircle className="text-primary" />
+                Store Details
+              </h3>
+
+              <div className="space-y-4">
+                {/* No of stores */}
+                <div className="flex justify-between items-center py-2 border-b border-[#f0f2f4] dark:border-[#324467]">
                   <span className="text-[#637588] dark:text-[#92a4c9] text-sm">
-                    Serviceable
+                    No of stores
                   </span>
-                  <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      store_owner.is_serviceable
-                        ? "bg-blue-100 text-blue-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {store_owner.is_serviceable ? "Yes" : "No"}
+                  <span className="text-[#111418] capitalize  dark:text-white font-medium text-sm">
+                    {store_owner.store_count}
+                  </span>
+                </div>
+
+                {/* No of Active stores */}
+                <div className="flex justify-between items-center py-2 border-b border-[#f0f2f4] dark:border-[#324467]">
+                  <span className="text-[#637588] dark:text-[#92a4c9] text-sm">
+                    No of Active stores
+                  </span>
+                  <span className="text-[#111418] dark:text-white font-medium text-sm">
+                    {store_owner.activeStoreCount}
+                  </span>
+                </div>
+                {/* Last Active */}
+                <div className="flex justify-between items-center py-2 border-b border-[#f0f2f4] dark:border-[#324467]">
+                  <span className="text-[#637588] dark:text-[#92a4c9] text-sm">
+                    No of InActive stores
+                  </span>
+                  <span className="text-[#111418] dark:text-white font-medium text-sm">
+                    {store_owner.inactiveStoreCount}
                   </span>
                 </div>
               </div>
@@ -348,9 +370,9 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
       />
 
       <UpdateStatusPopup
-        is_active={store_owner.is_active}
         show={showUpdateStatusModal}
-        currentStatus={store_owner.status}
+        reasonValue={store_owner.account_deactivated_reason || ""}
+        currentStatus={store_owner.account_status}
         onClose={() => setShowUpdateStatusModal(false)}
         onSubmit={handleUpdateStatus}
       />

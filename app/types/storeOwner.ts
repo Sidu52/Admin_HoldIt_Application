@@ -1,3 +1,4 @@
+import { Store } from "./store";
 
 export interface StoreOwner {
     _id: string;
@@ -10,11 +11,15 @@ export interface StoreOwner {
     address: string;
     last_login_at: Date;
     last_active_at: Date;
-    status: string;
+    account_status: string;
+    account_deactivated_reason: string;
+    verification_status: string;
     createdAt: Date;
     updatedAt: Date;
-    update_by: string;
-    onboarding_status: string;
+    store_count: number;
+    activeStoreCount: number;
+    inactiveStoreCount: number;
+    stores: Store[];
 }
 
 export interface StoreOwnerUpdateData {
@@ -28,9 +33,8 @@ export interface StoreOwnerUpdateData {
 }
 
 export interface UpdateStoreOwnerStatusData {
-    status: string;
-    reason: string;
-    is_active: boolean;
+    account_status: string;
+    account_deactivated_reason: string;
 }
 
 export interface Pagination {
@@ -42,7 +46,7 @@ export interface Pagination {
 
 export interface FilterState {
     search: string;
-    status: string;
+    account_status: string;
 }
 
 export interface StoreOwnersResponse {

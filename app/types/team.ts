@@ -14,12 +14,12 @@ export interface TeamMember {
     role: string;
     date_of_birth: string;
     address: string;
-    status: string;
+    account_status: string;
+    verification_status: string;
     createdAt: Date;
     updatedAt: Date;
-    is_active: boolean;
     last_login_at: Date;
-    isVerified: boolean;
+    account_deactivated_reason: string;
 }
 
 
@@ -32,12 +32,12 @@ export interface TeamMemberUpdateData {
     date_of_birth: string;
     address: string;
     role: string;
+    verification_status: string;
 }
 
 export interface UpdateTeamMemberStatus {
-    status: string;
-    reason: string;
-    is_active: boolean;
+    account_deactivated_reason: string;
+    account_status: string;
 }
 
 export interface Pagination {

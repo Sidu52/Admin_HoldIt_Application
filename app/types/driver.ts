@@ -12,18 +12,24 @@ export interface Driver {
   date_of_birth: string;
   address: string;
   is_online: boolean;
+  is_on_trip: boolean;
   last_active_at: Date;
-  isSignUp: boolean;
-  vehicleType: string;
-  licenseNumber: string;
+  is_signup: boolean;
+  vehicle_type: string;
+  license_number: string;
   verification_status: string;
-  status: string;
+  account_status: string;
   is_serviceable: boolean;
+  currentLocation: {
+    coordinates: [number, number]
+    address: string;
+    updatedAt: Date;
+  }
   createdAt: Date;
   updatedAt: Date;
   phone: string;
   last_login_at: Date;
-  isVerified: boolean;
+  account_deactivated_reason: string;
 }
 
 export interface DriverUpdateData {
@@ -34,22 +40,15 @@ export interface DriverUpdateData {
   date_of_birth: string;
   address: string;
   phone: string;
-  licenseNumber: string;
-  vehicleType: string;
+  vehicle_type: string;
+  license_number: string;
   verification_status: string;
-  is_online: boolean;
   documents: string[];
-  currentLocation: {
-    lat: number;
-    lng: number;
-    address: string;
-  };
 }
 
 export interface UpdateDriverStatusData {
-  status: string;
-  reason: string;
-  is_active: boolean;
+  account_status: string;
+  account_deactivated_reason: string;
 }
 
 export interface Pagination {

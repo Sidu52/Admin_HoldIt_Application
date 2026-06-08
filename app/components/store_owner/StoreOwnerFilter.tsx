@@ -44,7 +44,7 @@ const STATUS_OPTIONS = [
 
 interface StoreOwnerFiltersProps {
   filter: FilterState;
-  onFilterChange: (value: { search: string; status: string }) => void;
+  onFilterChange: (value: { search: string; account_status: string }) => void;
 }
 
 export default function StoreOwnerFilters({
@@ -52,12 +52,12 @@ export default function StoreOwnerFilters({
   onFilterChange,
 }: StoreOwnerFiltersProps) {
   const [searchInput, setSearchInput] = useState(filter.search);
-  const [status, setStatus] = useState(filter.status);
+  const [account_status, setAccountStatus] = useState(filter.account_status);
 
   // ---------------- Debounced handler ----------------
   const debouncedFilter = useMemo(
     () =>
-      debounce((payload: { search: string; status: string }) => {
+      debounce((payload: { search: string; account_status: string }) => {
         onFilterChange(payload);
       }, 500),
     [onFilterChange]
@@ -67,17 +67,17 @@ export default function StoreOwnerFilters({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchInput(value);
-    debouncedFilter({ search: value, status });
+    debouncedFilter({ search: value, account_status });
   };
 
   const handleClearSearch = () => {
     setSearchInput("");
-    onFilterChange({ search: "", status });
+    onFilterChange({ search: "", account_status });
   };
 
   const handleStatusChange = (statusValue: string) => {
-    setStatus(statusValue);
-    onFilterChange({ search: searchInput, status: statusValue });
+    setAccountStatus(statusValue);
+    onFilterChange({ search: searchInput, account_status: statusValue });
   };
 
   // ---------------- Render ----------------
@@ -135,7 +135,7 @@ export default function StoreOwnerFilters({
               <span className="text-slate-700 dark:text-slate-300 text-sm font-medium">
                 Status:{" "}
                 <span className="text-slate-900 dark:text-white">
-                  {STATUS_OPTIONS.find((opt) => opt.value === status)?.label ||
+                  {STATUS_OPTIONS.find((opt) => opt.value === account_status)?.label ||
                     "All Status"}
                 </span>
               </span>
@@ -157,10 +157,9 @@ export default function StoreOwnerFilters({
                   className={`w-full text-left px-4 py-2.5 text-sm
                     hover:bg-slate-50 dark:hover:bg-[#232f48]
                     transition-colors flex items-center gap-2
-                    ${
-                      status === option.value
-                        ? "text-primary bg-primary/10"
-                        : "text-slate-700 dark:text-slate-300"
+                    ${account_status === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
                     }`}
                 >
                   <span className={`text-lg ${option.color}`}>

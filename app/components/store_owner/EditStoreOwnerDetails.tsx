@@ -1,5 +1,6 @@
 "use client";
 
+import { GENDER } from "@/app/enum";
 import { StoreOwner, StoreOwnerUpdateData } from "@/app/types/storeOwner";
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
@@ -10,8 +11,6 @@ interface StoreOwnerProps {
   onClose: () => void;
   handleSubmit: (data: StoreOwnerUpdateData) => void;
 }
-
-const GENDER_OPTIONS = ["male", "female", "other", "prefer_not_to_say"];
 
 function EditStoreOwnerDetails({
   store_owner,
@@ -47,9 +46,8 @@ function EditStoreOwnerDetails({
 
   return (
     <div
-      className={`fixed top-0 right-0 h-screen z-20 bg-background text-foreground transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${
-        showEditModal ? "w-[400px]" : "w-0"
-      }`}
+      className={`fixed top-0 right-0 h-screen z-30 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
+        }`}
     >
       {/* Header */}
       <div className="relative p-6 border-b border-gray-200 dark:border-[#324467]">
@@ -150,7 +148,7 @@ function EditStoreOwnerDetails({
             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
           >
             <option value="">Select Gender</option>
-            {GENDER_OPTIONS.map((g) => (
+            {Object.values(GENDER).map((g) => (
               <option key={g} value={g}>
                 {g.charAt(0).toUpperCase() + g.slice(1)}
               </option>

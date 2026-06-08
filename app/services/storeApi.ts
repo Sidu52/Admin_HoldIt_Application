@@ -4,26 +4,26 @@ export const storeApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getStores: builder.query<any, any>({
       query: (params) => ({
-        url: "/stores",
+        url: "/store",
         params,
       }),
       providesTags: (result) => {
         const storesList = result && result.data ? (result.data.stores || result.data.store) : null;
         return storesList
           ? [
-              ...storesList.map(({ _id }: { _id: string }) => ({ type: "Store" as const, id: _id })),
-              { type: "Store", id: "PARTIAL-LIST" },
-            ]
+            ...storesList.map(({ _id }: { _id: string }) => ({ type: "Store" as const, id: _id })),
+            { type: "Store", id: "PARTIAL-LIST" },
+          ]
           : [{ type: "Store", id: "PARTIAL-LIST" }];
       },
     }),
     getStore: builder.query<any, string>({
-      query: (storeId) => `/stores/${storeId}`,
+      query: (storeId) => `/store/${storeId}`,
       providesTags: (result, error, id) => [{ type: "Store", id }],
     }),
     createStore: builder.mutation<any, Partial<any>>({
       query: (data) => ({
-        url: "/stores",
+        url: "/store",
         method: "POST",
         body: data,
       }),
@@ -31,22 +31,22 @@ export const storeApi = api.injectEndpoints({
     }),
     updateStore: builder.mutation<any, { storeId: string; data: Partial<any> }>({
       query: ({ storeId, data }) => ({
-        url: `/stores/${storeId}`,
+        url: `/store/${storeId}`,
         method: "PUT",
         body: data,
       }),
       invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
     }),
-    toggleStoreDuty: builder.mutation<any, { storeId: string; isOnline: boolean }>({
-      query: ({ storeId, isOnline }) => ({
-        url: `/stores/${storeId}/duty`,
+    toggleStoreDuty: builder.mutation<any, { storeId: string; is_online: boolean }>({
+      query: ({ storeId, is_online }) => ({
+        url: `/store/${storeId}/duty`,
         method: "PATCH",
-        body: { isOnline },
+        body: { is_online },
       }),
-      async onQueryStarted({ storeId, isOnline }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ storeId, is_online }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           storeApi.util.updateQueryData("getStore", storeId, (draft) => {
-            if (draft) draft.isOnline = isOnline;
+            if (draft) draft.is_online = is_online;
           })
         );
         try {
@@ -57,36 +57,17 @@ export const storeApi = api.injectEndpoints({
       },
       invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
     }),
-    toggleStoreStatus: builder.mutation<any, { storeId: string; status: string }>({
-      query: ({ storeId, status }) => ({
-        url: `/stores/${storeId}/status`,
+    toggleStoreStatus: builder.mutation<any, { storeId: string; account_status: string; store_deactivated_reason: string }>({
+      query: ({ storeId, account_status, store_deactivated_reason }) => ({
+        url: `/store/${storeId}/status`,
         method: "PATCH",
-        body: { status },
+        body: { account_status, store_deactivated_reason },
       }),
-      async onQueryStarted({ storeId, status }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ storeId, account_status, store_deactivated_reason }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           storeApi.util.updateQueryData("getStore", storeId, (draft) => {
-            if (draft) draft.status = status;
-          })
-        );
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      },
-      invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
-    }),
-    toggleStoreVerification: builder.mutation<any, { storeId: string; isVerified: boolean }>({
-      query: ({ storeId, isVerified }) => ({
-        url: `/stores/${storeId}/verification`,
-        method: "PATCH",
-        body: { isVerified },
-      }),
-      async onQueryStarted({ storeId, isVerified }, { dispatch, queryFulfilled }) {
-        const patchResult = dispatch(
-          storeApi.util.updateQueryData("getStore", storeId, (draft) => {
-            if (draft) draft.isVerified = isVerified;
+            if (draft) draft.account_status = account_status;
+            if (draft) draft.store_deactivated_reason = store_deactivated_reason;
           })
         );
         try {
@@ -99,12 +80,22 @@ export const storeApi = api.injectEndpoints({
     }),
     deleteStores: builder.mutation<any, { storeIds: string[] }>({
       query: ({ storeIds }) => ({
-        url: `/stores/bulk-delete`,
+        url: `/store/bulk-delete`,
         method: "POST",
         body: { ids: storeIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "Store", id: "PARTIAL-LIST" }],
     }),
+    updateLocation: builder.mutation<any, { storeId: string; lat: number, lng: number, address?: string }>(
+      {
+        query: ({ storeId, lat, lng, address }) => ({
+          url: `/store/${storeId}/location`,
+          method: "PATCH",
+          body: { lat, lng, address },
+        }),
+        invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
+      }
+    ),
   }),
 });
 
@@ -115,6 +106,6 @@ export const {
   useUpdateStoreMutation,
   useToggleStoreDutyMutation,
   useToggleStoreStatusMutation,
-  useToggleStoreVerificationMutation,
   useDeleteStoresMutation,
+  useUpdateLocationMutation,
 } = storeApi;

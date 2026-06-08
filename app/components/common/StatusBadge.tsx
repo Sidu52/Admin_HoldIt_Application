@@ -3,15 +3,15 @@
 import React from "react";
 
 interface StatusBadgeProps {
-  status: string | boolean;
+  account_status: string | boolean;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ account_status }) => {
   const base = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border";
 
   // Handle boolean states (e.g. isOnline)
-  if (typeof status === "boolean") {
-    return status ? (
+  if (typeof account_status === "boolean") {
+    return account_status ? (
       <span className={`${base} bg-emerald-500/10 text-emerald-400 border-emerald-500/30`}>
         <span className="size-1.5 rounded-full bg-emerald-400" /> Yes
       </span>
@@ -22,7 +22,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     );
   }
 
-  const s = status.toUpperCase();
+  const s = account_status?.toUpperCase();
 
   switch (s) {
     case "ACTIVE":
@@ -31,7 +31,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     case "VERIFIED":
       return (
         <span className={`${base} bg-emerald-500/10 text-emerald-500 border-emerald-500/30`}>
-          <span className="size-1.5 rounded-full bg-emerald-500" /> {status}
+          <span className="size-1.5 rounded-full bg-emerald-500" /> {s}
         </span>
       );
     case "INACTIVE":
@@ -40,19 +40,19 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     case "UNVERIFIED":
       return (
         <span className={`${base} bg-slate-500/10 text-slate-500 border-slate-500/30`}>
-          <span className="size-1.5 rounded-full bg-slate-500" /> {status}
+          <span className="size-1.5 rounded-full bg-slate-500" /> {s}
         </span>
       );
     case "PENDING":
       return (
         <span className={`${base} bg-amber-500/10 text-amber-500 border-amber-500/30`}>
-          <span className="size-1.5 rounded-full bg-amber-500" /> {status}
+          <span className="size-1.5 rounded-full bg-amber-500" /> {s}
         </span>
       );
     case "BLOCKED":
       return (
         <span className={`${base} bg-red-500/10 text-red-500 border-red-500/30`}>
-          <span className="size-1.5 rounded-full bg-red-500" /> {status}
+          <span className="size-1.5 rounded-full bg-red-500" /> {s}
         </span>
       );
     case "DRIVER_ASSIGNED":
@@ -62,13 +62,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     case "RETURN_REQUESTED":
       return (
         <span className={`${base} bg-blue-500/10 text-blue-500 border-blue-500/30`}>
-          <span className="size-1.5 rounded-full bg-blue-500" /> {status.replace(/_/g, " ")}
+          <span className="size-1.5 rounded-full bg-blue-500" /> {s.replace(/_/g, " ")}
         </span>
       );
     default:
       return (
         <span className={`${base} bg-gray-500/10 text-gray-500 border-gray-500/30`}>
-          {status}
+          {s}
         </span>
       );
   }

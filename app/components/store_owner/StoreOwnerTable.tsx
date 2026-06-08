@@ -100,9 +100,8 @@ const StoreOwnerTable: React.FC<StoreOwnerTableProps> = ({
             {store_owner.map((data) => (
               <tr
                 key={data._id}
-                className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${
-                  selectedIds.has(data._id) ? "bg-primary/[0.02]" : ""
-                }`}
+                className={`group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 ${selectedIds.has(data._id) ? "bg-primary/[0.02]" : ""
+                  }`}
               >
                 <td className="px-6 py-5 text-center">
                   <input
@@ -132,7 +131,7 @@ const StoreOwnerTable: React.FC<StoreOwnerTableProps> = ({
                   </div>
                 </td>
                 <td className="px-6 py-5 text-center">
-                  {getStatusBadge(data.status)}
+                  {getStatusBadge(data.account_status)}
                 </td>
                 <td className="px-6 py-5 hidden md:table-cell text-center">
                   <span className="text-[13px] font-bold text-text-muted-light dark:text-text-muted-dark">

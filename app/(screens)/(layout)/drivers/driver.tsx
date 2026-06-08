@@ -18,7 +18,7 @@ import { api } from "../../../services/api";
 function DriverClient() {
   const router = useRouter();
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", status: "all" });
+  const [filter, setFilter] = useState({ search: "", account_status: "all" });
   const [selectedDriver, setSelectedDriver] = useState<Driver[]>([]);
   const [driverToDelete, setDriverToDelete] = useState<Driver | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -33,7 +33,7 @@ function DriverClient() {
     page: pagination.page,
     limit: pagination.limit,
     search: filter.search,
-    status: filter.status === "all" ? undefined : filter.status,
+    status: filter.account_status === "all" ? undefined : filter.account_status,
   });
 
   const [bulkDeactivateDrivers, { isLoading: isDeleting }] = useBulkDeactivateDriversMutation();
@@ -58,8 +58,8 @@ function DriverClient() {
     }
   };
 
-  const handleFilterChange = ({ search, status }: { search: string; status: string }) => {
-    setFilter({ search, status });
+  const handleFilterChange = ({ search, account_status }: { search: string; account_status: string }) => {
+    setFilter({ search, account_status });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 
@@ -97,7 +97,7 @@ function DriverClient() {
               Deactivate ({selectedDriver.length})
             </button>
           )}
-          
+
           <div className="card-premium py-3 px-6 flex items-center gap-4 bg-surface-light dark:bg-surface-dark border-none shadow-premium/5">
             <div className="flex flex-col">
               <span className="text-[10px] font-bold text-text-muted-light uppercase tracking-widest leading-none mb-1">

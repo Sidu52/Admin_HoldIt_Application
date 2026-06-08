@@ -10,9 +10,9 @@ export const storeOwnerApi = api.injectEndpoints({
       providesTags: (result) =>
         result && result.data && result.data.owners
           ? [
-              ...result.data.owners.map(({ _id }: { _id: string }) => ({ type: "StoreOwner" as const, id: _id })),
-              { type: "StoreOwner", id: "PARTIAL-LIST" },
-            ]
+            ...result.data.owners.map(({ _id }: { _id: string }) => ({ type: "StoreOwner" as const, id: _id })),
+            { type: "StoreOwner", id: "PARTIAL-LIST" },
+          ]
           : [{ type: "StoreOwner", id: "PARTIAL-LIST" }],
     }),
     getStoreOwner: builder.query<any, string>({
@@ -35,16 +35,22 @@ export const storeOwnerApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { ownerId }) => [{ type: "StoreOwner", id: ownerId }, { type: "StoreOwner", id: "PARTIAL-LIST" }],
     }),
-    updateStoreOwnerStatus: builder.mutation<any, { ownerId: string; status: string }>({
-      query: ({ ownerId, status }) => ({
+    updateStoreOwnerStatus: builder.mutation<any, { ownerId: string; account_status: string; account_deactivated_reason: string }>({
+      query: ({ ownerId, account_status, account_deactivated_reason }) => ({
         url: `/storeowner/${ownerId}/status`,
         method: "PATCH",
-        body: { status },
+        body: {
+          account_status,
+          account_deactivated_reason,
+        },
       }),
-      async onQueryStarted({ ownerId, status }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ ownerId, account_status, account_deactivated_reason }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           storeOwnerApi.util.updateQueryData("getStoreOwner", ownerId, (draft) => {
-            if (draft) draft.status = status;
+            if (draft) {
+              draft.account_status = account_status;
+              if (account_deactivated_reason !== undefined) draft.account_deactivated_reason = account_deactivated_reason;
+            }
           })
         );
         try {
@@ -58,7 +64,7 @@ export const storeOwnerApi = api.injectEndpoints({
     deleteStoreOwners: builder.mutation<any, { ownerIds: string[] }>({
       query: ({ ownerIds }) => ({
         url: `/storeowner/bulk-delete`,
-        method: "POST",
+        method: "DELETE",
         body: { ids: ownerIds, reason: "Admin bulk deactivation" },
       }),
       invalidatesTags: [{ type: "StoreOwner", id: "PARTIAL-LIST" }],

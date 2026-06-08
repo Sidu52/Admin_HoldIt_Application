@@ -7,7 +7,7 @@ export interface UserProfile {
   phone: string;
   address: string;
   date_of_birth: string;
-  status: string;
+  account_status: string;
   gender: string;
   last_login_at: string;
   isVerified: boolean;

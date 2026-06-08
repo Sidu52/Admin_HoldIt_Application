@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 import { debounce } from "@/app/utils/helper";
-import { ROLES } from "@/app/constants/constant";
 import {
   BiSearch,
   BiFilter,
@@ -14,6 +13,7 @@ import {
   BiLock,
 } from "react-icons/bi";
 import { FilterState } from "@/app/types/user";
+import { ROLES } from "@/app/enum";
 
 const STATUS_OPTIONS = [
   { label: "All Status", value: "", icon: <BiUser />, color: "text-slate-400" },
@@ -45,7 +45,7 @@ const STATUS_OPTIONS = [
 
 interface TeamMemberFiltersProps {
   filter: FilterState & { role?: string };
-  onFilterChange: (value: { search: string; status: string; role: string }) => void;
+  onFilterChange: (value: { search: string; account_status: string; role: string }) => void;
 }
 
 export default function TeamMemberFilters({
@@ -53,13 +53,13 @@ export default function TeamMemberFilters({
   onFilterChange,
 }: TeamMemberFiltersProps) {
   const [searchInput, setSearchInput] = useState(filter.search);
-  const [status, setStatus] = useState(filter.status);
+  const [status, setStatus] = useState(filter.account_status);
   const [role, setRole] = useState(filter.role || "all");
 
   // ---------------- Debounced handler ----------------
   const debouncedFilter = useMemo(
     () =>
-      debounce((payload: { search: string; status: string; role: string }) => {
+      debounce((payload: { search: string; account_status: string; role: string }) => {
         onFilterChange(payload);
       }, 500),
     [onFilterChange]
@@ -69,22 +69,22 @@ export default function TeamMemberFilters({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchInput(value);
-    debouncedFilter({ search: value, status, role });
+    debouncedFilter({ search: value, account_status: status, role });
   };
 
   const handleClearSearch = () => {
     setSearchInput("");
-    onFilterChange({ search: "", status, role });
+    onFilterChange({ search: "", account_status: status, role });
   };
 
   const handleStatusChange = (statusValue: string) => {
     setStatus(statusValue);
-    onFilterChange({ search: searchInput, status: statusValue, role });
+    onFilterChange({ search: searchInput, account_status: statusValue, role });
   };
 
   const handleRoleChange = (roleValue: string) => {
     setRole(roleValue);
-    onFilterChange({ search: searchInput, status, role: roleValue });
+    onFilterChange({ search: searchInput, account_status: status, role: roleValue });
   };
 
   // ---------------- Render ----------------
@@ -164,10 +164,9 @@ export default function TeamMemberFilters({
                   className={`w-full text-left px-4 py-2.5 text-sm
                     hover:bg-slate-50 dark:hover:bg-[#232f48]
                     transition-colors flex items-center gap-2
-                    ${
-                      status === option.value
-                        ? "text-primary bg-primary/10"
-                        : "text-slate-700 dark:text-slate-300"
+                    ${status === option.value
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-700 dark:text-slate-300"
                     }`}
                 >
                   <span className={`text-lg ${option.color}`}>
@@ -212,17 +211,16 @@ export default function TeamMemberFilters({
               >
                 All Roles
               </button>
-              {ROLES.map((roleOption) => (
+              {Object.values(ROLES).map((roleOption) => (
                 <button
                   key={roleOption}
                   onClick={() => handleRoleChange(roleOption)}
                   className={`w-full text-left px-4 py-2.5 text-sm capitalize
                     hover:bg-slate-50 dark:hover:bg-[#232f48]
                     transition-colors flex items-center gap-2
-                    ${
-                      role === roleOption
-                        ? "text-primary bg-primary/10 font-bold"
-                        : "text-slate-700 dark:text-slate-300"
+                    ${role === roleOption
+                      ? "text-primary bg-primary/10 font-bold"
+                      : "text-slate-700 dark:text-slate-300"
                     }`}
                 >
                   {roleOption.replace("_", " ")}

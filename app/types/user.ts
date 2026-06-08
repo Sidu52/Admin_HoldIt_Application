@@ -8,6 +8,7 @@ export interface Address {
   coordinates?: number[];
   is_serviceable?: boolean;
   is_default?: boolean;
+  type?: "Home" | "Office" | "Other";
 }
 
 export interface User {
@@ -16,17 +17,16 @@ export interface User {
   last_name: string;
   email: string;
   gender: string;
-  dob: string;
-  status: string;
-  last_login_at: Date;
+  date_of_birth: string;
+  account_status: string;
   is_serviceable: boolean;
+  phone: string;
+  verification_status: string;
   createdAt: Date;
   updatedAt: Date;
   addresses?: Address[];
-  phone: string;
-  is_active: boolean;
+  last_login_at: Date;
   last_active_at: Date;
-  isVerified: boolean;
 }
 
 export interface UserUpdateData {
@@ -35,14 +35,14 @@ export interface UserUpdateData {
   email: string;
   phone: string;
   gender: string;
-  dob: string;
+  date_of_birth: string;
   addresses?: Address[];
+  verification_status: string;
 }
 
 export interface UpdateUserStatusData {
-  status: string;
+  account_status: string;
   reason: string;
-  is_active: boolean;
 }
 
 export interface Pagination {
@@ -54,7 +54,7 @@ export interface Pagination {
 
 export interface FilterState {
   search: string;
-  status: string;
+  account_status: string;
 }
 
 export interface UsersResponse {
