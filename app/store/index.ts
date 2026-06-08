@@ -1,20 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import uiReducer from "./slices/uiSlice";
-import profileReducer from "./slices/profileSlice";
-import bookingReducer from "./slices/bookingSlice";
-import dashboardSlice from "./slices/dashboardSlice";
-import userSlice from "./slices/usersSlice"
+import { api } from "../services/api";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     ui: uiReducer,
-    profile: profileReducer,
-    booking: bookingReducer,
-    dashboard: dashboardSlice,
-    users: userSlice,
+    [api.reducerPath]: api.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(api.middleware),
   devTools: process.env.NODE_ENV !== "production",
 });
 

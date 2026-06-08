@@ -1,16 +1,20 @@
 "use client";
 
 import { FaEye } from "react-icons/fa";
-import { useAppSelector } from "@/app/store/hooks";
 import { Booking } from "@/app/types/booking";
 import NoData from "@/app/NoData";
+import { Pagination } from "@/app/types/user";
 
-const ActivityTable = () => {
-  const { bookings, pagination } = useAppSelector((state) => state.booking);
+type Props = {
+  bookings: Booking[];
+  pagination: Pagination;
+};
 
-  if (bookings && bookings.length==0){
-  return <NoData/>
-} 
+const ActivityTable = ({ data }: { data: { data: Props } }) => {
+  const { bookings, pagination } = data.data;
+  if (bookings && bookings.length == 0) {
+    return <NoData />
+  }
 
   const getStatusStyles = (status: Booking["status"]) => {
     const styles = {
@@ -68,8 +72,11 @@ const ActivityTable = () => {
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {bookings.map((activity) => {
-              const statusStyles = getStatusStyles(activity.status);
-
+              const statusStyles = getStatusStyles(activity.status) ?? {
+                bg: "bg-blue-100 dark:bg-blue-500/10",
+                text: "text-blue-800 dark:text-blue-400",
+                border: "border-blue-200 dark:border-blue-500/20",
+              };
               return (
                 <tr
                   key={activity.id}
@@ -111,7 +118,7 @@ const ActivityTable = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-slate-400 hover:text-primary dark:hover:text-primary transition-colors p-1">
+                    <button className="text-slate-400 hover:text-[#135bec] dark:hover:text-[#135bec] transition-colors p-1">
                       <FaEye className="text-lg" />
                     </button>
                   </td>

@@ -7,20 +7,23 @@ import {
   SignupPayload,
 } from "@/app/types/auth";
 import { useRouter, usePathname } from "next/navigation";
-import { useAppDispatch } from "../store/hooks";
+import toast from "react-hot-toast";
 
 export const useAuth = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const isLoginPage = pathname === "/login";
   // Login
   const loginMutation = useMutation<AuthResponse, any, LoginCredentials>({
     mutationFn: login,
     onSuccess: () => {
+      toast.success("Login successful");
       queryClient.invalidateQueries({ queryKey: ["profile"] }); // Invalidate user profile query
       router.push("/dashboard");
+    },
+    onError: () => {
+      toast.error("Login failed");
     },
   });
 

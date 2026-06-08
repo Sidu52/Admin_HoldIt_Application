@@ -1,0 +1,1 @@
+app/store/thunks/driverThunks.ts(2,27): error TS2307: Cannot find module '@/app/api/client' or its corresponding type declarations.

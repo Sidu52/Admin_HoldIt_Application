@@ -4,19 +4,20 @@ export interface LoginCredentials {
 }
 
 export interface SignupPayload {
-  token: string;
   credentials: SignupCredentials;
 }
 
 
 export interface SignupCredentials {
+  invite_token: string;
   first_name: string;
   last_name: string;
   phone: string;
+  email: string;
   address: string;
-  dateOfBirth: string;
+  date_of_birth: string;
   password: string;
-  confirmPassword: string;
+  confirm_password: string;
   gender: string;
 }
 
@@ -29,10 +30,6 @@ export interface AuthResponse {
 }
 
 export interface RefreshTokenResponse {
-  data: {
-    accessToken: string;
-    expiresIn: number;
-  };
   message: string;
   status: string;
 }

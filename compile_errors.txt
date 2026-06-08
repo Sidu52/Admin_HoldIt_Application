@@ -1,0 +1,11 @@
+app/components/driver/DriverTable.tsx(138,13): error TS2322: Type '{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; siblingCount: number; }' is not assignable to type 'IntrinsicAttributes & PaginationProps'.
+  Property 'currentPage' does not exist on type 'IntrinsicAttributes & PaginationProps'.
+app/components/store/StoreTable.tsx(135,13): error TS2322: Type '{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; siblingCount: number; }' is not assignable to type 'IntrinsicAttributes & PaginationProps'.
+  Property 'currentPage' does not exist on type 'IntrinsicAttributes & PaginationProps'.
+app/components/store_owner/StoreOwnerTable.tsx(139,13): error TS2322: Type '{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; siblingCount: number; }' is not assignable to type 'IntrinsicAttributes & PaginationProps'.
+  Property 'currentPage' does not exist on type 'IntrinsicAttributes & PaginationProps'.
+app/components/team/TeamMemberTable.tsx(135,13): error TS2322: Type '{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; siblingCount: number; }' is not assignable to type 'IntrinsicAttributes & PaginationProps'.
+  Property 'currentPage' does not exist on type 'IntrinsicAttributes & PaginationProps'.
+app/components/user/UserTable.tsx(138,13): error TS2322: Type '{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; siblingCount: number; }' is not assignable to type 'IntrinsicAttributes & PaginationProps'.
+  Property 'currentPage' does not exist on type 'IntrinsicAttributes & PaginationProps'.
+app/store/thunks/driverThunks.ts(2,27): error TS2307: Cannot find module '@/app/api/client' or its corresponding type declarations.

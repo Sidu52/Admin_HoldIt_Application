@@ -1,0 +1,208 @@
+"use client";
+
+import { GENDER } from "@/app/enum";
+import { User, UserUpdateData } from "@/app/types/user";
+import React, { useState } from "react";
+import { MdClose } from "react-icons/md";
+
+interface UserProps {
+  showEditModal: boolean;
+  user: User;
+  onClose: () => void;
+  handleSubmit: (data: UserUpdateData) => void;
+}
+
+function EditUserDetails({
+  user,
+  showEditModal,
+  onClose,
+  handleSubmit,
+}: UserProps) {
+  const [form, setForm] = useState<UserUpdateData>({
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    phone: user.phone || "",
+    gender: user.gender || "",
+    date_of_birth: user.date_of_birth || "",
+    verification_status: user.verification_status || "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const submitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit(form);
+  };
+
+  return (
+    <div className={`fixed top-0 right-0 h-screen z-40 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
+      }`}
+    >
+      {/* Header */}
+      <div className="relative p-6 border-b border-gray-200 dark:border-[#324467]">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Edit User Details
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+          Update user profile
+        </p>
+
+        {/* Close button */}
+        <div
+          className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition-transform duration-150"
+          onClick={onClose}
+        >
+          <MdClose size={24} />
+        </div>
+      </div>
+
+      {/* Form */}
+      <form className="p-6 space-y-4" onSubmit={submitForm}>
+        {/* First Name */}
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="first_name"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            value={form.first_name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
+          />
+        </div>
+
+        {/* Last Name */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="last_name">
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            value={form.last_name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="email">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            required
+          />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="phone">
+            Phone
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="gender">
+            Gender
+          </label>
+          <select
+            id="gender"
+            name="gender"
+            value={form.gender}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="">Select Gender</option>
+            {Object.values(GENDER).map((g) => (
+              <option key={g} value={g}>
+                {g.charAt(0).toUpperCase() + g.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* DOB */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="date_of_birth">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="date_of_birth"
+            name="date_of_birth"
+            value={form.date_of_birth}
+            onChange={handleChange}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        {/* Verified Status Toggle */}
+        {/* <div className="flex items-center justify-between p-3 border rounded-lg dark:border-gray-600">
+          <div>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              Verified Status
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Toggle to verify or unverify this account
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, verification_status: form.verification_status === "verified" ? "rejected" : "verified" })}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300
+      ${form.verification_status === "verified" ? "bg-green-600" : "bg-gray-400"}
+    `}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300
+        ${form.verification_status === "verified" ? "translate-x-6" : "translate-x-1"}
+      `}
+            />
+          </button>
+        </div> */}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors duration-150"
+        >
+          Update User
+        </button>
+      </form>
+    </div>
+  );
+}
+
+export default EditUserDetails;

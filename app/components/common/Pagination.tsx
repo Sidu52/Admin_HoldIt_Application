@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
+import { GoArrowLeft, GoArrowRight } from "react-icons/go";
 
 interface PaginationProps {
   currentPage: number;
@@ -13,10 +14,12 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
   siblingCount = 1,
 }) => {
+
   const paginationRange = useMemo(() => {
     if (totalPages <= 1) return [];
 
     const totalNumbers = siblingCount * 2 + 5;
+
     if (totalNumbers >= totalPages) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
@@ -28,18 +31,17 @@ const Pagination: React.FC<PaginationProps> = ({
     const showRightDots = rightSibling < totalPages - 1;
 
     const pages: (number | string)[] = [];
-
     pages.push(1);
-
     if (showLeftDots) pages.push("...");
 
     for (let i = leftSibling; i <= rightSibling; i++) {
-      if (i !== 1 && i !== totalPages) pages.push(i);
+      if (i !== 1 && i !== totalPages) {
+        pages.push(i);
+      }
     }
 
     if (showRightDots) pages.push("...");
-
-    if (totalPages !== 1) pages.push(totalPages);
+    if (totalPages > 1) pages.push(totalPages);
 
     return pages;
   }, [currentPage, totalPages, siblingCount]);
@@ -47,47 +49,49 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="bg-slate-50 dark:bg-[#192233] px-6 py-4 border-t border-slate-200 dark:border-[#324467] flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        {/* Previous */}
+    <nav className="flex items-center justify-between px-4 py-4 w-full border-t border-gray-200">
+      {/* Previous */}
+      <div className="flex w-0 flex-1">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="flex items-center justify-center size-8 rounded hover:bg-slate-200 dark:hover:bg-[#324467] text-slate-500 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pr-1 pt-4 text-sm font-medium text-gray-500"
         >
-          <span className="material-symbols-outlined text-lg">
-            chevron_left
-          </span>
+          <GoArrowLeft className="mr-1 size-5" />
+          Previous
         </button>
+      </div>
 
-        {/* Pages */}
-        {paginationRange.map((page, index) => (
+      {/* Pages */}
+      <div className="hidden md:flex">
+        {paginationRange.map((p, index) => (
           <button
             key={index}
-            onClick={() => typeof page === "number" && onPageChange(page)}
-            disabled={page === "..."}
-            className={`flex items-center justify-center size-8 rounded text-sm font-medium transition-colors ${
-              currentPage === page
-                ? "bg-primary text-white shadow-md shadow-primary/20"
-                : "hover:bg-slate-200 dark:hover:bg-[#324467] text-slate-700 dark:text-slate-300"
-            } disabled:cursor-default`}
+            disabled={p === "..."}
+            onClick={() => typeof p === "number" && onPageChange(p)}
+            className={`inline-flex items-center px-4 pt-4 text-sm font-medium border-t-2 ${
+              p === currentPage
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
           >
-            {page}
+            {p}
           </button>
         ))}
+      </div>
 
-        {/* Next */}
+      {/* Next */}
+      <div className="flex w-0 flex-1 justify-end">
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="flex items-center justify-center size-8 rounded hover:bg-slate-200 dark:hover:bg-[#324467] text-slate-500 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pl-1 pt-4 text-sm font-medium text-gray-500"
         >
-          <span className="material-symbols-outlined text-lg">
-            chevron_right
-          </span>
+          Next
+          <GoArrowRight className="ml-1 size-5" />
         </button>
       </div>
-    </div>
+    </nav>
   );
 };
 
