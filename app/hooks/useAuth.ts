@@ -19,7 +19,7 @@ export const useAuth = () => {
     mutationFn: login,
     onSuccess: () => {
       toast.success("Login successful");
-      queryClient.invalidateQueries({ queryKey: ["profile"] }); // Invalidate user profile query
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       router.push("/dashboard");
     },
     onError: () => {
