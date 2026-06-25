@@ -1,9 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { API_URL } from "@/app/config/constants";
 import { refreshToken } from "../api/auth";
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "/api/v1/admin",
   withCredentials: true,
   timeout: 15000,
   headers: {
