@@ -40,16 +40,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-[#0b0f1a] dark:via-[#111827] dark:to-[#0b0f1a] relative overflow-hidden">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-100 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-full blur-3xl"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#f8fafc_1px,transparent_1px),linear-gradient(#f8fafc_1px,transparent_1px)] bg-[size:32px_32px] opacity-10"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 dark:bg-blue-950/20 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-100 dark:bg-cyan-950/20 rounded-full mix-blend-multiply opacity-70 blur-xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-blue-50/50 to-cyan-50/50 dark:from-blue-950/10 dark:to-cyan-950/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#f8fafc_1px,transparent_1px),linear-gradient(#f8fafc_1px,transparent_1px)] dark:bg-[linear-gradient(90deg,#1f2937_1px,transparent_1px),linear-gradient(#1f2937_1px,transparent_1px)] bg-[size:32px_32px] opacity-10"></div>
       </div>
 
       <div className="layout-container flex h-full grow flex-col relative z-10 items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-[440px] flex flex-col bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
+        <div className="w-full max-w-[440px] flex flex-col bg-white/90 dark:bg-[#111827]/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/80 dark:border-slate-800/80 overflow-hidden">
           <div className="relative px-8 pt-10 pb-8 flex flex-col items-center">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500"></div>
             <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 mb-6 group hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300">
@@ -57,10 +57,10 @@ export default function LoginPage() {
               <RiAdminFill className="text-white text-[34px] relative z-10" />
               <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:border-white/40 transition-colors"></div>
             </div>
-            <h2 className="text-gray-900 text-[32px] font-bold leading-tight text-center tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            <h2 className="text-gray-900 dark:text-white text-[32px] font-bold leading-tight text-center tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">
               Welcome Back
             </h2>
-            <p className="text-gray-600 text-base font-normal leading-relaxed pt-3 text-center max-w-[320px]">
+            <p className="text-gray-600 dark:text-gray-400 text-base font-normal leading-relaxed pt-3 text-center max-w-[320px]">
               Sign in to your admin account to continue
             </p>
           </div>
@@ -73,19 +73,19 @@ export default function LoginPage() {
               {/* Email Field */}
               <div className="flex flex-col gap-3">
                 <label
-                  className="text-gray-700 text-sm font-semibold leading-normal tracking-wide"
+                  className="text-gray-700 dark:text-gray-300 text-sm font-semibold leading-normal tracking-wide"
                   htmlFor="email"
                 >
                   Email Address
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
-                    <div className="p-2 rounded-lg bg-blue-50 group-focus-within:bg-blue-100 transition-colors">
-                      <FaMailBulk className="text-blue-500 group-focus-within:text-blue-600 text-[18px]" />
+                    <div className="p-2 rounded-lg bg-blue-50 dark:bg-slate-800 group-focus-within:bg-blue-100 dark:group-focus-within:bg-slate-700 transition-colors">
+                      <FaMailBulk className="text-blue-500 dark:text-blue-400 group-focus-within:text-blue-600 text-[18px]" />
                     </div>
                   </div>
                   <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 bg-white/50 hover:bg-white h-14 placeholder:text-gray-400 pl-[68px] pr-4 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 shadow-sm"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-[#1f2937]/50 hover:bg-white dark:hover:bg-[#1f2937] h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-[68px] pr-4 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 dark:hover:border-slate-700 shadow-sm"
                     id="email"
                     placeholder="admin@example.com"
                     type="email"
@@ -102,13 +102,13 @@ export default function LoginPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <label
-                    className="text-gray-700 text-sm font-semibold leading-normal tracking-wide"
+                    className="text-gray-700 dark:text-gray-300 text-sm font-semibold leading-normal tracking-wide"
                     htmlFor="password"
                   >
                     Password
                   </label>
                   <Link
-                    className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors cursor-pointer hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-semibold transition-colors cursor-pointer hover:underline"
                     href="/forgot-password"
                   >
                     Forgot password?
@@ -116,12 +116,12 @@ export default function LoginPage() {
                 </div>
                 <div className="relative flex w-full flex-1 items-stretch rounded-xl group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
-                    <div className="p-2 rounded-lg bg-blue-50 group-focus-within:bg-blue-100 transition-colors">
-                      <FaKey className="text-blue-500 group-focus-within:text-blue-600 text-[18px]" />
+                    <div className="p-2 rounded-lg bg-blue-50 dark:bg-slate-800 group-focus-within:bg-blue-100 dark:group-focus-within:bg-slate-700 transition-colors">
+                      <FaKey className="text-blue-500 dark:text-blue-400 group-focus-within:text-blue-600 text-[18px]" />
                     </div>
                   </div>
                   <input
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 bg-white/50 hover:bg-white h-14 placeholder:text-gray-400 pl-[68px] pr-14 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 shadow-sm"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 border-2 border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-[#1f2937]/50 hover:bg-white dark:hover:bg-[#1f2937] h-14 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-[68px] pr-14 text-base font-normal leading-normal transition-all duration-200 hover:border-gray-300 dark:hover:border-slate-700 shadow-sm"
                     id="password"
                     placeholder="Enter your password"
                     type={showPassword ? "text" : "password"}
@@ -135,14 +135,14 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
-                    className="absolute right-0 top-0 h-14 w-14 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:rounded-lg disabled:opacity-50"
+                    className="absolute right-0 top-0 h-14 w-14 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:rounded-lg disabled:opacity-50"
                   >
                     {showPassword ? (
-                      <div className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                         <FaEyeSlash className="text-[20px]" />
                       </div>
                     ) : (
-                      <div className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                         <FaEye className="text-[20px]" />
                       </div>
                     )}

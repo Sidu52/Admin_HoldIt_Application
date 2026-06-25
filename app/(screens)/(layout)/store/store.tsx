@@ -67,10 +67,10 @@ function StoreClient() {
       <header className="flex flex-col gap-6 pt-6 pb-2 shrink-0">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="flex flex-col max-w-2xl gap-1.5">
-            <h1 className="text-[28px] font-bold text-slate-900 tracking-tight">
+            <h1 className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight">
               Store Management
             </h1>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <p className="text-slate-500 dark:text-text-muted-dark text-sm leading-relaxed">
               Manage and view all registered stores across the platform through an
               editorial-grade interface designed for high-level orchestration.
             </p>
@@ -79,18 +79,18 @@ function StoreClient() {
             {selectedStore.length > 0 && (
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="flex items-center gap-2 h-10 px-4 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-sm font-medium rounded-lg transition-colors"
+                className="flex items-center gap-2 h-10 px-4 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg transition-colors animate-fade-in"
               >
                 <MdOutlineDelete size={18} />
                 Delete ({selectedStore.length})
               </button>
             )}
-            <div className="bg-[#f8f9fc] border border-slate-200/60 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
+            <div className="bg-[#f8f9fc] dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-text-muted-dark uppercase tracking-widest">
                   Total Stores
                 </span>
-                <span className="text-2xl font-bold text-slate-900 mt-0.5">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">
                   {paginationData?.totalItems?.toLocaleString() ?? data?.totalRecords?.toLocaleString() ?? "0"}
                 </span>
               </div>
