@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "../../hooks/useToast";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import Link from "next/link";
+import { setCredentials } from "@/app/store/slices/authSlice";
 import {
   FaEye,
   FaEyeSlash,
@@ -27,7 +28,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ email, password }).unwrap();
+      const response = await login({ email, password }).unwrap();
+      if (response?.data?.user) {
+        dispatch(setCredentials({ user: response.data.user }));
+      }
       toast.success("Successfully logged in");
       router.push("/dashboard");
     } catch (err: any) {

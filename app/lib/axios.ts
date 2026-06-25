@@ -46,9 +46,19 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError);
 
-        // Refresh failed → logout
+        // Refresh failed → logout and clear cookies on the backend
+        try {
+          await api.post("/auth/logout");
+        } catch (logoutError) {
+          // ignore
+        }
+
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          const path = window.location.pathname;
+          const isPublicRoute = ["/login", "/signup", "/forgot-password", "/reset-password"].some(p => path.startsWith(p));
+          if (!isPublicRoute) {
+            window.location.href = "/login";
+          }
         }
 
         return Promise.reject(refreshError);

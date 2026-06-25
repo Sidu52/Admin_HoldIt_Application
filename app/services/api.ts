@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError 
 import { logout } from "../store/slices/authSlice";
 import { Mutex } from "async-mutex";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4000/api/v1/admin";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "/api/v1/admin";
 //                                                     ↑ direct to backend, not proxied
 
 const baseQuery = fetchBaseQuery({
@@ -34,6 +34,19 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
           result = await baseQuery(args, api, extraOptions);
         } else {
           api.dispatch(logout());
+          // Clear HttpOnly cookies on the backend before redirecting to prevent a redirect loop
+          await baseQuery(
+            { url: "/auth/logout", method: "POST" },
+            api,
+            extraOptions
+          );
+          if (typeof window !== "undefined") {
+            const path = window.location.pathname;
+            const isPublicRoute = ["/login", "/signup", "/forgot-password", "/reset-password"].some(p => path.startsWith(p));
+            if (!isPublicRoute) {
+              window.location.href = "/login";
+            }
+          }
         }
       } finally {
         release();
