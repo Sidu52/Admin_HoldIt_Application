@@ -120,21 +120,21 @@ export default function BookingsClient() {
       <header className="flex flex-col gap-6 pt-6 pb-2 shrink-0">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="flex flex-col max-w-2xl gap-1.5">
-            <h1 className="text-[28px] font-bold text-slate-900 tracking-tight">
+            <h1 className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight">
               Booking Management
             </h1>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <p className="text-slate-500 dark:text-text-muted-dark text-sm leading-relaxed">
               View and manage all bookings in the system through an
               editorial-grade interface designed for high-level orchestration.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            <div className="bg-[#f8f9fc] border border-slate-200/60 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
+            <div className="bg-[#f8f9fc] dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl p-4 flex items-center justify-between min-w-[200px] shadow-sm">
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-text-muted-dark uppercase tracking-widest">
                   Total Bookings
                 </span>
-                <span className="text-2xl font-bold text-slate-900 mt-0.5">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">
                   {paginationData?.totalItems?.toLocaleString() ?? "0"}
                 </span>
               </div>
@@ -246,37 +246,37 @@ export default function BookingsClient() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col h-full bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex flex-col h-full bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl shadow-sm overflow-hidden">
             <div className="flex-1 overflow-auto">
-              <table className="w-full border-collapse text-sm text-slate-800">
-                <thead className="sticky top-0 z-10 bg-slate-50/80 backdrop-blur-sm border-b border-slate-100">
+              <table className="w-full border-collapse text-sm text-text-main-light dark:text-text-main-dark">
+                <thead className="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
                   <tr>
-                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-slate-500">
+                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark">
                       Booking ID
                     </th>
-                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-slate-500">
+                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark">
                       User
                     </th>
-                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-slate-500">
+                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark">
                       Status
                     </th>
-                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-slate-500 hidden md:table-cell">
+                    <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark hidden md:table-cell">
                       Booking Time
                     </th>
-                    <th className="px-4 py-4 text-right font-semibold tracking-wider uppercase text-[11px] text-slate-500">
+                    <th className="px-4 py-4 text-right font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100/80">
+                <tbody className="divide-y divide-border-light dark:divide-border-dark">
                   {bookings.map((booking) => (
                     <tr
                       key={booking.id}
-                      className="group transition-all duration-200 hover:bg-slate-50/80 bg-white"
+                      className="group transition-all duration-200 hover:bg-background-light dark:hover:bg-background-dark/50 bg-surface-light dark:bg-surface-dark"
                     >
                       {/* BOOKING ID */}
                       <td className="px-4 py-4">
-                        <span className="font-semibold text-slate-800">
+                        <span className="font-semibold text-text-main-light dark:text-text-main-dark">
                           {booking.bookingId}
                         </span>
                       </td>
@@ -291,10 +291,10 @@ export default function BookingsClient() {
                             {!booking.userAvatar && booking.userName?.charAt(0).toUpperCase()}
                           </div>
                           <div className="leading-tight">
-                            <p className="font-semibold text-slate-800 cursor-default">
+                            <p className="font-semibold text-text-main-light dark:text-text-main-dark cursor-default">
                               {booking.userName}
                             </p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
+                            <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark mt-0.5">
                               {booking.userEmail}
                             </p>
                           </div>
@@ -310,7 +310,7 @@ export default function BookingsClient() {
 
                       {/* TIME */}
                       <td className="px-4 py-4 hidden md:table-cell">
-                        <span className="text-slate-600 text-[13px]">
+                        <span className="text-text-muted-light dark:text-text-muted-dark text-[13px]">
                           {booking.bookingTime}
                         </span>
                       </td>
@@ -321,7 +321,7 @@ export default function BookingsClient() {
                           <button
                             onClick={() => router.push(`/booking/${booking.id}`)}
                             title="View Details"
-                            className="text-slate-400 hover:text-blue-600 cursor-pointer transition-colors p-1"
+                            className="text-text-muted-light dark:text-text-muted-dark hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors p-1"
                           >
                             <FaEye size={18} />
                           </button>
@@ -335,7 +335,7 @@ export default function BookingsClient() {
 
             {/* PAGINATION */}
             {(paginationData?.totalPages ?? 1) > 1 && (
-              <div className="border-t border-slate-100 bg-white p-4">
+              <div className="border-t border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-4">
                 <Pagination
                   currentPage={paginationData?.currentPage ?? pagination.page}
                   totalPages={paginationData?.totalPages ?? 1}

@@ -187,13 +187,13 @@ const buildStatsCards = (stats: any): StatsCard[] => {
       stats: [
         {
           label: "In Progress",
-          value: stats.bookings.inProgress,
+          value: (stats.bookings?.total || 0) - (stats.bookings?.statusWise?.delivered || 0) - (stats.bookings?.statusWise?.cancelled || 0),
           bgColor: "bg-blue-100 dark:bg-blue-500/10",
           textColor: "text-blue-600 dark:text-blue-400",
         },
         {
           label: "Completed",
-          value: stats.bookings.completed,
+          value: stats.bookings?.statusWise?.delivered || 0,
           bgColor: "bg-green-100 dark:bg-green-500/10",
           textColor: "text-green-600 dark:text-green-400",
         },

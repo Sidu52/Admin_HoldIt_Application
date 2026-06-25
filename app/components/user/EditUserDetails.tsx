@@ -43,21 +43,21 @@ function EditUserDetails({
   };
 
   return (
-    <div className={`fixed top-0 right-0 h-screen z-40 bg-[#fff] text-[#000] transition-all duration-150 ease-in-out shadow-2xl overflow-auto ${showEditModal ? "w-[400px]" : "w-0"
+    <div className={`fixed top-0 right-0 h-screen z-40 bg-surface-light dark:bg-surface-dark text-text-main-light dark:text-text-main-dark transition-all duration-150 ease-in-out shadow-2xl overflow-auto border-l border-border-light dark:border-border-dark ${showEditModal ? "w-[400px]" : "w-0"
       }`}
     >
       {/* Header */}
-      <div className="relative p-6 border-b border-gray-200 dark:border-[#324467]">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="relative p-6 border-b border-border-light dark:border-border-dark">
+        <h2 className="text-2xl font-bold text-text-main-light dark:text-text-main-dark">
           Edit User Details
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+        <p className="text-sm text-text-muted-light dark:text-text-muted-dark mt-1">
           Update user profile
         </p>
 
         {/* Close button */}
         <div
-          className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition-transform duration-150"
+          className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition-transform duration-150 text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
           onClick={onClose}
         >
           <MdClose size={24} />
@@ -69,7 +69,7 @@ function EditUserDetails({
         {/* First Name */}
         <div>
           <label
-            className="block text-sm font-medium mb-1"
+            className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1"
             htmlFor="first_name"
           >
             First Name
@@ -80,14 +80,14 @@ function EditUserDetails({
             name="first_name"
             value={form.first_name}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
             required
           />
         </div>
 
         {/* Last Name */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="last_name">
+          <label className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1" htmlFor="last_name">
             Last Name
           </label>
           <input
@@ -96,14 +96,14 @@ function EditUserDetails({
             name="last_name"
             value={form.last_name}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
             required
           />
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="email">
+          <label className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1" htmlFor="email">
             Email
           </label>
           <input
@@ -112,14 +112,14 @@ function EditUserDetails({
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
             required
           />
         </div>
 
         {/* Phone */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="phone">
+          <label className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1" htmlFor="phone">
             Phone
           </label>
           <input
@@ -128,13 +128,13 @@ function EditUserDetails({
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
           />
         </div>
 
         {/* Gender */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="gender">
+          <label className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1" htmlFor="gender">
             Gender
           </label>
           <select
@@ -142,7 +142,7 @@ function EditUserDetails({
             name="gender"
             value={form.gender}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
           >
             <option value="">Select Gender</option>
             {Object.values(GENDER).map((g) => (
@@ -155,7 +155,7 @@ function EditUserDetails({
 
         {/* DOB */}
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="date_of_birth">
+          <label className="block text-sm font-semibold text-text-main-light dark:text-text-main-dark mb-1" htmlFor="date_of_birth">
             Date of Birth
           </label>
           <input
@@ -164,39 +164,14 @@ function EditUserDetails({
             name="date_of_birth"
             value={form.date_of_birth}
             onChange={handleChange}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            className="w-full border border-border-light dark:border-border-dark rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 text-text-main-light dark:text-text-main-dark"
           />
         </div>
-        {/* Verified Status Toggle */}
-        {/* <div className="flex items-center justify-between p-3 border rounded-lg dark:border-gray-600">
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
-              Verified Status
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Toggle to verify or unverify this account
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setForm({ ...form, verification_status: form.verification_status === "verified" ? "rejected" : "verified" })}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300
-      ${form.verification_status === "verified" ? "bg-green-600" : "bg-gray-400"}
-    `}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300
-        ${form.verification_status === "verified" ? "translate-x-6" : "translate-x-1"}
-      `}
-            />
-          </button>
-        </div> */}
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors duration-150"
+          className="w-full bg-primary hover:bg-primary-dark text-white py-2 px-4 rounded transition-colors duration-150 cursor-pointer font-semibold"
         >
           Update User
         </button>

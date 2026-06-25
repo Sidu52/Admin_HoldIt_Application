@@ -6,7 +6,7 @@ import NoData from "@/app/NoData";
 import { Pagination } from "@/app/types/user";
 
 type Props = {
-  bookings: Booking[];
+  bookings: any[];
   pagination: Pagination;
 };
 
@@ -79,12 +79,12 @@ const ActivityTable = ({ data }: { data: { data: Props } }) => {
               };
               return (
                 <tr
-                  key={activity.id}
+                  key={activity._id || activity.id}
                   className="hover:bg-slate-50 dark:hover:bg-[#252f44] transition-colors group"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      {activity.bookingId}
+                      {activity.bookingCode || activity.bookingId}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -92,15 +92,15 @@ const ActivityTable = ({ data }: { data: { data: Props } }) => {
                       <div
                         className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center"
                         style={{
-                          backgroundImage: `url('${activity.userAvatar}')`,
+                          backgroundImage: `url('${activity.userAvatar || `https://ui-avatars.com/api/?name=${activity.userId?.first_name || 'U'}+${activity.userId?.last_name || ''}&background=random`}')`,
                         }}
                       />
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-slate-900 dark:text-white">
-                          {activity.userName}
+                          {activity.userId ? `${activity.userId.first_name || ''} ${activity.userId.last_name || ''}`.trim() : activity.userName}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-slate-400">
-                          {activity.userEmail}
+                          {activity.userId?.email || activity.userEmail}
                         </span>
                       </div>
                     </div>
@@ -114,7 +114,7 @@ const ActivityTable = ({ data }: { data: { data: Props } }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-slate-500 dark:text-slate-400">
-                      {activity.bookingTime}
+                      {activity.createdAt ? new Date(activity.createdAt).toLocaleString() : activity.bookingTime}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

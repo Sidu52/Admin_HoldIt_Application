@@ -49,15 +49,15 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="flex items-center justify-between px-4 py-4 w-full border-t border-gray-200">
+    <nav className="flex items-center justify-between px-4 py-4 w-full border-t border-border-light dark:border-border-dark">
       {/* Previous */}
       <div className="flex w-0 flex-1">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pr-1 pt-4 text-sm font-medium text-gray-500"
+          className="inline-flex cursor-pointer hover:text-primary dark:hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed items-center pr-1 pt-4 text-sm font-semibold text-text-muted-light dark:text-text-muted-dark transition-colors"
         >
-          <GoArrowLeft className="mr-1 size-5" />
+          <GoArrowLeft className="mr-2 size-5" />
           Previous
         </button>
       </div>
@@ -69,10 +69,10 @@ const Pagination: React.FC<PaginationProps> = ({
             key={index}
             disabled={p === "..."}
             onClick={() => typeof p === "number" && onPageChange(p)}
-            className={`inline-flex items-center px-4 pt-4 text-sm font-medium border-t-2 ${
+            className={`inline-flex items-center px-4 pt-4 text-sm font-semibold border-t-2 transition-all cursor-pointer ${
               p === currentPage
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-primary text-primary"
+                : "border-transparent text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark hover:border-border-light dark:hover:border-border-dark"
             }`}
           >
             {p}
@@ -85,10 +85,10 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="inline-flex cursor-pointer hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed items-center pl-1 pt-4 text-sm font-medium text-gray-500"
+          className="inline-flex cursor-pointer hover:text-primary dark:hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed items-center pl-1 pt-4 text-sm font-semibold text-text-muted-light dark:text-text-muted-dark transition-colors"
         >
           Next
-          <GoArrowRight className="ml-1 size-5" />
+          <GoArrowRight className="ml-2 size-5" />
         </button>
       </div>
     </nav>

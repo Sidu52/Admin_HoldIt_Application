@@ -71,8 +71,8 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
   const canControlModule = hasControl(actorRole, "teams");
 
   return (
-    <div className="card-premium overflow-hidden border-none shadow-none bg-transparent">
-      <div className="overflow-x-auto">
+    <div className="card-premium flex-1 flex flex-col overflow-hidden p-0 bg-transparent border-none shadow-none">
+      <div className="flex-1 overflow-auto">
         <table className="w-full border-separate border-spacing-0">
           <thead>
             <tr className="bg-background-light dark:bg-background-dark">
