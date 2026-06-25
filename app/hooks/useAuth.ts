@@ -1,75 +1,110 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { login, logout, signup } from "@/app/api/auth";
-import { verifyToken, verifyInvviteToken } from "@/app/api/auth";
+// import { useSelector, useDispatch } from "react-redux";
+// import { RootState } from "@/app/store";
+// import { logout as logoutAction } from "@/app/store/slices/authSlice";
+// import { useLogoutApiMutation, useVerifySessionQuery } from "@/app/services/authApi";
+// import { useRouter, usePathname } from "next/navigation";
+// import { useEffect } from "react";
+
+// export const useAuth = () => {
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const dispatch = useDispatch();
+  
+//   const user = useSelector((state: RootState) => state.auth.user);
+//   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+//   const isPublicRoute = ["/login", "/signup", "/forgot-password", "/reset-password"].some(
+//     (route) => pathname?.startsWith(route)
+//   );
+
+//   const { data: verifiedUser, isLoading, isError, error } = useVerifySessionQuery(undefined, {
+//     skip: isAuthenticated || isPublicRoute, // skip query if already authenticated or on a public route
+//   });
+
+//   const [logoutApi, { isLoading: logoutLoading, isSuccess: logoutSuccess }] = useLogoutApiMutation();
+
+//   const handleLogout = async () => {
+//     try {
+//       await logoutApi().unwrap();
+//     } catch (err) {
+//       console.error("Logout API failed, continuing client logout", err);
+//     } finally {
+//       dispatch(logoutAction());
+//       router.push("/login");
+//     }
+//   };
+
+//   return {
+//     user: user || verifiedUser,
+//     isLoading,
+//     isAuthenticated: isAuthenticated || !!verifiedUser,
+//     logout: handleLogout,
+//     logoutSuccess,
+//     logoutLoading,
+//     error: error ? (error as any)?.data?.message || "Session verification failed" : undefined,
+//   };
+// };
+
+
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/app/store";
+import { logout as logoutAction, setUser } from "@/app/store/slices/authSlice";
 import {
-  LoginCredentials,
-  AuthResponse,
-  SignupPayload,
-} from "@/app/types/auth";
+  useLogoutApiMutation,
+  useVerifySessionQuery,
+  useSignupMutation,
+} from "@/app/services/authApi";
 import { useRouter, usePathname } from "next/navigation";
-import toast from "react-hot-toast";
 
 export const useAuth = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
-  const isLoginPage = pathname === "/login";
-  // Login
-  const loginMutation = useMutation<AuthResponse, any, LoginCredentials>({
-    mutationFn: login,
-    onSuccess: () => {
-      toast.success("Login successful");
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      router.push("/dashboard");
-    },
-    onError: () => {
-      toast.error("Login failed");
-    },
+  const dispatch = useDispatch();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  const isPublicRoute = ["/login", "/signup", "/forgot-password", "/reset-password"].some(
+    (route) => pathname?.startsWith(route)
+  );
+
+  const { data: verifiedUser, isLoading, isError, error } = useVerifySessionQuery(undefined, {
+    skip: isAuthenticated || isPublicRoute,
   });
 
-  // Signup
-  const signupMutation = useMutation<AuthResponse, any, SignupPayload>({
-    mutationFn: signup,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      router.push("/login");
-    },
-  });
+  const [logoutApi, { isLoading: logoutLoading, isSuccess: logoutSuccess }] = useLogoutApiMutation();
 
-  // Verify session
-  const verifyQuery = useQuery({
-    queryKey: ["auth-verify"],
-    queryFn: verifyToken,
-    retry: false,
-    staleTime: 5 * 60 * 1000,
-    enabled: !isLoginPage,
-  });
+  // NEW: signup mutation
+  const [signupApi, { isLoading: signupLoading, error: signupError }] = useSignupMutation();
 
-  // Logout
-  const logoutMutation = useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      queryClient.clear();
+  const handleLogout = async () => {
+    try {
+      await logoutApi().unwrap();
+    } catch (err) {
+      console.error("Logout API failed, continuing client logout", err);
+    } finally {
+      dispatch(logoutAction());
       router.push("/login");
-    },
-    onError: () => {
-      queryClient.clear();
-      router.push("/login");
-    },
-  });
+    }
+  };
+
+  // NEW: signup handler
+  const handleSignup = async (payload: any) => {
+    const result = await signupApi(payload).unwrap(); // throws on failure
+    dispatch(setUser(result)); // adjust to however your slice stores the user
+    return result;
+  };
 
   return {
-    user: verifyQuery.data,
-    isLoading: verifyQuery.isLoading,
-    isAuthenticated: verifyQuery.isSuccess,
-    login: loginMutation.mutate,
-    loginIsLoading: loginMutation.isPending,
-    loginSuccess: loginMutation.isSuccess,
-    loginError: loginMutation.error?.response?.data?.message,
-    logout: logoutMutation.mutate,
-    logoutSuccess: logoutMutation.isSuccess,
-    logoutLoading: logoutMutation.isPending,
-    signup: signupMutation.mutate,
-    error: verifyQuery.error?.message,
+    user: user || verifiedUser,
+    isLoading,
+    isAuthenticated: isAuthenticated || !!verifiedUser,
+    logout: handleLogout,
+    logoutSuccess,
+    logoutLoading,
+    signup: handleSignup,      // <-- now actually exists
+    signupLoading,
+    error: error ? (error as any)?.data?.message || "Session verification failed" : undefined,
+    signupError: signupError ? (signupError as any)?.data?.message : undefined,
   };
 };

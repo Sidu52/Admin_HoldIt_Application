@@ -14,9 +14,9 @@ export const login = async (
   return response.data;
 };
 export const signup = async (payload: SignupPayload): Promise<AuthResponse> => {
-  const { credentials } = payload;
+  const { token, credentials } = payload;
   const response = await api.post<AuthResponse>("/auth/signup", credentials, {
-    params: { token: credentials.invite_token },
+    params: { token },
   });
 
   return response.data;

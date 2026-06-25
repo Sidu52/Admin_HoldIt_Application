@@ -5,6 +5,7 @@ export interface LoginCredentials {
 
 export interface SignupPayload {
   credentials: SignupCredentials;
+  token: string;
 }
 
 
