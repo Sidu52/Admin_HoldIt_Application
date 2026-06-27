@@ -109,15 +109,15 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 justify-between">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
           {/* Profile Header */}
-          <div className="flex gap-6 items-start">
-            <div className="flex items-center justify-center h-16 w-16 bg-[#1a2332] text-white rounded-full font-bold text-xl uppercase tracking-wider">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
+            <div className="flex items-center justify-center h-16 w-16 shrink-0 bg-[#1a2332] text-white rounded-full font-bold text-xl uppercase tracking-wider">
               <p> {(user.first_name?.[0] || "") + (user.last_name?.[0] || "")}</p>
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
+              <div className="flex flex-wrap items-center gap-3 mb-1">
+                <h1 className="text-[#111418] dark:text-white text-2xl sm:text-[32px] font-bold leading-tight">
                   {user.first_name} {user.last_name}
                 </h1>
                 <StatusBadge account_status={user.account_status} />
@@ -139,7 +139,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowEditModal(true)}
               className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 text-white text-sm font-bold transition-colors"

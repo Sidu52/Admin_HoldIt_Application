@@ -16,35 +16,31 @@ const ActivityTable = ({ data }: { data: { data: Props } }) => {
     return <NoData />
   }
 
-  const getStatusStyles = (status: Booking["status"]) => {
-    const styles = {
-      completed: {
-        bg: "bg-emerald-100 dark:bg-emerald-500/10",
-        text: "text-emerald-800 dark:text-emerald-400",
-        border: "border-emerald-200 dark:border-emerald-500/20",
-      },
-      "in-progress": {
-        bg: "bg-blue-100 dark:bg-blue-500/10",
-        text: "text-blue-800 dark:text-blue-400",
-        border: "border-blue-200 dark:border-blue-500/20",
-      },
-      pending: {
-        bg: "bg-amber-100 dark:bg-amber-500/10",
-        text: "text-amber-800 dark:text-amber-400",
-        border: "border-amber-200 dark:border-amber-500/20",
-      },
-      cancelled: {
-        bg: "bg-slate-100 dark:bg-slate-700",
-        text: "text-slate-800 dark:text-slate-400",
-        border: "border-slate-200 dark:border-slate-600",
-      },
-    };
+  const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+    created:                  { bg: "bg-slate-100 dark:bg-slate-500/10",   text: "text-slate-800 dark:text-slate-400",   border: "border-slate-200 dark:border-slate-500/20" },
+    store_assigned:           { bg: "bg-indigo-100 dark:bg-indigo-500/10", text: "text-indigo-800 dark:text-indigo-400", border: "border-indigo-200 dark:border-indigo-500/20" },
+    driver_assigned:          { bg: "bg-blue-100 dark:bg-blue-500/10",     text: "text-blue-800 dark:text-blue-400",     border: "border-blue-200 dark:border-blue-500/20" },
+    driver_arrived:           { bg: "bg-cyan-100 dark:bg-cyan-500/10",     text: "text-cyan-800 dark:text-cyan-400",     border: "border-cyan-200 dark:border-cyan-500/20" },
+    picked_up:                { bg: "bg-teal-100 dark:bg-teal-500/10",     text: "text-teal-800 dark:text-teal-400",     border: "border-teal-200 dark:border-teal-500/20" },
+    at_store:                 { bg: "bg-purple-100 dark:bg-purple-500/10", text: "text-purple-800 dark:text-purple-400", border: "border-purple-200 dark:border-purple-500/20" },
+    stored:                   { bg: "bg-violet-100 dark:bg-violet-500/10", text: "text-violet-800 dark:text-violet-400", border: "border-violet-200 dark:border-violet-500/20" },
+    return_requested:         { bg: "bg-amber-100 dark:bg-amber-500/10",   text: "text-amber-800 dark:text-amber-400",   border: "border-amber-200 dark:border-amber-500/20" },
+    return_driver_assigned:   { bg: "bg-orange-100 dark:bg-orange-500/10", text: "text-orange-800 dark:text-orange-400", border: "border-orange-200 dark:border-orange-500/20" },
+    out_for_return:           { bg: "bg-sky-100 dark:bg-sky-500/10",       text: "text-sky-800 dark:text-sky-400",       border: "border-sky-200 dark:border-sky-500/20" },
+    arrived_for_delivery:     { bg: "bg-lime-100 dark:bg-lime-500/10",     text: "text-lime-800 dark:text-lime-400",     border: "border-lime-200 dark:border-lime-500/20" },
+    delivered:                { bg: "bg-emerald-100 dark:bg-emerald-500/10", text: "text-emerald-800 dark:text-emerald-400", border: "border-emerald-200 dark:border-emerald-500/20" },
+    cancelled:                { bg: "bg-red-100 dark:bg-red-500/10",       text: "text-red-800 dark:text-red-400",       border: "border-red-200 dark:border-red-500/20" },
+    driver_cancelled_critical:{ bg: "bg-rose-100 dark:bg-rose-500/10",     text: "text-rose-800 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20" },
+  };
 
-    return styles[status];
+  const DEFAULT_STYLE = { bg: "bg-blue-100 dark:bg-blue-500/10", text: "text-blue-800 dark:text-blue-400", border: "border-blue-200 dark:border-blue-500/20" };
+
+  const getStatusStyles = (status: string) => {
+    return STATUS_STYLES[status] || DEFAULT_STYLE;
   };
 
   const formatStatus = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1).replace("-", " ");
+    return status.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   };
 
   return (

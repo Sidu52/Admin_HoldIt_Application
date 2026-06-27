@@ -1,8 +1,9 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import StatCard from "@/app/components/dashboard/StatCard";
 import ActivityTable from "@/app/components/dashboard/ActivityTable";
 import ChartBar from "@/app/components/dashboard/ChartBar";
+import { FaChartBar, FaChartPie } from "react-icons/fa";
 
 
 import {
@@ -36,6 +37,7 @@ const ENTITY = [
 export default function DashboardPage() {
   const [entity, setEntity] = useState("user");
   const [range, setRange] = useState("week");
+  const [chartType, setChartType] = useState<"bar" | "pie">("bar");
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -49,7 +51,7 @@ export default function DashboardPage() {
     data: chartData,
     isLoading: chartLoading,
     isError: chartError,
-  } = useGetChartQuery({ type: entity, groupBy: range });
+  } = useGetChartQuery({ entity, range });
 
   const { data: bookingData, isLoading: bookingLoading } = useGetBookingsQuery({ page: 1, limit: 10 });
 
@@ -94,11 +96,11 @@ export default function DashboardPage() {
   return (
     <RoleGuard allowedRoles={["SUPER_ADMIN", "ADMIN", "OPERATION_MANAGER"]} fallback={<div className="p-8 text-center font-bold uppercase tracking-widest text-text-muted-light">Access Denied</div>}>
       <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
-        <div className="w-full max-w-[1600px] mx-auto p-8 flex flex-col gap-10">
+        <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-8 flex flex-col gap-6 sm:gap-10">
           {/* Header */}
           <div className="flex justify-between items-end">
             <div className="flex flex-col gap-1">
-              <h1 className="text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">Dashboard</h1>
+              <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">Dashboard</h1>
               <p className="text-text-muted-light dark:text-text-muted-dark font-medium tracking-wide">
                 System performance and operational overview.
               </p>
@@ -118,42 +120,78 @@ export default function DashboardPage() {
 
           {/* Analytics Section */}
           <div className="card-premium p-8 bg-surface-light dark:bg-surface-dark border-none shadow-premium/5">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-bold font-display text-text-main-light dark:text-text-main-dark">Analytics</h3>
-                <p className="text-xs font-bold text-text-muted-light uppercase tracking-widest">Growth & Trends</p>
+            {/* Header Row */}
+            <div className="flex flex-col gap-5 mb-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-xl font-bold font-display text-text-main-light dark:text-text-main-dark">Analytics</h3>
+                  <p className="text-xs font-bold text-text-muted-light uppercase tracking-widest">Growth & Trends</p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {/* Entity Selector */}
+                  <select
+                    value={entity}
+                    onChange={(e) => setEntity(e.target.value)}
+                    className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
+                  >
+                    {ENTITY.map((e) => (
+                      <option key={e.value} value={e.value}>
+                        {e.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Chart Type Toggle */}
+                  <div className="flex items-center bg-background-light dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-1 gap-0.5">
+                    <button
+                      onClick={() => setChartType("bar")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                        chartType === "bar"
+                          ? "bg-primary text-white shadow-sm shadow-primary/25"
+                          : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
+                      }`}
+                    >
+                      <FaChartBar className="text-sm" />
+                      <span className="hidden sm:inline">Bar</span>
+                    </button>
+                    <button
+                      onClick={() => setChartType("pie")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                        chartType === "pie"
+                          ? "bg-primary text-white shadow-sm shadow-primary/25"
+                          : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
+                      }`}
+                    >
+                      <FaChartPie className="text-sm" />
+                      <span className="hidden sm:inline">Pie</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <select
-                  value={range}
-                  onChange={(e) => setRange(e.target.value)}
-                  className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                >
-                  {RANGE.map((r) => (
-                    <option key={r.value} value={r.value}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={entity}
-                  onChange={(e) => setEntity(e.target.value)}
-                  className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-xl px-4 py-2 text-sm font-bold text-text-main-light dark:text-text-main-dark focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                >
-                  {ENTITY.map((e) => (
-                    <option key={e.value} value={e.value}>
-                      {e.label}
-                    </option>
-                  ))}
-                </select>
+              {/* Range Pill Selector */}
+              <div className="flex items-center bg-background-light dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-1 gap-0.5 w-fit">
+                {RANGE.map((r) => (
+                  <button
+                    key={r.value}
+                    onClick={() => setRange(r.value)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                      range === r.value
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark hover:bg-surface-light dark:hover:bg-surface-dark"
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
               </div>
             </div>
 
+            {/* Chart */}
             <div className="h-[400px] w-full">
               {chartData &&
-                (chartLoading ? <ChartSkeleton /> : <ChartBar data={chartData?.data} />)}
+                (chartLoading ? <ChartSkeleton /> : <ChartBar data={chartData?.data} chartType={chartType} />)}
             </div>
           </div>
 

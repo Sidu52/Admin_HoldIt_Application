@@ -9,7 +9,7 @@ export const bookingApi = api.injectEndpoints({
       }),
       providesTags: (result) =>
         result && result.data
-          ? [...result.data.bookings.map(({ id }: { id: string }) => ({ type: "Booking" as const, id })), "Booking"]
+          ? [...result.data.bookings.map(({ _id }: { _id: string }) => ({ type: "Booking" as const, id: _id })), "Booking"]
           : ["Booking"],
     }),
     getBooking: builder.query<any, string>({

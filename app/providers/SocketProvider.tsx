@@ -51,16 +51,25 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
     }
 
+    function onNewBooking(payload: any) {
+      toast.success(`🎉 New Booking Received: ${payload?.bookingCode || "Booking Code N/A"}`, {
+        duration: 5000,
+        position: "top-right",
+      });
+    }
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("connect_error", onConnectError);
     socket.on("admin:alert:no_driver", onAdminAlert);
+    socket.on("booking:created", onNewBooking);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("connect_error", onConnectError);
       socket.off("admin:alert:no_driver", onAdminAlert);
+      socket.off("booking:created", onNewBooking);
       socket.disconnect();
     };
   }, [isAuthenticated]);

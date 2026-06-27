@@ -6,7 +6,7 @@ export const dashboardApi = api.injectEndpoints({
       query: () => "/dashboard/summary",
       providesTags: ["Dashboard"],
     }),
-    getChart: builder.query<any, { type?: string; from?: string; to?: string; groupBy?: string }>({
+    getChart: builder.query<any, { entity?: string; range?: string; status?: string }>({
       query: (params) => ({
         url: "/dashboard/chart",
         params,

@@ -70,15 +70,15 @@ function DriverClient() {
   const paginationData = data?.data?.pagination;
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark p-8">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark px-4 py-6 sm:p-8">
       {/* HEADER */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 sm:mb-10">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
               <FaTruck className="text-xl" />
             </div>
-            <h1 className="text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">
+            <h1 className="text-2xl sm:text-4xl font-extrabold font-display tracking-tight text-text-main-light dark:text-text-main-dark">
               Driver Management
             </h1>
           </div>
