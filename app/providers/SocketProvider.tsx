@@ -21,6 +21,18 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (isAuthenticated) {
+      // Read cookies on the client side to set the auth token manually
+      const getCookie = (name: string) => {
+        if (typeof document === 'undefined') return '';
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift() || '';
+        return '';
+      };
+      const token = getCookie("admin_accessToken") || getCookie("accessToken");
+      if (token) {
+        socket.auth = { token };
+      }
       socket.connect();
     } else {
       socket.disconnect();

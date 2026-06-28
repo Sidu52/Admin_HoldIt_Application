@@ -2,7 +2,12 @@
 
 import { useEffect, useState, useRef } from "react";
 import { socket } from "@/app/lib/socket";
-import { FaMapMarkerAlt, FaLocationArrow, FaSatellite, FaCompass } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaLocationArrow,
+  FaSatellite,
+  FaCompass,
+} from "react-icons/fa";
 import { formatCoord } from "@/app/utils/location";
 
 interface LiveLocationProps {
@@ -22,9 +27,15 @@ interface LocationUpdate {
   bookingId?: string;
 }
 
-export default function DriverLiveLocation({ driverId, initialLocation }: LiveLocationProps) {
+export default function DriverLiveLocation({
+  driverId,
+  initialLocation,
+}: LiveLocationProps) {
   const [currentLoc, setCurrentLoc] = useState<LocationUpdate | null>(() => {
-    if (initialLocation?.coordinates?.[1] && initialLocation?.coordinates?.[0]) {
+    if (
+      initialLocation?.coordinates?.[1] &&
+      initialLocation?.coordinates?.[0]
+    ) {
       return {
         lat: initialLocation.coordinates[1],
         lng: initialLocation.coordinates[0],
@@ -34,8 +45,12 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
     return null;
   });
 
-  const [history, setHistory] = useState<{ lat: number; lng: number; time: number }[]>([]);
-  const [status, setStatus] = useState<"connecting" | "tracking" | "offline">("connecting");
+  const [history, setHistory] = useState<
+    { lat: number; lng: number; time: number }[]
+  >([]);
+  const [status, setStatus] = useState<"connecting" | "tracking" | "offline">(
+    "connecting",
+  );
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // 1. Listen for socket updates
@@ -44,8 +59,13 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
     socket.emit("admin:join", { room: "admin:dashboard" });
 
     const handleLocationUpdate = (payload: any) => {
+      // console.log(
+      //   "handleLocationUpdate",
+      //   payload && payload.driverId === driverId,
+      // );
       // payload structure: { driverId, bookingId, lat, lng, updatedAt, speed, heading }
       if (payload && payload.driverId === driverId) {
+        // console.log("handleLocationUpdate", payload);
         const update: LocationUpdate = {
           lat: payload.lat,
           lng: payload.lng,
@@ -56,11 +76,15 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
         };
         setCurrentLoc(update);
         setStatus("tracking");
-        setHistory((prev) => [...prev, { lat: payload.lat, lng: payload.lng, time: Date.now() }]);
+        setHistory((prev) => [
+          ...prev,
+          { lat: payload.lat, lng: payload.lng, time: Date.now() },
+        ]);
       }
     };
 
     const handleStaleLocation = (payload: any) => {
+      console.log("handleStaleLocation", payload);
       if (payload && payload.driverId === driverId) {
         setStatus("offline");
       }
@@ -70,7 +94,10 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
     socket.on("driver:location:stale", handleStaleLocation);
 
     // Initial check: if we have initial coordinates, mark status as tracking
-    if (initialLocation?.coordinates?.[1] && initialLocation?.coordinates?.[0]) {
+    if (
+      initialLocation?.coordinates?.[1] &&
+      initialLocation?.coordinates?.[0]
+    ) {
       setStatus("tracking");
     }
 
@@ -80,9 +107,26 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
     };
   }, [driverId, initialLocation]);
 
-  // 2. Update Map Iframe (OpenStreetMap via Leaflet embedded HTML)
+  console.log("currentLoc", currentLoc);
+
+  const mapInitializedRef = useRef(false);
+
+  // 2. Initialize Map Iframe Once (OpenStreetMap via Leaflet embedded HTML)
   useEffect(() => {
-    if (!currentLoc || !iframeRef.current) return;
+    if (!currentLoc || !iframeRef.current || mapInitializedRef.current) {
+      // If already initialized and we get new coordinates, update position smoothly
+      if (mapInitializedRef.current && currentLoc && iframeRef.current) {
+        try {
+          const win = iframeRef.current.contentWindow as any;
+          if (win && typeof win.updatePosition === "function") {
+            win.updatePosition(currentLoc.lat, currentLoc.lng);
+          }
+        } catch (e) {
+          console.error("Failed to update marker position smoothly:", e);
+        }
+      }
+      return;
+    }
 
     const mapHtml = `
       <!DOCTYPE html>
@@ -131,7 +175,7 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
           // Add popup
           marker.bindPopup("<div style='color:#000;font-family:sans-serif;font-size:12px;font-weight:bold;'>Driver Live Location</div>").openPopup();
 
-          // Update position function called from parent window if needed, or simply let iframe reload/redraw
+          // Update position function called from parent window if needed
           window.updatePosition = (lat, lng) => {
             const newLatLng = new L.LatLng(lat, lng);
             marker.setLatLng(newLatLng);
@@ -142,15 +186,19 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
       </html>
     `;
 
-    const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+    const doc =
+      iframeRef.current.contentDocument ||
+      iframeRef.current.contentWindow?.document;
     if (doc) {
       doc.open();
       doc.write(mapHtml);
       doc.close();
+      mapInitializedRef.current = true;
     }
-  }, [currentLoc?.lat, currentLoc?.lng]);
+  }, [currentLoc?.lat, currentLoc?.lng, currentLoc?.updatedAt]);
 
-  const hasCoords = currentLoc?.lat !== undefined && currentLoc?.lng !== undefined;
+  const hasCoords =
+    currentLoc?.lat !== undefined && currentLoc?.lng !== undefined;
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-280px)] min-h-[450px]">
@@ -163,36 +211,53 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
           </h3>
 
           <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-xl mb-4">
-            <div className={`h-3.5 w-3.5 rounded-full ${
-              status === "tracking" ? "bg-emerald-500 animate-pulse" :
-              status === "connecting" ? "bg-amber-500" : "bg-rose-500"
-            }`} />
+            <div
+              className={`h-3.5 w-3.5 rounded-full ${
+                status === "tracking"
+                  ? "bg-emerald-500 animate-pulse"
+                  : status === "connecting"
+                    ? "bg-amber-500"
+                    : "bg-rose-500"
+              }`}
+            />
             <div>
               <p className="text-sm font-bold text-slate-900 dark:text-white capitalize">
-                {status === "tracking" ? "Live Tracking Active" : status === "connecting" ? "Awaiting Socket Signals" : "Driver Offline"}
+                {status === "tracking"
+                  ? "Live Tracking Active"
+                  : status === "connecting"
+                    ? "Awaiting Socket Signals"
+                    : "Driver Offline"}
               </p>
               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                {status === "tracking" ? "Receiving real-time coordinates" : "Listening on driver:location:updated"}
+                {status === "tracking"
+                  ? "Receiving real-time coordinates"
+                  : "Listening on driver:location:updated"}
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Latitude</span>
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                Latitude
+              </span>
               <p className="text-sm font-semibold text-slate-900 dark:text-white font-mono mt-0.5">
                 {hasCoords ? formatCoord(currentLoc!.lat, "lat") : "—"}
               </p>
             </div>
             <div>
-              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Longitude</span>
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                Longitude
+              </span>
               <p className="text-sm font-semibold text-slate-900 dark:text-white font-mono mt-0.5">
                 {hasCoords ? formatCoord(currentLoc!.lng, "lng") : "—"}
               </p>
             </div>
             {currentLoc?.speed !== undefined && (
               <div>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Speed</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Speed
+                </span>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
                   {currentLoc.speed.toFixed(1)} km/h
                 </p>
@@ -200,7 +265,9 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
             )}
             {currentLoc?.updatedAt && (
               <div>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Last Signal</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Last Signal
+                </span>
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
                   {new Date(currentLoc.updatedAt).toLocaleTimeString()}
                 </p>
@@ -216,7 +283,9 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
             Telemetry Information
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Live updates are received directly from the driver's mobile app via Socket.io. Tracking activates automatically when the driver is assigned to an active booking.
+            Live updates are received directly from the driver's mobile app via
+            Socket.io. Tracking activates automatically when the driver is
+            assigned to an active booking.
           </p>
         </div>
       </div>
@@ -234,9 +303,12 @@ export default function DriverLiveLocation({ driverId, initialLocation }: LiveLo
             <div className="h-16 w-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-4 shadow-sm">
               <FaMapMarkerAlt className="text-2xl animate-bounce" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">No Location Stream Yet</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
+              No Location Stream Yet
+            </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs">
-              Waiting for the driver's device to transmit live GPS coordinates. Make sure the driver is online.
+              Waiting for the driver's device to transmit live GPS coordinates.
+              Make sure the driver is online.
             </p>
           </div>
         )}
