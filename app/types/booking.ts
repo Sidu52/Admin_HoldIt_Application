@@ -30,6 +30,8 @@ export interface PopulatedStore {
 
 export interface DriverAssignment {
   driverId?: string | { _id: string; first_name?: string; last_name?: string };
+  otp?: string;
+  returnOtp?: string;
   assignedAt?: string;
   acceptedAt?: string;
   startedAt?: string;

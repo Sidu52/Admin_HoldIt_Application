@@ -63,7 +63,6 @@ const getStoreField = (storeId: Booking["storeId"], field: keyof PopulatedStore)
 
 const getDriverName = (assignment?: any): string => {
   if (!assignment?.driverId) return "Not assigned";
-  if (typeof assignment.driverId === "string") return assignment.driverId;
   const d = assignment.driverId;
   return `${d.first_name || ""} ${d.last_name || ""}`.trim() || "—";
 };
@@ -193,12 +192,11 @@ const BookingDetailsTab = ({ booking }: { booking: Booking }) => {
       {booking.payment && (
         <SectionCard title="Payment">
           <DetailRow label="Payment Status" value={
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-              booking.payment.status === "paid" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" :
-              booking.payment.status === "failed" ? "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400" :
-              booking.payment.status === "refunded" ? "bg-purple-100 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" :
-              "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
-            }`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.payment.status === "paid" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" :
+                booking.payment.status === "failed" ? "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400" :
+                  booking.payment.status === "refunded" ? "bg-purple-100 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" :
+                    "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+              }`}>
               {(booking.payment.status || "pending").toUpperCase()}
             </span>
           } />
@@ -277,6 +275,25 @@ const StoreDetailsTab = ({ booking }: { booking: Booking }) => (
   </div>
 );
 
+const OtpBadge = ({ otp, label, color }: { otp?: string; label: string; color: string }) => {
+  if (!otp) return null;
+  return (
+    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/30">
+      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">{label}</p>
+      <div className="flex items-center gap-2">
+        {otp.split("").map((digit, i) => (
+          <div
+            key={i}
+            className={`w-11 h-13 rounded-xl ${color} flex items-center justify-center shadow-sm`}
+          >
+            <span className="text-2xl font-black font-mono">{digit}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const DriverDetailsTab = ({ booking }: { booking: Booking }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
     {/* Pickup Driver */}
@@ -296,6 +313,7 @@ const DriverDetailsTab = ({ booking }: { booking: Booking }) => (
           <DetailRow label="Accepted At" value={formatDate(booking.pickup.assignment.acceptedAt)} />
           <DetailRow label="Started At" value={formatDate(booking.pickup.assignment.startedAt)} />
           <DetailRow label="Completed At" value={formatDate(booking.pickup.assignment.completedAt)} />
+          <OtpBadge otp={booking.pickup.assignment.otp} label="Pickup OTP" color="bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400" />
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -325,6 +343,8 @@ const DriverDetailsTab = ({ booking }: { booking: Booking }) => (
           <DetailRow label="Accepted At" value={formatDate(booking.delivery.assignment.acceptedAt)} />
           <DetailRow label="Started At" value={formatDate(booking.delivery.assignment.startedAt)} />
           <DetailRow label="Completed At" value={formatDate(booking.delivery.assignment.completedAt)} />
+          <OtpBadge otp={booking.delivery.assignment.returnOtp} label="Return OTP (Store → Driver)" color="bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400" />
+          <OtpBadge otp={booking.delivery.assignment.otp} label="Delivery OTP (User → Driver)" color="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" />
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -363,9 +383,8 @@ const TimelineTab = ({ booking }: { booking: Booking }) => {
             <div key={i} className="flex gap-4 relative">
               {/* Connector */}
               <div className="flex flex-col items-center">
-                <div className={`w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-[#1a2332] shadow-sm z-10 ${
-                  i === 0 ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"
-                }`} />
+                <div className={`w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-[#1a2332] shadow-sm z-10 ${i === 0 ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"
+                  }`} />
                 {i < booking.timeline!.length - 1 && (
                   <div className="w-0.5 flex-1 bg-slate-200 dark:bg-slate-700 min-h-[40px]" />
                 )}
@@ -507,11 +526,10 @@ export default function BookingDetailsClient({ bookingId }: { bookingId: string 
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-200 cursor-pointer ${
-                activeTab === tab.key
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-200 cursor-pointer ${activeTab === tab.key
                   ? "border-primary text-primary"
                   : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600"
-              }`}
+                }`}
             >
               <span className="text-base">{tab.icon}</span>
               {tab.label}
