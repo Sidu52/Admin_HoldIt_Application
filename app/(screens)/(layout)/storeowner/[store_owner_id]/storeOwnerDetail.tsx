@@ -98,15 +98,15 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 justify-between">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
           {/* Profile Header */}
-          <div className="flex gap-6 items-start">
-            <div className="flex items-center justify-center px-4 py-3.5 bg-[#f0f2f4] dark:bg-[#324467] rounded-full">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
+            <div className="flex items-center justify-center h-14 w-14 shrink-0 bg-[#f0f2f4] dark:bg-[#324467] rounded-full font-bold">
               <p> {store_owner?.first_name?.[0] + store_owner?.last_name?.[0]}</p>
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-[#111418] dark:text-white text-[32px] font-bold leading-tight">
+              <div className="flex flex-wrap items-center gap-3 mb-1">
+                <h1 className="text-[#111418] dark:text-white text-2xl sm:text-[32px] font-bold leading-tight">
                   {store_owner?.first_name} {store_owner?.last_name}
                 </h1>
                 <span className="text-xs font-bold px-2 py-1 rounded-full  uppercase tracking-wide">
@@ -127,7 +127,7 @@ const storeOwnerDetail = ({ store_owner_id }: { store_owner_id: string }) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowEditModal(true)}
               className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 text-white text-sm font-bold"
