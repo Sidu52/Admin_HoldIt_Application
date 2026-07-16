@@ -37,6 +37,16 @@ export const adminApi = api.injectEndpoints({
         "Team",
       ],
     }),
+
+    // Sent Invite
+    resendInvite: builder.mutation<any, string>({
+      query: (memberId) => ({
+        url: `/resend-invite/${memberId}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Team"],
+    }),
+
     getAdmins: builder.query<any, void>({
       query: () => "/admins",
       providesTags: ["Team"],
@@ -78,6 +88,7 @@ export const {
   useGetTeamQuery,
   useGetTeamMemberByIdQuery,
   useUpdateTeamMemberMutation,
+  useResendInviteMutation,
   useGetAdminsQuery,
   useGetSuperAdminsQuery,
   useInviteTeamMemberMutation,

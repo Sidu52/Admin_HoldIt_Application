@@ -11,6 +11,7 @@ import {
   useGetTeamQuery,
   useDeleteAdminsMutation,
   useInviteTeamMemberMutation,
+  useResendInviteMutation,
 } from "../../../services/adminApi";
 import { useToast } from "../../../hooks/useToast";
 import { TeamMemberFilter, TeamMemberTable } from "@/app/components/team";
@@ -44,6 +45,17 @@ function TeamClient() {
   });
 
   const [deleteAdmins, { isLoading: isDeleting }] = useDeleteAdminsMutation();
+    const [resendInvite, { isLoading: isResending }] = useResendInviteMutation();
+
+
+    const handleResendInvite = async (team_id: string) => {
+      try{
+        const res = await resendInvite(team_id).unwrap();
+        toast.success(res.message);
+      }catch(error: any){
+        toast.error(error.message || "Failed to resend invite");
+      }
+    }
 
   const handleViewDetail = (teamMember: TeamMember) => router.push(`/team/${teamMember._id}`);
 
@@ -161,6 +173,7 @@ function TeamClient() {
             onSelectionChange={setSelectTeamMember}
             onViewDetails={handleViewDetail}
             onDeleteClick={handleDeleteClick}
+            onResendInvite={handleResendInvite}
             actorRole={loggedInUser?.role}
             pagination={{
               page: paginationData?.page ?? 1,

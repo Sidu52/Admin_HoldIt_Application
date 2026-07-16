@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { RiShieldKeyholeFill, RiAdminFill } from "react-icons/ri";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 interface SignupPageProps {
   data: {
@@ -38,6 +39,7 @@ type FormData = {
 };
 
 export default function SignupPage({ data, token }: SignupPageProps) {
+  const router = useRouter();
   const { signup, isLoading, error } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
@@ -126,37 +128,37 @@ export default function SignupPage({ data, token }: SignupPageProps) {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      signup({
-        credentials: {
-          invite_token: token,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: data?.email,
-          phone: formData.phone,
-          address: formData.address,
-          date_of_birth: formData.dateOfBirth,
-          password: formData.password,
-          confirm_password: formData.confirmPassword,
-          gender: formData.gender,
-        },
+      const response = await signup({
+        invite_token: token,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: data?.email,
+        phone: formData.phone,
+        address: formData.address,
+        date_of_birth: formData.dateOfBirth,
+        password: formData.password,
+        confirm_password: formData.confirmPassword,
+        gender: formData.gender,
       });
 
-      // Reset form after successful submission
-      // setFormData({
-      //   email: data?.email || "",
-      //   role: data?.role || "",
-      //   gender: "",
-      //   firstName: "",
-      //   lastName: "",
-      //   phone: "",
-      //   address: "",
-      //   dateOfBirth: "",
-      //   password: "",
-      //   confirmPassword: "",
-      // });
+      router.push("/login");
+      setFormData({
+        email: data?.email || "",
+        role: data?.role || "",
+        gender: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        address: "",
+        dateOfBirth: "",
+        password: "",
+        confirmPassword: "",
+      });
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Failed to create account. Please try again.");
     }
   };
 

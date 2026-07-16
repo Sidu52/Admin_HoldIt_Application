@@ -61,6 +61,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
     }
   };
 
+
   const [updateStatus] = useUpdateAccountStatusMutation();
 
   const handleUpdateStatus = async (

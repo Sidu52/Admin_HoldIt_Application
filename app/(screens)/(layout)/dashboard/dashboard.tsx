@@ -39,7 +39,6 @@ export default function DashboardPage() {
   const [range, setRange] = useState("week");
   const [chartType, setChartType] = useState<"bar" | "pie">("bar");
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
 
   const {
     data: summaryData,
@@ -146,22 +145,20 @@ export default function DashboardPage() {
                   <div className="flex items-center bg-background-light dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-1 gap-0.5">
                     <button
                       onClick={() => setChartType("bar")}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
-                        chartType === "bar"
-                          ? "bg-primary text-white shadow-sm shadow-primary/25"
-                          : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
-                      }`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${chartType === "bar"
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
+                        }`}
                     >
                       <FaChartBar className="text-sm" />
                       <span className="hidden sm:inline">Bar</span>
                     </button>
                     <button
                       onClick={() => setChartType("pie")}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
-                        chartType === "pie"
-                          ? "bg-primary text-white shadow-sm shadow-primary/25"
-                          : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
-                      }`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${chartType === "pie"
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark"
+                        }`}
                     >
                       <FaChartPie className="text-sm" />
                       <span className="hidden sm:inline">Pie</span>
@@ -176,11 +173,10 @@ export default function DashboardPage() {
                   <button
                     key={r.value}
                     onClick={() => setRange(r.value)}
-                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
-                      range === r.value
-                        ? "bg-primary text-white shadow-sm shadow-primary/25"
-                        : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark hover:bg-surface-light dark:hover:bg-surface-dark"
-                    }`}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${range === r.value
+                      ? "bg-primary text-white shadow-sm shadow-primary/25"
+                      : "text-text-muted-light dark:text-text-muted-dark hover:text-text-main-light dark:hover:text-text-main-dark hover:bg-surface-light dark:hover:bg-surface-dark"
+                      }`}
                   >
                     {r.label}
                   </button>
