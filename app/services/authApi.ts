@@ -11,6 +11,7 @@ export const authApi = api.injectEndpoints(
           method: "POST",
           body: credentials,
         }),
+        invalidatesTags: ["Admin", "Dashboard"],
       }),
       signup: builder.mutation<any, any>({
         query: (data) => ({

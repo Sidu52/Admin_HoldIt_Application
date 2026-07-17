@@ -15,6 +15,8 @@ import {
   FaMailBulk,
 } from "react-icons/fa";
 import { RiAdminFill } from "react-icons/ri";
+import { api } from "@/app/services/api";
+
 
 export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
@@ -28,12 +30,14 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+
       const response = await login({ email, password }).unwrap();
       if (response?.data?.user) {
+        dispatch(api.util.resetApiState());
         dispatch(setCredentials({ user: response.data.user }));
       }
       toast.success("Successfully logged in");
-      router.push("/dashboard");
+      await router.push("/dashboard");
     } catch (err: any) {
       toast.error(err?.data?.message || "Login failed");
     }
@@ -149,6 +153,9 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
+
+
+              {/* <p className="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal tracking-wide text-center mt-4 cursor-pointer"><Link href="/request-demo">Request to Demo Account</Link></p> */}
 
               {/* Submit Button */}
               <button
