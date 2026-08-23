@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useLoginMutation } from "../../services/authApi";
+import { useLoginMutation, useRequestJoinTeamMutation } from "../../services/authApi";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useToast } from "../../hooks/useToast";
@@ -13,13 +13,14 @@ import {
   FaShieldAlt,
   FaKey,
   FaMailBulk,
+  FaUserPlus,
+  FaTimes,
 } from "react-icons/fa";
 import { RiAdminFill } from "react-icons/ri";
-import { api } from "@/app/services/api";
-
 
 export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
+  const [requestJoinTeam, { isLoading: isSubmittingJoin }] = useRequestJoinTeamMutation();
   const dispatch = useDispatch();
   const router = useRouter();
   const toast = useToast();
@@ -27,17 +28,45 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // Join Team Request State
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinForm, setJoinForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    desired_role: "customer_support",
+    experience_notes: "",
+  });
+
+  const handleJoinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await requestJoinTeam(joinForm).unwrap();
+      toast.success("Your team join request has been submitted for admin review!");
+      setShowJoinModal(false);
+      setJoinForm({
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        desired_role: "customer_support",
+        experience_notes: "",
+      });
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to submit join request");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-
       const response = await login({ email, password }).unwrap();
       if (response?.data?.user) {
-        dispatch(api.util.resetApiState());
         dispatch(setCredentials({ user: response.data.user }));
       }
       toast.success("Successfully logged in");
-      await router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err: any) {
       toast.error(err?.data?.message || "Login failed");
     }
@@ -154,9 +183,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-
-              {/* <p className="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal tracking-wide text-center mt-4 cursor-pointer"><Link href="/request-demo">Request to Demo Account</Link></p> */}
-
               {/* Submit Button */}
               <button
                 type="submit"
@@ -177,10 +203,141 @@ export default function LoginPage() {
                   </>
                 )}
               </button>
+
+              {/* Join Team Request Footer */}
+              <div className="pt-2 text-center border-t border-slate-100 dark:border-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Interested in joining our team?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setShowJoinModal(true)}
+                    className="font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer ml-1"
+                  >
+                    Request to Join Team
+                  </button>
+                </p>
+              </div>
             </form>
           </div>
         </div>
       </div>
+
+      {/* ── JOIN TEAM REQUEST MODAL ── */}
+      {showJoinModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <FaUserPlus className="text-blue-500" /> Apply to Join Team
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Submit your details for admin review. If approved, you will receive an invitation link via email.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowJoinModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg transition-colors cursor-pointer"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <form onSubmit={handleJoinSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={joinForm.first_name}
+                    onChange={(e) => setJoinForm({ ...joinForm, first_name: e.target.value })}
+                    placeholder="e.g. Rahul"
+                    className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={joinForm.last_name}
+                    onChange={(e) => setJoinForm({ ...joinForm, last_name: e.target.value })}
+                    placeholder="e.g. Sharma"
+                    className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  value={joinForm.email}
+                  onChange={(e) => setJoinForm({ ...joinForm, email: e.target.value })}
+                  placeholder="rahul@example.com"
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    value={joinForm.phone}
+                    onChange={(e) => setJoinForm({ ...joinForm, phone: e.target.value })}
+                    placeholder="9876543210"
+                    className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Desired Role *</label>
+                  <select
+                    value={joinForm.desired_role}
+                    onChange={(e) => setJoinForm({ ...joinForm, desired_role: e.target.value })}
+                    className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
+                  >
+                    <option value="customer_support">Customer Support</option>
+                    <option value="operation_manager">Operation Manager</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Experience / Application Notes</label>
+                <textarea
+                  rows={3}
+                  value={joinForm.experience_notes}
+                  onChange={(e) => setJoinForm({ ...joinForm, experience_notes: e.target.value })}
+                  placeholder="Tell us about your background or why you want to join..."
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowJoinModal(false)}
+                  className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingJoin}
+                  className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-colors flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                >
+                  {isSubmittingJoin ? "Submitting..." : "Submit Join Request"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

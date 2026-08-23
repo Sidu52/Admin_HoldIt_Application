@@ -18,8 +18,10 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "teams",
       "bookings",
       "serviceable-areas",
+      "price-rules",
       "profile",
       "support",
+      "notifications",
     ],
     control: [
       "dashboard",
@@ -30,8 +32,10 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "teams",
       "bookings",
       "serviceable-areas",
+      "price-rules",
       "profile",
       "support",
+      "notifications",
     ],
   },
   [ROLES.ADMIN]: {
@@ -44,8 +48,10 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "teams",
       "bookings",
       "serviceable-areas",
+      "price-rules",
       "profile",
       "support",
+      "notifications",
     ],
     control: [
       "dashboard",
@@ -56,8 +62,10 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "teams",
       "bookings",
       "serviceable-areas",
+      "price-rules",
       "profile",
       "support",
+      "notifications",
     ],
   },
   [ROLES.OPERATION_MANAGER]: {
@@ -69,9 +77,12 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "bookings",
       "serviceable-areas",
+      "price-rules",
       "profile",
+      "support",
+      "notifications",
     ],
-    control: ["dashboard", "bookings", "profile"],
+    control: ["dashboard", "bookings", "profile", "notifications"],
   },
   [ROLES.CUSTOMER_SUPPORT]: {
     access: [
@@ -83,8 +94,10 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "drivers",
       "users",
+      "serviceable-areas",
+      "price-rules",
     ],
-    control: ["support"],
+    control: ["support", "bookings"],
   },
 };
 

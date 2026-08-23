@@ -78,6 +78,11 @@ export interface Booking {
     lng: number;
     address: string;
   } | null;
+  criticalHandoverLocation?: {
+    lat: number;
+    lng: number;
+    address: string;
+  } | null;
   pickup?: {
     scheduledAt?: string;
     assignment?: DriverAssignment;

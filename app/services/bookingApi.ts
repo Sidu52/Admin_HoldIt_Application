@@ -16,12 +16,20 @@ export const bookingApi = api.injectEndpoints({
       query: (id) => `/booking/${id}`,
       providesTags: (result, error, id) => [{ type: "Booking", id }],
     }),
-    cancelBooking: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `/booking/${id}/cancel`,
-        method: "PUT",
-      }),
-      invalidatesTags: (result, error, id) => [{ type: "Booking", id }, "Booking"],
+    cancelBooking: builder.mutation<any, string | { id: string; reason?: string }>({
+      query: (arg) => {
+        const id = typeof arg === "string" ? arg : arg.id;
+        const reason = typeof arg === "string" ? undefined : arg.reason;
+        return {
+          url: `/booking/${id}/cancel`,
+          method: "PUT",
+          body: reason ? { reason } : {},
+        };
+      },
+      invalidatesTags: (result, error, arg) => {
+        const id = typeof arg === "string" ? arg : arg.id;
+        return [{ type: "Booking", id }, "Booking"];
+      },
     }),
     assignDriver: builder.mutation<any, { bookingId: string; driverId: string }>({
       query: ({ bookingId, driverId }) => ({
@@ -31,11 +39,19 @@ export const bookingApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { bookingId }) => [{ type: "Booking", id: bookingId }, "Booking"],
     }),
-    reassignDriver: builder.mutation<any, { bookingId: string; driverId: string }>({
+    reassignDriver: builder.mutation<any, { bookingId: string; driverId?: string }>({
       query: ({ bookingId, driverId }) => ({
         url: `/booking/${bookingId}/reassign-driver`,
         method: "PATCH",
-        body: { driverId },
+        body: driverId ? { driverId } : {},
+      }),
+      invalidatesTags: (result, error, { bookingId }) => [{ type: "Booking", id: bookingId }, "Booking"],
+    }),
+    processCriticalCancel: builder.mutation<any, { bookingId: string; reason?: string }>({
+      query: ({ bookingId, reason }) => ({
+        url: `/booking/${bookingId}/process-critical-cancel`,
+        method: "PATCH",
+        body: { reason },
       }),
       invalidatesTags: (result, error, { bookingId }) => [{ type: "Booking", id: bookingId }, "Booking"],
     }),
@@ -90,6 +106,13 @@ export const bookingApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Booking", id }, "Booking"],
     }),
+    regenerateStatement: builder.mutation<any, string>({
+      query: (id) => ({
+        url: `/booking/${id}/regenerate-statement`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, id) => [{ type: "Booking", id }, "Booking"],
+    }),
   }),
 });
 
@@ -99,6 +122,7 @@ export const {
   useCancelBookingMutation,
   useAssignDriverMutation,
   useReassignDriverMutation,
+  useProcessCriticalCancelMutation,
   useReassignStoreMutation,
   useAssignReturnDriverMutation,
   useMarkArrivedMutation,
@@ -106,4 +130,5 @@ export const {
   useMarkStoredMutation,
   useRequestReturnMutation,
   useMarkDeliveredMutation,
+  useRegenerateStatementMutation,
 } = bookingApi;

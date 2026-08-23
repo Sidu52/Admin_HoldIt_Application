@@ -15,8 +15,9 @@ import {
 import NoData from "@/app/NoData";
 import { useGetBookingsQuery } from "../../../services/bookingApi";
 import { Booking, BookingStatus, PopulatedUser, PopulatedStore } from "@/app/types/booking";
-import Pagination from "@/app/components/common/Pagination";
 import { debounce } from "@/app/utils/helper";
+import { TableSkeleton } from "@/app/components/common/Skeleton";
+import Pagination from "@/app/components/common/Pagination";
 
 // ── Helpers ──
 const getUserName = (userId: Booking["userId"]): string => {
@@ -71,6 +72,7 @@ const STATUS_OPTIONS = [
   { label: "Arrived for Delivery", value: "arrived_for_delivery", icon: <BiCheckCircle />, color: "text-lime-600" },
   { label: "Delivered", value: "delivered", icon: <BiCheckCircle />, color: "text-green-500" },
   { label: "Cancelled", value: "cancelled", icon: <BiBlock />, color: "text-red-500" },
+  { label: "Driver Cancelled (Critical)", value: "driver_cancelled_critical", icon: <BiBlock />, color: "text-rose-500" },
 ] as const;
 
 const STATUS_BADGE_MAP: Record<string, { label: string; dot: string; bg: string; text: string }> = {
@@ -275,8 +277,12 @@ export default function BookingsClient() {
       </div>
 
       {/* TABLE */}
-      <div className={`flex-1 flex flex-col overflow-hidden transition-opacity duration-200 ${isFetching ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
-        {bookings.length === 0 ? (
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {isLoading ? (
+          <div className="p-4">
+            <TableSkeleton rows={8} cols={7} />
+          </div>
+        ) : bookings.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center text-slate-400">
               <p className="text-sm">No bookings found for the current filters.</p>
@@ -284,8 +290,8 @@ export default function BookingsClient() {
           </div>
         ) : (
           <div className="flex flex-col h-full bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl shadow-sm overflow-hidden">
-            <div className="flex-1 overflow-auto">
-              <table className="w-full border-collapse text-sm text-text-main-light dark:text-text-main-dark">
+            <div className="flex-1 overflow-x-auto">
+              <table className="w-full border-collapse text-sm text-text-main-light dark:text-text-main-dark min-w-[700px]">
                 <thead className="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
                   <tr>
                     <th className="px-4 py-4 text-left font-semibold tracking-wider uppercase text-[11px] text-text-muted-light dark:text-text-muted-dark">

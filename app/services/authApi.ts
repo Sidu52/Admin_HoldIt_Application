@@ -11,7 +11,6 @@ export const authApi = api.injectEndpoints(
           method: "POST",
           body: credentials,
         }),
-        invalidatesTags: ["Admin", "Dashboard"],
       }),
       signup: builder.mutation<any, any>({
         query: (data) => ({
@@ -35,7 +34,7 @@ export const authApi = api.injectEndpoints(
       }),
       resetPassword: builder.mutation<any, any>({
         query: (data) => ({
-          url: "/auth/forgot-password/reset",
+          url: `/auth/forgot-password/reset?token=${encodeURIComponent(data.token || "")}`,
           method: "POST",
           body: data,
         }),
@@ -57,6 +56,20 @@ export const authApi = api.injectEndpoints(
           body: data,
         }),
       }),
+      requestJoinTeam: builder.mutation<any, {
+        first_name: string;
+        last_name: string;
+        email: string;
+        phone: string;
+        desired_role?: string;
+        experience_notes?: string;
+      }>({
+        query: (data) => ({
+          url: "/auth/request-join-team",
+          method: "POST",
+          body: data,
+        }),
+      }),
     }),
   }
 );
@@ -71,4 +84,5 @@ export const {
   useVerifySessionQuery,
   useLogoutApiMutation,
   useChangePasswordMutation,
+  useRequestJoinTeamMutation,
 } = authApi;

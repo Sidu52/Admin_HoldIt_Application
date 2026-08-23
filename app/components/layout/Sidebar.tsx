@@ -13,8 +13,9 @@ import {
   FaChevronRight,
   FaMapMarkedAlt,
   FaCog,
+  FaMoneyBillWave,
 } from "react-icons/fa";
-import { RiAdminFill, RiDashboardLine, RiUserLine, RiTruckLine, RiStore2Line, RiTeamLine, RiMapPinUserLine, RiCalendarCheckLine, RiProfileLine } from "react-icons/ri";
+import { RiAdminFill, RiDashboardLine, RiUserLine, RiTruckLine, RiStore2Line, RiTeamLine, RiMapPinUserLine, RiCalendarCheckLine, RiProfileLine, RiCustomerService2Line, RiNotification3Line } from "react-icons/ri";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -101,6 +102,27 @@ const Sidebar = ({
       icon: <FaMapMarkedAlt />,
       href: "/serviceable-areas",
       active: pathname.startsWith("/serviceable-areas"),
+    },
+    {
+      id: "price-rules",
+      label: "Price Rules",
+      icon: <FaMoneyBillWave />,
+      href: "/price-rules",
+      active: pathname.startsWith("/price-rules"),
+    },
+    {
+      id: "support",
+      label: "Support Desk",
+      icon: <RiCustomerService2Line />,
+      href: "/support",
+      active: pathname.startsWith("/support"),
+    },
+    {
+      id: "notifications",
+      label: "Push Notifications",
+      icon: <RiNotification3Line />,
+      href: "/notifications",
+      active: pathname.startsWith("/notifications"),
     },
     {
       id: "profile",

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import Pagination from "../common/Pagination";
-import { MdOutlineEdit, MdOutlineDelete, MdOutlineMail } from "react-icons/md";
+import { MdOutlineEdit, MdOutlineDelete } from "react-icons/md";
 import { getStatusBadge } from "../common/GetStatus";
 import { TeamMember } from "@/app/types/team";
 import { formatDateTime, getFullName, getUserNameFirstChar } from "@/app/utils/helper";
@@ -19,7 +19,6 @@ interface TeamMemberTableProps {
   onSelectionChange: (members: TeamMember[]) => void;
   onViewDetails: (member: TeamMember) => void;
   onDeleteClick: (member: TeamMember) => void;
-  onResendInvite: (id: string) => void;
   pagination: PaginationProps;
   onPageChange: (page: number) => void;
   actorRole?: string;
@@ -31,7 +30,6 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
   onSelectionChange,
   onViewDetails,
   onDeleteClick,
-  onResendInvite,
   pagination,
   onPageChange,
   actorRole,
@@ -70,16 +68,12 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
     }
   }, [allSelected, teamMember, selectedTeamMember, onSelectionChange]);
 
-  const handleResendInvite = useCallback((id: string) => {
-    onResendInvite(id);
-  }, []);
-
   const canControlModule = hasControl(actorRole, "teams");
 
   return (
     <div className="card-premium flex-1 flex flex-col overflow-hidden p-0 bg-transparent border-none shadow-none">
-      <div className="flex-1 overflow-auto">
-        <table className="w-full border-separate border-spacing-0">
+      <div className="flex-1 overflow-x-auto">
+        <table className="w-full border-separate border-spacing-0 min-w-[700px]">
           <thead>
             <tr className="bg-background-light dark:bg-background-dark">
               <th className="sticky top-0 z-10 px-6 py-4 text-center border-b border-border-light dark:border-border-dark">
@@ -106,9 +100,6 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
               </th>
               <th className="sticky top-0 z-10 px-6 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark hidden md:table-cell">
                 Last Activity
-              </th>
-              <th className="sticky top-0 z-10 px-6 py-4 text-right text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">
-                ReSend Invite
               </th>
               <th className="sticky top-0 z-10 px-6 py-4 text-right text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">
                 Actions
@@ -165,22 +156,6 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
                       {team.last_login_at ? formatDateTime(team.last_login_at, "date") : "Never"}
                     </span>
                   </td>
-
-                  {/* Resent Link */}
-                  <td className="px-6 py-4 hidden lg:table-cell text-center">
-                    {modifiable && team.account_status === "pending" &&
-                      <button
-                        onClick={() => handleResendInvite(team._id)}
-                        className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:bg-primary/10 transition-all"
-                        title="Resend Invite"
-                      >
-                        Resend
-                      </button>
-                    }
-
-                  </td>
-
-
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       {modifiable && (

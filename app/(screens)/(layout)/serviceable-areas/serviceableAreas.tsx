@@ -1,5 +1,7 @@
 "use client";
 
+import { TableSkeleton } from "../../../components/common/Skeleton";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NoData from "@/app/NoData";
@@ -136,8 +138,8 @@ export default function ServiceableAreasClient() {
 
       {/* Table Container */}
       <div className="card-premium flex-1 flex flex-col overflow-hidden p-0 border-none shadow-none bg-transparent">
-        <div className="flex-1 overflow-auto">
-          <table className="w-full border-separate border-spacing-0">
+        <div className="flex-1 overflow-x-auto">
+          <table className="w-full border-separate border-spacing-0 min-w-[700px]">
             <thead className="bg-background-light dark:bg-background-dark">
               <tr>
                 <th className="sticky top-0 z-10 px-8 py-5 text-left text-[11px] font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark border-b border-border-light dark:border-border-dark">Zone Details</th>
@@ -148,7 +150,14 @@ export default function ServiceableAreasClient() {
               </tr>
             </thead>
             <tbody className="bg-surface-light dark:bg-surface-dark divide-y divide-border-light dark:divide-border-dark">
-              {areas.map((area) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="p-4">
+                    <TableSkeleton rows={6} cols={5} />
+                  </td>
+                </tr>
+              ) : (
+                areas.map((area) => (
                 <tr key={area._id} className="group hover:bg-background-light dark:hover:bg-background-dark/50 transition-colors">
                   <td className="px-8 py-6">
                     <div className="flex flex-col gap-0.5">
@@ -212,8 +221,8 @@ export default function ServiceableAreasClient() {
                     </div>
                   </td>
                 </tr>
-              ))}
-              {areas.length === 0 && (
+              )))}
+              {!isLoading && areas.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-8 py-20 text-center">
                     <p className="text-sm font-bold text-text-muted-light uppercase tracking-widest">No serviceable areas found</p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   useGetServiceableAreaQuery,
   useCreateServiceableAreaMutation,
@@ -15,7 +16,8 @@ import {
   FaMapMarkerAlt,
   FaGlobeAmericas,
   FaMoneyBillWave,
-  FaRulerCombined
+  FaRulerCombined,
+  FaSuitcaseRolling,
 } from "react-icons/fa";
 
 export default function AreaFormClient({ areaId }: { areaId: string }) {
@@ -37,6 +39,24 @@ export default function AreaFormClient({ areaId }: { areaId: string }) {
     service_radius_km: "5",
     delivery_charge: "0",
     is_active: true
+  });
+
+  const [priceRuleData, setPriceRuleData] = useState({
+    name: "",
+    platformFee: "10",
+    handlingFee: "0",
+    packingFee: "0",
+    perKmRate: "12",
+    maxAdvanceDistanceKm: "15",
+    hourlyStorageRate: "25",
+    smallBase: "49",
+    smallHourly: "15",
+    mediumBase: "99",
+    mediumHourly: "25",
+    largeBase: "149",
+    largeHourly: "40",
+    otherBase: "199",
+    otherHourly: "50",
   });
 
   useEffect(() => {
@@ -71,7 +91,7 @@ export default function AreaFormClient({ areaId }: { areaId: string }) {
     }
 
     try {
-      const payload = {
+      const payload: any = {
         name: formData.name,
         city: formData.city,
         state: formData.state,
@@ -86,15 +106,46 @@ export default function AreaFormClient({ areaId }: { areaId: string }) {
       };
 
       if (isNew) {
+        payload.priceRule = {
+          name: priceRuleData.name.trim() || `${formData.name || formData.city || "Zone"} Standard Rate Card`,
+          feeBreakdown: {
+            platformFee: parseFloat(priceRuleData.platformFee) || 10,
+            handlingFee: parseFloat(priceRuleData.handlingFee) || 0,
+            packingFee: parseFloat(priceRuleData.packingFee) || 0,
+          },
+          perKmRate: parseFloat(priceRuleData.perKmRate) || 12,
+          maxAdvanceDistanceKm: parseFloat(priceRuleData.maxAdvanceDistanceKm) || 15,
+          hourlyStorageRate: parseFloat(priceRuleData.hourlyStorageRate) || 25,
+          bagPricing: {
+            small: {
+              basePrice: parseFloat(priceRuleData.smallBase) || 49,
+              hourlyRate: parseFloat(priceRuleData.smallHourly) || 15,
+            },
+            medium: {
+              basePrice: parseFloat(priceRuleData.mediumBase) || 99,
+              hourlyRate: parseFloat(priceRuleData.mediumHourly) || 25,
+            },
+            large: {
+              basePrice: parseFloat(priceRuleData.largeBase) || 149,
+              hourlyRate: parseFloat(priceRuleData.largeHourly) || 40,
+            },
+            other: {
+              basePrice: parseFloat(priceRuleData.otherBase) || 199,
+              hourlyRate: parseFloat(priceRuleData.otherHourly) || 50,
+            },
+          },
+          currency: "INR",
+        };
+
         await createArea(payload).unwrap();
-        toast.success("Serviceable area created successfully");
+        toast.success("Serviceable area and price rule created successfully");
       } else {
         await updateArea({ areaId, data: payload }).unwrap();
         toast.success("Serviceable area updated successfully");
       }
       router.push("/serviceable-areas");
     } catch (err: any) {
-      toast.error(err?.data?.message || (isNew ? "Failed to create area" : "Failed to update area"));
+      toast.error(err?.data?.message || (isNew ? "Failed to create area and price rule" : "Failed to update area"));
     }
   };
 
@@ -216,6 +267,193 @@ export default function AreaFormClient({ areaId }: { areaId: string }) {
                 </p>
               </div>
             </section>
+
+            {/* Price Rule & Bag Pricing (Required during Area Creation) */}
+            {isNew && (
+              <section className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-50 dark:border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <FaMoneyBillWave className="text-emerald-500 text-xl" />
+                    <div>
+                      <h2 className="text-xl font-bold">Zone Pricing Rule & Bag Rates</h2>
+                      <p className="text-xs text-slate-400 mt-0.5">Define initial rate card & luggage pricing for this area</p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-bold px-3 py-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-full border border-emerald-200 dark:border-emerald-500/20">
+                    Required
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pricing Rule Name</label>
+                    <input
+                      type="text"
+                      placeholder={`${formData.name || formData.city || "Zone"} Rate Card`}
+                      value={priceRuleData.name}
+                      onChange={e => setPriceRuleData({ ...priceRuleData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] outline-none focus:border-primary font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Per KM Distance Rate (₹)</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={priceRuleData.perKmRate}
+                      onChange={e => setPriceRuleData({ ...priceRuleData, perKmRate: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] outline-none focus:border-primary font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Base Platform Fee (₹)</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={priceRuleData.platformFee}
+                      onChange={e => setPriceRuleData({ ...priceRuleData, platformFee: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] outline-none focus:border-primary font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Default Storage Rate (₹/hr)</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={priceRuleData.hourlyStorageRate}
+                      onChange={e => setPriceRuleData({ ...priceRuleData, hourlyStorageRate: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] outline-none focus:border-primary font-bold"
+                    />
+                  </div>
+                </div>
+
+                {/* Bag Specific Rates Grid */}
+                <div className="p-4 bg-blue-50/40 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30 space-y-4">
+                  <p className="font-black uppercase tracking-widest text-[11px] text-primary flex items-center gap-2">
+                    <FaSuitcaseRolling /> Bag Item Rates (Base & Hourly)
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    {/* Small */}
+                    <div className="p-3 bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="font-bold flex items-center gap-1">🎒 Small Bag</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Base (₹)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.smallBase}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, smallBase: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Hourly (₹/h)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.smallHourly}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, smallHourly: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Medium */}
+                    <div className="p-3 bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="font-bold flex items-center gap-1">💼 Medium Bag</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Base (₹)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.mediumBase}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, mediumBase: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Hourly (₹/h)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.mediumHourly}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, mediumHourly: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Large */}
+                    <div className="p-3 bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="font-bold flex items-center gap-1">🧳 Large Bag</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Base (₹)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.largeBase}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, largeBase: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Hourly (₹/h)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.largeHourly}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, largeHourly: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Other */}
+                    <div className="p-3 bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="font-bold flex items-center gap-1">📦 Other / Odd Item</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Base (₹)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.otherBase}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, otherBase: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400">Hourly (₹/h)</label>
+                          <input
+                            type="number"
+                            required
+                            value={priceRuleData.otherHourly}
+                            onChange={e => setPriceRuleData({ ...priceRuleData, otherHourly: e.target.value })}
+                            className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Configuration Sidebar Section */}
@@ -280,6 +518,15 @@ export default function AreaFormClient({ areaId }: { areaId: string }) {
                 {isCreating || isUpdating ? "Processing..." : (isNew ? "Create Zone" : "Update Zone")}
               </button>
             </RoleGuard>
+
+            {!isNew && (
+              <Link
+                href={`/price-rules?serviceAreaId=${areaId}`}
+                className="w-full py-4 rounded-[1.5rem] bg-emerald-600 text-white font-bold text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all cursor-pointer"
+              >
+                <FaMoneyBillWave /> Manage Price Rules for this Zone
+              </Link>
+            )}
           </div>
         </form>
       </div>

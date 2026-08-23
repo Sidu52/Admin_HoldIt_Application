@@ -64,6 +64,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (path.startsWith("/serviceable-areas")) return "serviceable-areas";
     if (path.startsWith("/profile")) return "profile";
     if (path.startsWith("/support")) return "support";
+    if (path.startsWith("/notifications")) return "notifications";
     return null;
   };
 

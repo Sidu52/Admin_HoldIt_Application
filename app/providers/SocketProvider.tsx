@@ -49,9 +49,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     function onConnectError(err: any) {
-      console.error("[Socket] Connection error:", err.message);
       if (err.message === "UNAUTHORIZED") {
-        // Handle unauthorized (maybe token expired)
+        console.warn("[Socket] Unauthorized: Missing or expired auth token. Disconnecting socket.");
+        socket.disconnect();
+        setIsConnected(false);
+      } else {
+        console.warn("[Socket] Connection error:", err.message);
       }
     }
 

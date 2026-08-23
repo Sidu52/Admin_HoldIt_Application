@@ -37,16 +37,6 @@ export const adminApi = api.injectEndpoints({
         "Team",
       ],
     }),
-
-    // Sent Invite
-    resendInvite: builder.mutation<any, string>({
-      query: (memberId) => ({
-        url: `/resend-invite/${memberId}`,
-        method: "PUT",
-      }),
-      invalidatesTags: ["Team"],
-    }),
-
     getAdmins: builder.query<any, void>({
       query: () => "/admins",
       providesTags: ["Team"],
@@ -79,6 +69,28 @@ export const adminApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Team"],
     }),
+    getJoinRequests: builder.query<any, { page?: number; limit?: number; status?: string; search?: string } | void>({
+      query: (params) => ({
+        url: "/join-requests",
+        params: params || {},
+      }),
+      providesTags: ["TeamJoinRequests"],
+    }),
+    approveJoinRequest: builder.mutation<any, string>({
+      query: (id) => ({
+        url: `/join-requests/${id}/approve`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["TeamJoinRequests", "Team"],
+    }),
+    rejectJoinRequest: builder.mutation<any, { id: string; rejectionReason?: string }>({
+      query: ({ id, rejectionReason }) => ({
+        url: `/join-requests/${id}/reject`,
+        method: "PATCH",
+        body: { rejectionReason },
+      }),
+      invalidatesTags: ["TeamJoinRequests"],
+    }),
   }),
 });
 
@@ -88,10 +100,12 @@ export const {
   useGetTeamQuery,
   useGetTeamMemberByIdQuery,
   useUpdateTeamMemberMutation,
-  useResendInviteMutation,
   useGetAdminsQuery,
   useGetSuperAdminsQuery,
   useInviteTeamMemberMutation,
   useUpdateAccountStatusMutation,
   useDeleteAdminsMutation,
+  useGetJoinRequestsQuery,
+  useApproveJoinRequestMutation,
+  useRejectJoinRequestMutation,
 } = adminApi;
