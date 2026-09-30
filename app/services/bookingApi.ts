@@ -113,6 +113,10 @@ export const bookingApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Booking", id }, "Booking"],
     }),
+    getBookingFinancials: builder.query<any, string>({
+      query: (id) => `/booking/${id}/financials`,
+      providesTags: (result, error, id) => [{ type: "Booking", id: `financials-${id}` }],
+    }),
   }),
 });
 
@@ -131,4 +135,5 @@ export const {
   useRequestReturnMutation,
   useMarkDeliveredMutation,
   useRegenerateStatementMutation,
+  useGetBookingFinancialsQuery,
 } = bookingApi;

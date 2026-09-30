@@ -15,7 +15,7 @@ import {
   FaCog,
   FaMoneyBillWave,
 } from "react-icons/fa";
-import { RiAdminFill, RiDashboardLine, RiUserLine, RiTruckLine, RiStore2Line, RiTeamLine, RiMapPinUserLine, RiCalendarCheckLine, RiProfileLine, RiCustomerService2Line, RiNotification3Line } from "react-icons/ri";
+import { RiAdminFill, RiDashboardLine, RiUserLine, RiTruckLine, RiStore2Line, RiTeamLine, RiMapPinUserLine, RiCalendarCheckLine, RiProfileLine, RiCustomerService2Line, RiNotification3Line, RiTicket2Line } from "react-icons/ri";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -95,6 +95,13 @@ const Sidebar = ({
       icon: <RiCalendarCheckLine />,
       href: "/bookings",
       active: pathname.startsWith("/booking"),
+    },
+    {
+      id: "coupans",
+      label: "Coupans",
+      icon: <RiTicket2Line />,
+      href: "/coupans",
+      active: pathname.startsWith("/coupans"),
     },
     {
       id: "serviceable-areas",

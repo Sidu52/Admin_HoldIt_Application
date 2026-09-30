@@ -37,31 +37,33 @@ export default function PriceRulesClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
 
-  // Form fields state
+  // Form fields state (Zero Hardcoded Values - loaded strictly from DB/Rule)
   const [formData, setFormData] = useState({
     name: "",
     serviceAreaId: "",
-    platformFee: "10",
-    handlingFee: "0",
-    packingFee: "0",
-    perKmRate: "12",
-    maxAdvanceDistanceKm: "15",
-    hourlyStorageRate: "25",
-    minChargeableHours: "1",
+    active: true,
+    platformFee: "",
+    handlingFee: "",
+    packingFee: "",
+    perKmRate: "",
+    maxAdvanceDistanceKm: "",
+    hourlyStorageRate: "",
+    minChargeableHours: "",
     maxDailyRate: "",
-    peakMultiplier: "1.0",
+    freeStorageHours: "",
+    peakMultiplier: "",
     startHour: "",
     endHour: "",
     currency: "INR",
     // Bag-specific rates
-    smallBase: "49",
-    smallHourly: "15",
-    mediumBase: "99",
-    mediumHourly: "25",
-    largeBase: "149",
-    largeHourly: "40",
-    otherBase: "199",
-    otherHourly: "50",
+    smallBase: "",
+    smallHourly: "",
+    mediumBase: "",
+    mediumHourly: "",
+    largeBase: "",
+    largeHourly: "",
+    otherBase: "",
+    otherHourly: "",
   });
 
   const { data: areasData } = useGetServiceableAreasQuery({ limit: 100 });
@@ -83,32 +85,34 @@ export default function PriceRulesClient() {
 
   const handleOpenEditModal = (rule: PricingRule) => {
     setEditingRule(rule);
-    const areaId = typeof rule.serviceAreaId === "object" ? rule.serviceAreaId._id : rule.serviceAreaId;
+    const areaId = (rule.serviceAreaId && typeof rule.serviceAreaId === "object") ? (rule.serviceAreaId as any)._id : (rule.serviceAreaId || "");
     const bp = rule.bagPricing;
 
     setFormData({
       name: rule.name || "",
       serviceAreaId: areaId || "",
-      platformFee: String(rule.feeBreakdown?.platformFee ?? 10),
-      handlingFee: String(rule.feeBreakdown?.handlingFee ?? 0),
-      packingFee: String(rule.feeBreakdown?.packingFee ?? 0),
-      perKmRate: String(rule.perKmRate ?? 12),
-      maxAdvanceDistanceKm: String(rule.maxAdvanceDistanceKm ?? 15),
-      hourlyStorageRate: String(rule.hourlyStorageRate ?? 25),
-      minChargeableHours: String(rule.minChargeableHours ?? 1),
+      active: rule.active ?? true,
+      platformFee: rule.feeBreakdown?.platformFee !== undefined && rule.feeBreakdown?.platformFee !== null ? String(rule.feeBreakdown.platformFee) : "",
+      handlingFee: rule.feeBreakdown?.handlingFee !== undefined && rule.feeBreakdown?.handlingFee !== null ? String(rule.feeBreakdown.handlingFee) : "",
+      packingFee: rule.feeBreakdown?.packingFee !== undefined && rule.feeBreakdown?.packingFee !== null ? String(rule.feeBreakdown.packingFee) : "",
+      perKmRate: rule.perKmRate !== undefined && rule.perKmRate !== null ? String(rule.perKmRate) : "",
+      maxAdvanceDistanceKm: rule.maxAdvanceDistanceKm !== undefined && rule.maxAdvanceDistanceKm !== null ? String(rule.maxAdvanceDistanceKm) : "",
+      hourlyStorageRate: rule.hourlyStorageRate !== undefined && rule.hourlyStorageRate !== null ? String(rule.hourlyStorageRate) : "",
+      minChargeableHours: rule.minChargeableHours !== undefined && rule.minChargeableHours !== null ? String(rule.minChargeableHours) : "",
       maxDailyRate: rule.maxDailyRate !== null && rule.maxDailyRate !== undefined ? String(rule.maxDailyRate) : "",
-      peakMultiplier: String(rule.peakMultiplier ?? 1.0),
+      freeStorageHours: rule.freeStorageHours !== undefined && rule.freeStorageHours !== null ? String(rule.freeStorageHours) : "",
+      peakMultiplier: rule.peakMultiplier !== undefined && rule.peakMultiplier !== null ? String(rule.peakMultiplier) : "",
       startHour: rule.peakHours?.startHour !== null && rule.peakHours?.startHour !== undefined ? String(rule.peakHours.startHour) : "",
       endHour: rule.peakHours?.endHour !== null && rule.peakHours?.endHour !== undefined ? String(rule.peakHours.endHour) : "",
       currency: rule.currency || "INR",
-      smallBase: String(bp?.small?.basePrice ?? 49),
-      smallHourly: String(bp?.small?.hourlyRate ?? 15),
-      mediumBase: String(bp?.medium?.basePrice ?? 99),
-      mediumHourly: String(bp?.medium?.hourlyRate ?? 25),
-      largeBase: String(bp?.large?.basePrice ?? 149),
-      largeHourly: String(bp?.large?.hourlyRate ?? 40),
-      otherBase: String(bp?.other?.basePrice ?? 199),
-      otherHourly: String(bp?.other?.hourlyRate ?? 50),
+      smallBase: bp?.small?.basePrice !== undefined && bp?.small?.basePrice !== null ? String(bp.small.basePrice) : "",
+      smallHourly: bp?.small?.hourlyRate !== undefined && bp?.small?.hourlyRate !== null ? String(bp.small.hourlyRate) : "",
+      mediumBase: bp?.medium?.basePrice !== undefined && bp?.medium?.basePrice !== null ? String(bp.medium.basePrice) : "",
+      mediumHourly: bp?.medium?.hourlyRate !== undefined && bp?.medium?.hourlyRate !== null ? String(bp.medium.hourlyRate) : "",
+      largeBase: bp?.large?.basePrice !== undefined && bp?.large?.basePrice !== null ? String(bp.large.basePrice) : "",
+      largeHourly: bp?.large?.hourlyRate !== undefined && bp?.large?.hourlyRate !== null ? String(bp.large.hourlyRate) : "",
+      otherBase: bp?.other?.basePrice !== undefined && bp?.other?.basePrice !== null ? String(bp.other.basePrice) : "",
+      otherHourly: bp?.other?.hourlyRate !== undefined && bp?.other?.hourlyRate !== null ? String(bp.other.hourlyRate) : "",
     });
     setIsModalOpen(true);
   };
@@ -119,18 +123,22 @@ export default function PriceRulesClient() {
 
     try {
       const payload: any = {
-        name: formData.name,
+        name: formData.name.trim(),
+        serviceAreaId: formData.serviceAreaId || undefined,
+        active: formData.active,
+        currency: (formData.currency || "INR").trim().toUpperCase(),
         feeBreakdown: {
           platformFee: parseFloat(formData.platformFee) || 0,
           handlingFee: parseFloat(formData.handlingFee) || 0,
           packingFee: parseFloat(formData.packingFee) || 0,
         },
         perKmRate: parseFloat(formData.perKmRate) || 0,
-        maxAdvanceDistanceKm: parseFloat(formData.maxAdvanceDistanceKm) || 15,
-        hourlyStorageRate: parseFloat(formData.hourlyStorageRate) || 0,
-        minChargeableHours: parseInt(formData.minChargeableHours) || 1,
-        maxDailyRate: formData.maxDailyRate ? parseFloat(formData.maxDailyRate) : null,
-        peakMultiplier: parseFloat(formData.peakMultiplier) || 1.0,
+        maxAdvanceDistanceKm: formData.maxAdvanceDistanceKm !== "" ? Math.max(0, parseFloat(formData.maxAdvanceDistanceKm)) : 0,
+        hourlyStorageRate: formData.hourlyStorageRate !== "" ? Math.max(0, parseFloat(formData.hourlyStorageRate)) : 0,
+        minChargeableHours: formData.minChargeableHours !== "" ? Math.max(0, parseInt(formData.minChargeableHours)) : 0,
+        maxDailyRate: formData.maxDailyRate ? Math.max(0, parseFloat(formData.maxDailyRate)) : null,
+        freeStorageHours: formData.freeStorageHours !== "" ? Math.max(0, parseInt(formData.freeStorageHours)) : 0,
+        peakMultiplier: formData.peakMultiplier !== "" ? Math.max(1.0, parseFloat(formData.peakMultiplier)) : 1.0,
         peakHours: {
           startHour: formData.startHour !== "" ? parseInt(formData.startHour) : null,
           endHour: formData.endHour !== "" ? parseInt(formData.endHour) : null,
@@ -153,11 +161,10 @@ export default function PriceRulesClient() {
             hourlyRate: parseFloat(formData.otherHourly) || 0,
           },
         },
-        currency: formData.currency,
       };
 
       await updatePriceRule({ id: editingRule._id, data: payload }).unwrap();
-      toast.success("Price rule and bag prices updated successfully");
+      toast.success("Price rule and storage policy updated successfully");
       setIsModalOpen(false);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to save price rule");
@@ -241,7 +248,7 @@ export default function PriceRulesClient() {
       <div className="bg-white dark:bg-[#1a2332] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex-1 flex flex-col">
         {isLoading || isFetching ? (
           <div className="p-4">
-            <TableSkeleton rows={6} cols={7} />
+            <TableSkeleton rows={6} cols={9} />
           </div>
         ) : rules.length === 0 ? (
           <div className="p-8">
@@ -249,12 +256,13 @@ export default function PriceRulesClient() {
           </div>
         ) : (
           <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left border-collapse text-xs min-w-[750px]">
+            <table className="w-full text-left border-collapse text-xs min-w-[950px]">
               <thead className="sticky top-0 z-10 bg-slate-50/90 dark:bg-slate-800/90 backdrop-blur-sm">
                 <tr className="border-b border-slate-200 dark:border-slate-700/50 text-slate-500 font-bold uppercase tracking-wider">
                   <th className="py-3.5 px-4">Rule Name</th>
                   <th className="py-3.5 px-4">Service Area</th>
                   <th className="py-3.5 px-4">Bag Rates (Base • Hourly)</th>
+                  <th className="py-3.5 px-4">Storage Policy</th>
                   <th className="py-3.5 px-4">Per KM</th>
                   <th className="py-3.5 px-4">Platform Fee</th>
                   <th className="py-3.5 px-4">Peak</th>
@@ -264,7 +272,7 @@ export default function PriceRulesClient() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-slate-700 dark:text-slate-300">
                 {rules.map((rule: PricingRule) => {
-                  const areaName = typeof rule.serviceAreaId === "object" ? rule.serviceAreaId.name : "Area";
+                  const areaName = rule.serviceAreaId && typeof rule.serviceAreaId === "object" ? (rule.serviceAreaId as any).name || "Area" : "Area";
                   const bp = rule.bagPricing;
 
                   return (
@@ -278,17 +286,43 @@ export default function PriceRulesClient() {
                       <td className="py-3.5 px-4">
                         <div className="flex flex-wrap gap-1.5">
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/20">
-                            🎒 ₹{bp?.small?.basePrice ?? 49} • ₹{bp?.small?.hourlyRate ?? 15}/h
+                            🎒 ₹{bp?.small?.basePrice ?? 0} • ₹{bp?.small?.hourlyRate ?? 0}/h
                           </span>
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">
-                            💼 ₹{bp?.medium?.basePrice ?? 99} • ₹{bp?.medium?.hourlyRate ?? 25}/h
+                            💼 ₹{bp?.medium?.basePrice ?? 0} • ₹{bp?.medium?.hourlyRate ?? 0}/h
                           </span>
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/20">
-                            🧳 ₹{bp?.large?.basePrice ?? 149} • ₹{bp?.large?.hourlyRate ?? 40}/h
+                            🧳 ₹{bp?.large?.basePrice ?? 0} • ₹{bp?.large?.hourlyRate ?? 0}/h
                           </span>
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
-                            📦 ₹{bp?.other?.basePrice ?? 199} • ₹{bp?.other?.hourlyRate ?? 50}/h
+                            📦 ₹{bp?.other?.basePrice ?? 0} • ₹{bp?.other?.hourlyRate ?? 0}/h
                           </span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                            <FaClock className="text-indigo-500 text-[10px]" /> ₹{rule.hourlyStorageRate}/hr
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">
+                              Min: {rule.minChargeableHours ?? 0}h
+                            </span>
+                            {rule.maxDailyRate ? (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
+                                Cap: ₹{rule.maxDailyRate}/d
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] text-slate-400">
+                                No Cap
+                              </span>
+                            )}
+                            {(rule.freeStorageHours ?? 0) > 0 && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/20">
+                                {rule.freeStorageHours}h Free
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
@@ -387,19 +421,58 @@ export default function PriceRulesClient() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Standard City Rate"
-                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground font-semibold"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Service Area (Linked)</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Service Area (Linked) *</label>
+                  <select
+                    value={formData.serviceAreaId}
+                    onChange={(e) => setFormData({ ...formData, serviceAreaId: e.target.value })}
+                    required
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground font-semibold"
+                  >
+                    <option value="">Select Service Area</option>
+                    {areas.map((area: any) => (
+                      <option key={area._id} value={area._id}>
+                        {area.name} ({area.city}, {area.state})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Status & Currency Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Currency</label>
                   <input
                     type="text"
-                    readOnly
-                    disabled
-                    value={typeof editingRule.serviceAreaId === "object" ? editingRule.serviceAreaId.name : "Service Area"}
-                    className="w-full p-2.5 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 font-semibold"
+                    maxLength={3}
+                    value={formData.currency}
+                    onChange={(e) => setFormData({ ...formData, currency: e.target.value.toUpperCase() })}
+                    placeholder="INR"
+                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground font-semibold"
                   />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-200 mb-1">Rule Status</label>
+                  <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.active}
+                        onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+                    </label>
+                    <span className={`text-xs font-bold ${formData.active ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}`}>
+                      {formData.active ? "Active (In Effect)" : "Inactive (Disabled)"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -421,7 +494,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Base Price (₹)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.smallBase}
@@ -433,7 +506,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Hourly Rate (₹/hr)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.smallHourly}
@@ -452,7 +525,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Base Price (₹)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.mediumBase}
@@ -464,7 +537,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Hourly Rate (₹/hr)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.mediumHourly}
@@ -483,7 +556,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Base Price (₹)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.largeBase}
@@ -495,7 +568,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Hourly Rate (₹/hr)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.largeHourly}
@@ -514,7 +587,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Base Price (₹)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.otherBase}
@@ -526,7 +599,7 @@ export default function PriceRulesClient() {
                         <label className="text-[10px] font-semibold text-slate-500">Hourly Rate (₹/hr)</label>
                         <input
                           type="number"
-                          step="1"
+                          step="any"
                           min="0"
                           required
                           value={formData.otherHourly}
@@ -539,15 +612,102 @@ export default function PriceRulesClient() {
                 </div>
               </div>
 
-              {/* General Rates Grid */}
+              {/* ── LUGGAGE STORAGE & DURATION RULES ── */}
+              <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl border border-indigo-200 dark:border-indigo-800/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold uppercase tracking-wider text-[11px] text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                    <FaClock className="text-indigo-600 dark:text-indigo-400" /> Luggage Storage & Duration Rules
+                  </p>
+                  <span className="text-[10px] text-slate-500">Hourly Rates & Caps</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Min Chargeable Hours */}
+                  <div className="p-3 bg-white dark:bg-[#1a2332] rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 text-xs">
+                      Min Chargeable Hours *
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      required
+                      value={formData.minChargeableHours}
+                      onChange={(e) => setFormData({ ...formData, minChargeableHours: e.target.value })}
+                      className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-foreground font-bold text-sm"
+                    />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Minimum hours charged even for short stays (e.g., 35 mins billed as 1 hr). Default: 1 hr.
+                    </p>
+                  </div>
+
+                  {/* Fallback Hourly Rate */}
+                  <div className="p-3 bg-white dark:bg-[#1a2332] rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 text-xs">
+                      Default Storage Rate (₹/hr) *
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0"
+                      required
+                      value={formData.hourlyStorageRate}
+                      onChange={(e) => setFormData({ ...formData, hourlyStorageRate: e.target.value })}
+                      className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-foreground font-bold text-sm"
+                    />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Fallback hourly rate if item-specific bag rates are not applicable.
+                    </p>
+                  </div>
+
+                  {/* Max Daily Rate Cap */}
+                  <div className="p-3 bg-white dark:bg-[#1a2332] rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 text-xs">
+                      Max Daily Rate Cap (₹/day)
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0"
+                      placeholder="e.g. 299 (Leave blank for no cap)"
+                      value={formData.maxDailyRate}
+                      onChange={(e) => setFormData({ ...formData, maxDailyRate: e.target.value })}
+                      className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-foreground font-bold text-sm"
+                    />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Maximum cap per 24-hour storage cycle. Leave empty for uncapped storage.
+                    </p>
+                  </div>
+
+                  {/* Free Storage Hours */}
+                  <div className="p-3 bg-white dark:bg-[#1a2332] rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                    <label className="block font-bold text-slate-700 dark:text-slate-200 text-xs">
+                      Free Grace Hours
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.freeStorageHours}
+                      onChange={(e) => setFormData({ ...formData, freeStorageHours: e.target.value })}
+                      className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-foreground font-bold text-sm"
+                    />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Initial complimentary hours before storage billing begins (default: 0).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── DISTANCE & SERVICE FEES ── */}
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-3">
                 <p className="font-bold uppercase tracking-wider text-[11px] text-primary">Distance & Service Fees</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Per KM Distance Rate (₹) *</label>
                     <input
                       type="number"
-                      step="0.01"
+                      step="any"
                       min="0"
                       required
                       value={formData.perKmRate}
@@ -559,23 +719,11 @@ export default function PriceRulesClient() {
                     <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Base Platform Fee (₹) *</label>
                     <input
                       type="number"
-                      step="0.01"
+                      step="any"
                       min="0"
                       required
                       value={formData.platformFee}
                       onChange={(e) => setFormData({ ...formData, platformFee: e.target.value })}
-                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Default Storage Rate (₹/h) *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      required
-                      value={formData.hourlyStorageRate}
-                      onChange={(e) => setFormData({ ...formData, hourlyStorageRate: e.target.value })}
                       className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                     />
                   </div>
@@ -588,33 +736,33 @@ export default function PriceRulesClient() {
                   <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Handling Fee (₹)</label>
                   <input
                     type="number"
-                    step="0.01"
+                    step="any"
                     min="0"
                     value={formData.handlingFee}
                     onChange={(e) => setFormData({ ...formData, handlingFee: e.target.value })}
-                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Packing Fee (₹)</label>
                   <input
                     type="number"
-                    step="0.01"
+                    step="any"
                     min="0"
                     value={formData.packingFee}
                     onChange={(e) => setFormData({ ...formData, packingFee: e.target.value })}
-                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Max Distance (KM)</label>
                   <input
                     type="number"
-                    step="1"
+                    step="any"
                     min="1"
                     value={formData.maxAdvanceDistanceKm}
                     onChange={(e) => setFormData({ ...formData, maxAdvanceDistanceKm: e.target.value })}
-                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                    className="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                   />
                 </div>
               </div>
@@ -624,14 +772,14 @@ export default function PriceRulesClient() {
                 <p className="font-bold uppercase tracking-wider text-[11px] text-amber-700 dark:text-amber-400">Peak Hours & Multipliers</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Peak Multiplier (e.g. 1.25x)</label>
+                    <label className="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Peak Multiplier (e.g. 1.5x)</label>
                     <input
                       type="number"
-                      step="0.05"
+                      step="any"
                       min="1.0"
                       value={formData.peakMultiplier}
                       onChange={(e) => setFormData({ ...formData, peakMultiplier: e.target.value })}
-                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                     />
                   </div>
                   <div>
@@ -640,10 +788,11 @@ export default function PriceRulesClient() {
                       type="number"
                       min="0"
                       max="23"
-                      placeholder="e.g. 17"
+                      step="1"
+                      placeholder="e.g. 18"
                       value={formData.startHour}
                       onChange={(e) => setFormData({ ...formData, startHour: e.target.value })}
-                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                     />
                   </div>
                   <div>
@@ -652,10 +801,11 @@ export default function PriceRulesClient() {
                       type="number"
                       min="0"
                       max="23"
-                      placeholder="e.g. 21"
+                      step="1"
+                      placeholder="e.g. 22"
                       value={formData.endHour}
                       onChange={(e) => setFormData({ ...formData, endHour: e.target.value })}
-                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground"
+                      className="w-full p-2 bg-white dark:bg-[#1a2332] border border-slate-200 dark:border-slate-700 rounded-lg text-foreground font-semibold"
                     />
                   </div>
                 </div>

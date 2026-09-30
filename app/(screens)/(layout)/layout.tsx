@@ -61,12 +61,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (path.startsWith("/store")) return "stores";
     if (path.startsWith("/team")) return "teams";
     if (path.startsWith("/bookings")) return "bookings";
+    if (path.startsWith("/coupans")) return "coupans";
     if (path.startsWith("/serviceable-areas")) return "serviceable-areas";
+    if (path.startsWith("/price-rules")) return "price-rules";
     if (path.startsWith("/profile")) return "profile";
     if (path.startsWith("/support")) return "support";
     if (path.startsWith("/notifications")) return "notifications";
     return null;
   };
+
 
   const moduleId = getModuleFromPathname(pathname);
   // Wait to determine if it is unauthorized until profile details are fetched.

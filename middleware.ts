@@ -14,8 +14,8 @@ const redirect = (url: string, request: NextRequest) =>
 
 export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
-    const token = request.cookies.get("admin_accessToken")?.value || request.cookies.get("accessToken")?.value;
-    const hasSession = request.cookies.get("admin_hasSession")?.value || request.cookies.get("hasSession")?.value;
+    const token = request.cookies.get("admin_accessToken")?.value;
+    const hasSession = request.cookies.get("admin_hasSession")?.value;
     const isAuthenticated = token || hasSession;
 
     const isPublicRoute =

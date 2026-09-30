@@ -96,6 +96,14 @@ export const storeApi = api.injectEndpoints({
         invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
       }
     ),
+    releaseStoreCapacity: builder.mutation<any, { storeId: string; reset_to?: number }>({
+      query: ({ storeId, reset_to }) => ({
+        url: `/store/${storeId}/release-capacity`,
+        method: "POST",
+        body: { reset_to },
+      }),
+      invalidatesTags: (result, error, { storeId }) => [{ type: "Store", id: storeId }, { type: "Store", id: "PARTIAL-LIST" }],
+    }),
   }),
 });
 
@@ -108,4 +116,5 @@ export const {
   useToggleStoreStatusMutation,
   useDeleteStoresMutation,
   useUpdateLocationMutation,
+  useReleaseStoreCapacityMutation,
 } = storeApi;

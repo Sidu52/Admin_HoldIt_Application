@@ -28,7 +28,12 @@ function TeamClient() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"members" | "requests">("members");
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [filter, setFilter] = useState({ search: "", account_status: "all", role: "all" });
+  const [filter, setFilter] = useState({
+    search: "",
+    account_status: "",
+    verification_status: "",
+    role: "",
+  });
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [selectedTeamMember, setSelectTeamMember] = useState<TeamMember[]>([]);
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
@@ -46,9 +51,10 @@ function TeamClient() {
   const { data, isLoading, isFetching, isError } = useGetTeamQuery({
     page: pagination.page,
     limit: pagination.limit,
-    search: filter.search,
-    account_status: filter.account_status === "all" ? undefined : filter.account_status,
-    role: filter.role === "all" ? undefined : filter.role,
+    search: filter.search || undefined,
+    account_status: filter.account_status && filter.account_status !== "all" ? filter.account_status : undefined,
+    verification_status: filter.verification_status && filter.verification_status !== "all" ? filter.verification_status : undefined,
+    role: filter.role && filter.role !== "all" ? filter.role : undefined,
   });
 
   const { data: requestsData, isLoading: requestsLoading } = useGetJoinRequestsQuery();
@@ -108,8 +114,23 @@ function TeamClient() {
     }
   };
 
-  const handleFilterChange = ({ search, account_status, role }: { search: string; account_status: string; role: string }) => {
-    setFilter({ search, account_status, role });
+  const handleFilterChange = ({
+    search,
+    account_status,
+    verification_status,
+    role,
+  }: {
+    search: string;
+    account_status: string;
+    verification_status?: string;
+    role: string;
+  }) => {
+    setFilter({
+      search,
+      account_status,
+      verification_status: verification_status || "",
+      role,
+    });
     setPagination((p) => ({ ...p, page: 1 }));
   };
 

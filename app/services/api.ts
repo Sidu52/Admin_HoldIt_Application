@@ -20,7 +20,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
+  if (result.error && (result.error.status === 401 || result.error.status === 403)) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
@@ -63,6 +63,6 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Store", "StoreOwner", "Driver", "Booking", "ServiceableArea", "Admin", "Team", "Dashboard", "PriceRule", "SupportTicket", "TeamJoinRequests", "NotificationLog"],
+  tagTypes: ["User", "Store", "StoreOwner", "Driver", "Booking", "ServiceableArea", "Admin", "Team", "Dashboard", "PriceRule", "SupportTicket", "TeamJoinRequests", "NotificationLog", "Settlement", "Coupon"],
   endpoints: () => ({}),
 });

@@ -1,5 +1,16 @@
 import { Store } from "./store";
 
+export interface BankDetails {
+    accountNumber?: string | null;
+    ifscCode?: string | null;
+    beneficiaryName?: string | null;
+    upiId?: string | null;
+    preferredMode?: "IMPS" | "NEFT" | "UPI";
+    isVerified?: boolean;
+    verifiedAt?: Date | string | null;
+    verifiedBy?: string | { _id: string; name?: string; email?: string } | null;
+}
+
 export interface StoreOwner {
     _id: string;
     first_name: string;
@@ -9,11 +20,14 @@ export interface StoreOwner {
     gender: string;
     date_of_birth: string;
     address: string;
+    bankDetails?: BankDetails;
     last_login_at: Date;
     last_active_at: Date;
     account_status: string;
-    account_deactivated_reason: string;
+    account_deactivated_reason?: string;
     verification_status: string;
+    deactivated_at?: Date | string | null;
+    deactivated_by?: string | { _id: string; name?: string; email?: string } | null;
     createdAt: Date;
     updatedAt: Date;
     store_count: number;
@@ -23,13 +37,17 @@ export interface StoreOwner {
 }
 
 export interface StoreOwnerUpdateData {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    gender: string;
-    date_of_birth: string;
-    address: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+    gender?: string;
+    date_of_birth?: string;
+    address?: string;
+    bankDetails?: BankDetails;
+    account_status?: string;
+    account_deactivated_reason?: string;
+    verification_status?: string;
 }
 
 export interface UpdateStoreOwnerStatusData {

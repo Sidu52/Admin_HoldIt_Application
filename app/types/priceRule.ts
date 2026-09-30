@@ -37,6 +37,7 @@ export interface PricingRule {
   hourlyStorageRate: number;
   minChargeableHours?: number;
   maxDailyRate?: number | null;
+  freeStorageHours?: number;
   peakMultiplier?: number;
   peakHours?: PeakHours;
   bagPricing?: BagPricing;

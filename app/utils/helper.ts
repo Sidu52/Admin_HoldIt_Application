@@ -98,4 +98,16 @@ export function getFullName(first_name: string, last_name: string): string {
   return `${first_name} ${last_name}`;
 }
 
+export function getCurrencySymbol(currency?: string): string {
+  if (!currency) return "₹";
+  const c = currency.toUpperCase();
+  if (c === "INR") return "₹";
+  if (c === "USD") return "$";
+  if (c === "EUR") return "€";
+  if (c === "GBP") return "£";
+  if (c === "AED") return "AED ";
+  return `${c} `;
+}
+
+
 

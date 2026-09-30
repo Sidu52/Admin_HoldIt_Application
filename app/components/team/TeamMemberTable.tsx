@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import Pagination from "../common/Pagination";
-import { MdOutlineEdit, MdOutlineDelete } from "react-icons/md";
+import { MdOutlineEdit, MdOutlineDelete, MdOutlineVisibility } from "react-icons/md";
 import { getStatusBadge } from "../common/GetStatus";
 import { TeamMember } from "@/app/types/team";
 import { formatDateTime, getFullName, getUserNameFirstChar } from "@/app/utils/helper";
@@ -124,12 +124,15 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
                     />
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-primary/20">
+                    <div
+                      onClick={() => onViewDetails(team)}
+                      className="flex items-center gap-4 cursor-pointer group-hover:opacity-90 transition-opacity"
+                    >
+                      <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-primary/20 group-hover:ring-primary/40 transition-all">
                         {getUserNameFirstChar(team.first_name, team.last_name)}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark leading-none mb-1">
+                        <span className="text-sm font-bold text-text-main-light dark:text-text-main-dark leading-none mb-1 hover:text-primary transition-colors">
                           {getFullName(team.first_name, team.last_name)}
                         </span>
                         <span className="text-[10px] font-bold text-text-muted-light dark:text-text-muted-dark uppercase tracking-tight">
@@ -144,7 +147,22 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {getStatusBadge(team.account_status)}
+                    <div className="flex flex-col gap-1.5 items-start">
+                      {getStatusBadge(team.account_status)}
+                      {team.verification_status && (
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase border ${
+                            team.verification_status === "VERIFIED"
+                              ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40"
+                              : team.verification_status === "PENDING"
+                              ? "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/40"
+                              : "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/40"
+                          }`}
+                        >
+                          {team.verification_status}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-1 rounded-lg bg-background-light dark:bg-background-dark text-[11px] font-bold text-text-main-light dark:text-text-main-dark border border-border-light dark:border-border-dark uppercase tracking-wider">
@@ -157,12 +175,19 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1.5">
+                      <button
+                        onClick={() => onViewDetails(team)}
+                        className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                        title="View Details & Edit"
+                      >
+                        <MdOutlineVisibility size={18} />
+                      </button>
                       {modifiable && (
                         <button
                           onClick={() => onViewDetails(team)}
-                          className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:bg-primary/10 transition-all"
-                          title="Edit"
+                          className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-blue-600 hover:bg-blue-500/10 transition-all cursor-pointer"
+                          title="Edit Member"
                         >
                           <MdOutlineEdit size={18} />
                         </button>
@@ -170,8 +195,8 @@ const TeamMemberTable: React.FC<TeamMemberTableProps> = ({
                       {modifiable && (
                         <button
                           onClick={() => onDeleteClick(team)}
-                          className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all"
-                          title="Delete"
+                          className="p-2 rounded-lg text-text-muted-light dark:text-text-muted-dark hover:text-rose-600 hover:bg-rose-500/10 transition-all cursor-pointer"
+                          title="Delete Member"
                         >
                           <MdOutlineDelete size={18} />
                         </button>

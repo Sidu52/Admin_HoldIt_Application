@@ -19,25 +19,38 @@ export interface User {
   gender: string;
   date_of_birth: string;
   account_status: string;
+  account_deactivated_reason?: string;
   is_serviceable: boolean;
   phone: string;
   verification_status: string;
   createdAt: Date;
   updatedAt: Date;
   addresses?: Address[];
-  last_login_at: Date;
-  last_active_at: Date;
+  last_login_at?: Date;
+  last_active_at?: Date;
+  is_verified?: boolean;
+  is_signup?: boolean;
+  location?: {
+    type?: string;
+    coordinates?: number[];
+    address?: string;
+  };
+  assignedCouponsCount?: number;
+  totalAssignedCouponsCount?: number;
 }
 
 export interface UserUpdateData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  gender: string;
-  date_of_birth: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  date_of_birth?: string;
   addresses?: Address[];
-  verification_status: string;
+  verification_status?: string;
+  account_status?: string;
+  account_deactivated_reason?: string;
+  is_serviceable?: boolean;
 }
 
 export interface UpdateUserStatusData {

@@ -2,6 +2,17 @@ export type UserRole = "super_admin" | "admin" | "operation_manager" | "customer
 export type UserStatus = "active" | "pending" | "blocked" | "inactive";
 export type Gender = "male" | "female" | "other";
 
+export interface DriverBankDetails {
+  accountNumber?: string | null;
+  ifscCode?: string | null;
+  beneficiaryName?: string | null;
+  upiId?: string | null;
+  preferredMode?: "IMPS" | "NEFT" | "UPI";
+  isVerified?: boolean;
+  verifiedAt?: Date | string | null;
+  verifiedBy?: string | { _id: string; name?: string; email?: string } | null;
+}
+
 // app/types/driver.ts
 export interface Driver {
   _id: string;
@@ -20,30 +31,38 @@ export interface Driver {
   verification_status: string;
   account_status: string;
   is_serviceable: boolean;
-  currentLocation: {
-    coordinates: [number, number]
+  bankDetails?: DriverBankDetails;
+  currentLocation?: {
+    coordinates: [number, number];
     address: string;
     updatedAt: Date;
-  }
+  };
   createdAt: Date;
   updatedAt: Date;
   phone: string;
   last_login_at: Date;
-  account_deactivated_reason: string;
+  account_deactivated_reason?: string;
+  deactivated_at?: Date | string | null;
+  deactivated_by?: string | { _id: string; name?: string; email?: string } | null;
 }
 
 export interface DriverUpdateData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  gender: string;
-  date_of_birth: string;
-  address: string;
-  phone: string;
-  vehicle_type: string;
-  license_number: string;
-  verification_status: string;
-  documents: string[];
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  gender?: string;
+  date_of_birth?: string;
+  address?: string;
+  phone?: string;
+  vehicle_type?: string;
+  license_number?: string;
+  verification_status?: string;
+  account_status?: string;
+  account_deactivated_reason?: string;
+  is_serviceable?: boolean;
+  is_online?: boolean;
+  bankDetails?: DriverBankDetails;
+  documents?: string[];
 }
 
 export interface UpdateDriverStatusData {

@@ -17,6 +17,7 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "teams",
       "bookings",
+      "coupans",
       "serviceable-areas",
       "price-rules",
       "profile",
@@ -31,6 +32,7 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "teams",
       "bookings",
+      "coupans",
       "serviceable-areas",
       "price-rules",
       "profile",
@@ -47,6 +49,7 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "teams",
       "bookings",
+      "coupans",
       "serviceable-areas",
       "price-rules",
       "profile",
@@ -61,6 +64,7 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "store-owners",
       "teams",
       "bookings",
+      "coupans",
       "serviceable-areas",
       "price-rules",
       "profile",
@@ -76,19 +80,21 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
       "users",
       "store-owners",
       "bookings",
+      "coupans",
       "serviceable-areas",
       "price-rules",
       "profile",
       "support",
       "notifications",
     ],
-    control: ["dashboard", "bookings", "profile", "notifications"],
+    control: ["dashboard", "bookings", "coupans", "profile", "notifications"],
   },
   [ROLES.CUSTOMER_SUPPORT]: {
     access: [
       "dashboard",
       "profile",
       "bookings",
+      "coupans",
       "support",
       "stores",
       "store-owners",
@@ -101,6 +107,7 @@ export const ROLE_PERMISSIONS: Record<Role, RolePermissions> = {
   },
 };
 
+
 /**
  * Check if a role has access (view permission) to a specific module.
  */
@@ -111,9 +118,7 @@ export function hasAccess(role: string | undefined, module: string): boolean {
   return permissions.access.includes(module);
 }
 
-/**
- * Check if a role has control (write/edit/delete/status toggle) over a specific module.
- */
+
 export function hasControl(role: string | undefined, module: string): boolean {
   if (!role) return false;
   const permissions = ROLE_PERMISSIONS[role as Role];
@@ -121,10 +126,6 @@ export function hasControl(role: string | undefined, module: string): boolean {
   return permissions.control.includes(module);
 }
 
-/**
- * Check if the current actor can update or delete a target user based on their roles.
- * e.g., Admin cannot update/delete Super Admin.
- */
 export function canModifyUser(actorRole: string | undefined, targetRole: string | undefined): boolean {
   if (!actorRole) return false;
   if (actorRole === ROLES.SUPER_ADMIN) return true;

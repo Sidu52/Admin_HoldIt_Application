@@ -110,6 +110,55 @@ export interface Booking {
     transactionId?: string;
   };
   timeline?: TimelineEntry[];
+  reviews?: BookingReview[];
+  isReviewed?: boolean;
+  createdAt: string;
+  couponCode?: string | null;
+  coupon?: {
+    couponId?: string;
+    code?: string;
+    discountType?: "PERCENTAGE" | "FIXED";
+    discountValue?: number;
+    discountAmount?: number;
+    advanceDiscount?: number;
+    finalDiscount?: number;
+    remainingDiscount?: number;
+    appliedAt?: string;
+    appliedBy?: string;
+    appliedByModel?: "Admin" | "User";
+    removedAt?: string | null;
+  } | null;
+  [key: string]: any;
+}
+
+export interface BookingReview {
+  _id: string;
+  bookingId: string;
+  userId?: {
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    email?: string;
+    avatar?: string;
+  };
+  driverId?: {
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    profile_picture?: string;
+  };
+  storeId?: {
+    _id?: string;
+    store_name?: string;
+    address?: string;
+    location?: any;
+  };
+  reviewType: "DRIVER" | "STORE" | "PLATFORM" | "SERVICE";
+  rating: number;
+  tags?: string[];
+  comment?: string;
   createdAt: string;
   updatedAt?: string;
 }
