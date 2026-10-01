@@ -292,7 +292,7 @@ const TeamDetailClient = ({ team_id }: { team_id: string }) => {
                       </p>
                       {user.phone && (
                         <button
-                          onClick={() => handleCopy(user.phone, "phone")}
+                          onClick={() => handleCopy(user.phone || "", "phone")}
                           className="p-1 text-slate-400 hover:text-primary transition-colors cursor-pointer"
                           title="Copy Phone"
                         >

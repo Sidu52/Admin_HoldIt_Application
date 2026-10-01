@@ -98,7 +98,6 @@ export function EditTeamMember({
 
   const isDeactivating =
     form.account_status === ACCOUNT_STATUS.INACTIVE ||
-    form.account_status === ACCOUNT_STATUS.SUSPENDED ||
     form.account_status === ACCOUNT_STATUS.BLOCKED;
 
   const submitForm = (e: React.FormEvent) => {
